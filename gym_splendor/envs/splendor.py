@@ -24,10 +24,11 @@ class SplendporEnv(gym.Env):
         # self.render()
 
     def step(self, action):
+        self.turn += 1
         if self.close() and self.turn % self.amount_player == 0:
             return self,None,True,None
         else:
-            self.turn += 1
+            print(self.player[self.turn % self.amount_player].name,"------------------------------------",end="")
             stocks = action[0]
             card = action[1]
             stock_return = action[2]
