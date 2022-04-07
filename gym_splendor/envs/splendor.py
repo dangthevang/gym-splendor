@@ -11,7 +11,7 @@ def getType(dict_type):
         for j in dict_type.keys():
             if dict_type[j] == 1:
                 return j
-amount_player = 4
+amount_player = 2
 class SplendporEnv(gym.Env):
     metadata = {'render.modes': ['human']}
     def __init__(self):
