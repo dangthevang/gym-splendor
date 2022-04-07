@@ -6,6 +6,7 @@ from matplotlib.pyplot import close
 from gym_splendor.envs.base.board import Board
 from gym_splendor.envs.base.card import Card_Stock,Card_Noble
 from gym_splendor.envs.agents import agents_inteface
+from gym_splendor.envs.base import error
 
 def getType(dict_type):
         for j in dict_type.keys():
@@ -27,11 +28,13 @@ class SplendporEnv(gym.Env):
         if self.close() and self.turn % self.amount_player == 0:
             return self,None,True,None
         else:
-            self.turn += 1
             stocks = action[0]
             card = action[1]
             stock_return = action[2]
+            print("***************************************8888")
+            error.errorColor(str(self.turn % self.amount_player))
             self.player[self.turn % self.amount_player].action_space(self.state,stocks,card,stock_return)
+            self.turn += 1
         return self.state,None,None,None
 
 
