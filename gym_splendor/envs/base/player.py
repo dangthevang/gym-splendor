@@ -1,8 +1,9 @@
+from gym_splendor.envs.base import error
 class Player:
     def __init__(self, name):
         self.message = ""
         self.__name = name
-        self.__score = 0
+        self.__score = 14
         self.__stocks = {
             "red": 0,
             "blue": 0,
@@ -84,23 +85,39 @@ class Player:
     def setCard_noble(self, value):
         self.__card_noble = value
 
-    def action_space(self, state, stocks=[], card=None, stock_return=[]):
-        if len(stocks) != 0:
-            if self.check_input_stock(stocks) == 1:
-                for stock in stocks:
-                    self.__stocks[stock] += 1
-            elif self.check_input_stock(stocks) == 2:
-                self.__stocks[stocks[0]] += 2
-            else:
-                print("Không thể lấy thẻ do đầu vào bị lỗi!!!")
-            self.return_stock(state, stock_return)
+    def action_space(self, state, stocks=[], card=None, stock_return=[], prioritize=0):
+        if prioritize == 1:
+            self.get_stocks(stocks, state, stock_return)
+        elif prioritize == 2:
+            self.get_card(state, card)
+        elif prioritize == 3:
+            self.get_upside_down(state, card, stock_return)
         else:
-            if self.check_get_card(card):
-              self.get_card(self, state, card)
-            elif self.check_upsite_down():
-              self.get_upside_down(self,state, card)
-              self.return_stock(state, stock_return)
-        return state
+            if len(stocks) != 0:
+                self.get_stocks(stocks, state, stock_return)
+            else:
+                if self.check_get_card(card):
+                    self.get_card(state, card)
+                elif self.check_upsite_down(card):
+                    self.get_upside_down(state, card, stock_return)
+                    
+
+    def get_stocks(self, stocks, state, stock_return):
+        l = self.check_input_stock(stocks, state)
+        t = self.check_return(stock_return, stocks)
+        if t == False:
+            error.errorColor("Không thể lấy nguyên liệu do đầu vào bị lỗi!!!")
+            return None
+        if l == 1:
+            for stock in stocks:
+                self.__stocks[stock] += 1
+            state["Board"].getStock(stocks)
+            self.return_stock(state, stock_return)
+        elif l == 2:
+            self.__stocks[stocks[0]] += 2
+            state["Board"].getStock(stocks)
+            self.return_stock(state, stock_return)
+        error.successColor("Lấy nguyên liệu")            
 
     def validate_stock(self, arr_stock):
         '''
@@ -112,10 +129,10 @@ class Player:
         types_stock = len(list(set(arr_stock)))
         scale = amount_stock/types_stock
         if "auto_color" in arr_stock:
-            print("Lỗi đầu vào lấy stock auto_color")
+            error.errorColor("Lỗi đầu vào lấy stock auto_color")
             return 0
         if amount_stock > 3 or scale == 3 or scale == 1.5:
-            print("Lỗi đầu vào lấy không đúng số lượng loại, hoặc số lượng stock")
+            error.errorColor("Lỗi đầu vào lấy không đúng số lượng loại, hoặc số lượng stock")
             return 0
         if scale == 1:
             return 1
@@ -123,66 +140,66 @@ class Player:
             return 2
 
     def check_input_stock(self, arr_stock, state):
-        if self.validate_stock(self, arr_stock) == 1:
+        if self.validate_stock(arr_stock) == 1:
             for stock in arr_stock:
                 if state["Board"].stocks[stock] == 0:
-                    print("Không đủ điều kiện trên bàn")
+                    error.errorColor("Không đủ điều kiện nguyen lieu trên bàn")
                     return 0
             return 1
-        if self.validate_stock(self, arr_stock) == 2:
+        if self.validate_stock(arr_stock) == 2:
             if state["Board"].stocks[arr_stock[0]] <= len(state["Agent"])//2:
-                print("Không đủ điều kiện trên bàn")
+                error.errorColor("Không đủ điều kiện trên bàn")
                 return 0
             return 2
 
     def return_stock(self, state, stock_return):
-        if sum(self.__stocks.values()) > 10:
-            if len(stock_return) >= sum(self.__stocks.values()) - 10 and self.check_return(stock_return):
-                for stock in stock_return:
-                    self.__stocks[stock] = self.__stocks[stock] - 1
-                return state["Board"].postStock(stock_return)
-            else:
-                print(
-                    " Số lượng thẻ bỏ chưa đúng hoặc số thẻ trả bị âm, Cần sửa lại ngay")
-        return
+        if sum(self.__stocks.values()) + len(stock_return) > 10:
+            for stock in stock_return:
+                self.__stocks[stock] = self.__stocks[stock] - 1
+            state["Board"].postStock(stock_return)
 
     def check_get_card(self, Card):
+        if Card == None:
+            error.errorColor("Thẻ truyền vào bị rỗng")
+            return False
         auto_color = self.__stocks["auto_color"]
         for i in Card.stocks.keys():
             if self.__stocks[i] + self.__stocks_const[i] < Card.stocks[i]:
                 if self.__stocks[i] + self.__stocks_const[i] + auto_color >= Card.stocks[i]:
-                    auto_color = self.__stocks[i] + \
-                        self.__stocks_const[i] + auto_color - Card.stocks[i]
+                    auto_color = self.__stocks[i] + self.__stocks_const[i] + auto_color - Card.stocks[i]
                 else:
                     return False
         return True
 
-    def check_return(self, stock_return):
-        stock_current = self.stocks
-        for stock in stock_return:
-            stock_current[stock] -= 1
-            if stock_current[stock] < 0:
-                return False
+    def check_return(self, stock_return, stocks):
+        if sum(self.__stocks.values()) + len(stocks) > 10:
+            stock_current = self.stocks
+            for stock in stock_return:
+                stock_current[stock] -= 1
+                if stock_current[stock] < 0:
+                    return False
         return True
 
-    def get_upside_down(self,state, Card, stock_return):
-            auto_color = 0
-            if state["Board"].stocks["auto_color"] >= 1:
-                auto_color = 1
+    def get_upside_down(self, state, Card, stock_return):
+        auto_color = 0
+        if state["Board"].stocks["auto_color"] >= 1:
+            auto_color = 1
+            if self.check_return(stock_return, ["auto_color"]):
                 self.__stocks["auto_color"] += 1
-            # -------
-            a = self.getPositionCard(state["Board"], Card)
-            show = a["show"]
-            key = a["key"]
-            if show == True:
-                self.__card_upside_down.append(Card)
-                state["Board"].deleteUpCard(key, Card)
-            else:
-                self.__card_upside_down.append(
-                  state["Board"].dict_Card_Stocks_UpsiteDown[key][1])
-                state["Board"].deleteCardInUpsiteDown(
-                  key, state["Board"].dict_Card_Stocks_UpsiteDown[key][1])
-            state["Board"].getStock({"auto_color": auto_color})
+                state["Board"].getStock(["auto_color"])
+        # -------
+        a = self.get_position_card(state, Card)
+        show = a["show"]
+        key = a["key"]
+        if show == True:
+            self.__card_upside_down.append(Card)
+            state["Board"].deleteUpCard(key, Card)
+        else:
+            self.__card_upside_down.append(
+                state["Board"].dict_Card_Stocks_UpsiteDown[key][1])
+            state["Board"].deleteCardInUpsiteDown(
+                key, state["Board"].dict_Card_Stocks_UpsiteDown[key][1])
+        error.successColor("Up The")
 
     def get_card(self, state, Card):
         stock_return = {"red": 0,
@@ -190,38 +207,43 @@ class Player:
                         "green": 0,
                         "white": 0,
                         "black": 0,
-                        "auto_color": 0, }
+                        "auto_color": 0}
         self.__card_open.append(Card)
         self.__score += Card.score
+        error.RecommendColor(Card.stocks)
         for i in Card.stocks.keys():
             stocks_late = self.__stocks[i]
             if stocks_late + self.__stocks_const[i] < Card.stocks[i]:
                 auto_color = self.__stocks["auto_color"]
                 self.__stocks["auto_color"] = self.__stocks["auto_color"] - (Card.stocks[i] - self.__stocks[i] -
                                                                              self.__stocks_const[i])
-                self.__stocks[i] = self.__stocks[i] + (
-                    auto_color-self.__stocks["auto_color"]) + self.__stocks_const[i] - Card.stocks[i]
-                stock_return["auto_color"] = auto_color - \
-                    self.__stocks["auto_color"]
+                self.__stocks[i] = self.__stocks[i] + (auto_color-self.__stocks["auto_color"]) + self.__stocks_const[i] - Card.stocks[i]
+                stock_return["auto_color"] += auto_color - self.__stocks["auto_color"]
                 stock_return[i] = stocks_late
             else:
                 if self.__stocks_const[i] >= Card.stocks[i]:
                     stock_return[i] = 0
                 else:
-                    self.__stocks[i] = stocks_late + \
-                        self.__stocks_const[i] - Card.stocks[i]
+                    self.__stocks[i] = stocks_late + self.__stocks_const[i] - Card.stocks[i]
                     stock_return[i] = stocks_late - self.__stocks[i]
         self.__stocks_const[Card.type_stock] += 1
-
         a = self.get_position_card(state, Card)
         mine = a["mine"]
         if mine == False:
             state["Board"].deleteUpCard(a["key"], Card)
         else:
             self.__card_upside_down.remove(Card)
-        state["Board"] = self.getNoble(state["Board"])
+        self.getNoble(state)
+        error.RecommendColor(stock_return)
+        error.successColor("Lật The")
+        stock_return = list(self.coverdicttolist(stock_return))
         state["Board"].postStock(stock_return)
-        return state
+    
+    def coverdicttolist(self,stock_return):
+        for key,value in stock_return.items():
+            for i in range(value):
+                yield key
+
 
     def get_position_card(self, state, card):
         for i in self.__card_upside_down:
@@ -264,43 +286,9 @@ class Player:
                 state["Board"].deleteCardNoble(i)
             except:
                 continue
-    def check_upsite_down(self):
-      if len(self.__card_upside_down) < 3:
-          return True
-      else:
-          return False
-        
 
-
-# Kiểm tra xem có lấy được 3 nguyên liệu hay không
-
-    def checkThreeStocks(self, board, color_1, color_2, color_3):
-        try:
-            if color_1 == "auto_color" or color_2 == "auto_color" or color_3 == "auto_color":
-                return False
-            if color_1 == color_2 or color_1 == color_3 or color_2 == color_3:
-                return False
-            if board.stocks[color_1] == 0:
-                return False
-            elif board.stocks[color_2] == 0:
-                return False
-            elif board.stocks[color_3] == 0:
-                return False
+    def check_upsite_down(self, card):
+        if len(self.__card_upside_down) < 3 and card !=None:
             return True
-        except AttributeError:
-            error.errorColor(
-                "Check Three Stocks Có tham số nào đó truyền vào bị rỗng nên không thực hiện được hàm")
-            return False
-
-# Kiểm tra xem có lấy được 1 nguyên liệu hay không
-    def checkOneStock(self, board, color_1):
-        try:
-            if color_1 == "auto_color":
-                return False
-            if board.stocks[color_1] <= 3:
-                return False
-            return True
-        except AttributeError:
-            error.errorColor(
-                "Check One Stocks  Có tham số nào đó truyền vào bị rỗng nên không thực hiện được hàm")
+        else:
             return False

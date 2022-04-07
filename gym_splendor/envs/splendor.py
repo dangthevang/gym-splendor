@@ -11,32 +11,38 @@ def getType(dict_type):
         for j in dict_type.keys():
             if dict_type[j] == 1:
                 return j
-
+amount_player = 4
 class SplendporEnv(gym.Env):
     metadata = {'render.modes': ['human']}
-    def __init__(self,amount_player):
+    def __init__(self):
+        self.turn = 0
         self.amount_player = amount_player
-        self.reset()
-        self.render()
+        self.board = None
+        self.player = None
+        self.pVictory = None
+        self.state = {}
+        # self.render()
 
     def step(self, action):
         if self.close() and self.turn % self.amount_player == 0:
-            return None
+            return self,None,True,None
         else:
             self.turn += 1
             stocks = action[0]
             card = action[1]
             stock_return = action[2]
             self.player[self.turn % self.amount_player].action_space(self.state,stocks,card,stock_return)
+        return self.state,None,None,None
 
 
     def reset(self):
         self.turn = 0
+        self.amount_player = amount_player
         self.board = Board()
         self.player = random.sample(agents_inteface.ListPlayer, k=self.amount_player)
         self.pVictory = None
         self.state = {
-            "turn" :self.turn,
+            "Turn" :self.turn,
             "Board": self.board,
             "Player": self.player,
         }
@@ -44,11 +50,20 @@ class SplendporEnv(gym.Env):
 
     def render(self, mode='human', close=False):
         print("Turn", self.turn)
-        print(self.board.stocks)
         self.board.hien_the()
-        
+        print("Turn",self.board.stocks)
+        t = 0
         for p in self.player:
-            print(p.name,p.score,end="   ")
+            print(p.name,p.score,list(p.stocks.values()),end="")
+            print("Cac the da lat: ",end="")
+            for i in p.card_open:
+                print(i.id, end=" ")
+            t +=1
+            if t % 2 == 0:
+                print()
+            else:
+                print(end="        ")
+        print("------------------------------")
 
     def setup_board(self):
         self.board.Stocks(self.amount_player)

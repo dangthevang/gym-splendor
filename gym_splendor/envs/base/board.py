@@ -101,14 +101,15 @@ class Board:
         return self.__dict_Card_Stocks_Show
 
 # Trả lại thẻ
-    def getStock(self, dict_color):
-        for i in dict_color.keys():
-            self.__stocks[i] -= dict_color[i]
+    def getStock(self, stock_return):
+        for stock in stock_return:
+            self.__stocks[stock] -=1
         return self
 
     def postStock(self, stock_return):
         for stock in stock_return:
             self.__stocks[stock] +=1
+        return self
     def hien_the(self):
         for i in self.__dict_Card_Stocks_Show.keys():
             print(i,end=": ")
