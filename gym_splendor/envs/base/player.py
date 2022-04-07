@@ -3,7 +3,7 @@ class Player:
     def __init__(self, name):
         self.message = ""
         self.__name = name
-        self.__score = 14
+        self.__score = 13
         self.__stocks = {
             "red": 0,
             "blue": 0,
