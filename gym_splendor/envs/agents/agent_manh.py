@@ -14,3 +14,4 @@ class Agent(Player):
 
         stocks = ['red', 'red']
         stocks_return = ['red']
+        print('update ')
