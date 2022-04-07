@@ -12,19 +12,18 @@ class Agent(Player):
         card = None
         stock_return = []
 
-        Check_laythe = self.Checklatthe(state["Board"])
+        card = self.Checklatthe(state["Board"])
         nlnhamtoi = list(self.check_board_nl(state["Board"]).keys())
-        
-        if Check_laythe != None:
+        if card != None:
             return stocks,card,stock_return
-        
         if len(nlnhamtoi) >= 3:
             stocks = nlnhamtoi[:3]
-        stock_return = self.TimNguyenLieuTra(stocks)
+        stock_return = list(self.TimNguyenLieuTra(stocks))
+
         return stocks, card, stock_return
     
-    def board_nl(self,state):
-        x = state["Board"].stocks
+    def board_nl(self,board):
+        x = board.stocks
         y = self.stocks_const
         x.pop("auto_color")
         dic_nl = {}
@@ -63,7 +62,7 @@ class Agent(Player):
             if ti_so[i] == dinh_gia_max:
                 return list_card[i]
     
-    def TimNguyenLieuTra(self,*arr):
+    def TimNguyenLieuTra(self,arr):
         dict_hien_tai = self.stocks.copy()
         for i in arr:
             dict_hien_tai[i] += 1
@@ -83,7 +82,9 @@ class Agent(Player):
                 x = self.NLTTvaNLC(self.stocks_const, dict_hien_tai)
                 dict_hien_tai[x] -= 1
                 dict_tra[x] += 1
-        return dict_tra
+        for key,value in dict_tra.items():
+            for i in range(value):
+                yield key
 
     def NLTTvaNLC(self,const_stock, stock):
         x = const_stock
