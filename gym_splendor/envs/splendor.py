@@ -33,8 +33,9 @@ class SplendporEnv(gym.Env):
             stock_return = action[2]
             print("***************************************8888")
             error.errorColor(str(self.turn % self.amount_player))
+            self.state["Turn"] = self.turn+1
             self.player[self.turn % self.amount_player].action_space(self.state,stocks,card,stock_return)
-            self.turn += 1
+            self.turn = self.turn+1
         return self.state,None,None,None
 
 
@@ -45,7 +46,7 @@ class SplendporEnv(gym.Env):
         self.player = random.sample(agents_inteface.ListPlayer, k=self.amount_player)
         self.pVictory = None
         self.state = {
-            "Turn" :self.turn,
+            "Turn" : 0,
             "Board": self.board,
             "Player": self.player,
         }

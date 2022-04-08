@@ -11,7 +11,7 @@ class Agent(Player):
         stocks = []
         card = None
         stock_return = []
-
+        print(state)
         # card = self.Checklatthe(state["Board"])
         # nlnhamtoi = list(self.check_board_nl(state["Board"]).keys())
         # if card != None:
