@@ -147,8 +147,8 @@ class Player:
                     return 0
             return 1
         if self.validate_stock(arr_stock) == 2:
-            if state["Board"].stocks[arr_stock[0]] <= len(state["Player"])//2:
-                error.errorColor(str(self.name) + " không đủ điều kiện trên bàn")
+            if state["Board"].stocks[arr_stock[0]] <= len(state["Player"])//2+2:
+                error.errorColor("Không đủ điều kiện trên bàn")
                 return 0
             return 2
 
