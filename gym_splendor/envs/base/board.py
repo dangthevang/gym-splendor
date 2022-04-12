@@ -3,6 +3,7 @@ import copy
 class Board:
     def __init__(self):
         self.name = "Board"
+        self.max_init_stock = 7
         self.__stocks = {
             "red": 0,
             "blue": 0,
@@ -35,6 +36,7 @@ class Board:
             token = 5
         if value == 2:
             token = 4
+        self.max_init_stock = token
         for key in self.__stocks.keys():
             if key != "auto_color":
                 self.__stocks[key] = token
