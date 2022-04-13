@@ -3,7 +3,7 @@ class Player:
     def __init__(self, name):
         self.message = ""
         self.__name = name
-        self.__score = 14
+        self.__score = 0
         self.__stocks = {
             "red": 0,
             "blue": 0,
@@ -199,6 +199,8 @@ class Player:
                 state["Board"].dict_Card_Stocks_UpsiteDown[key][1])
             state["Board"].deleteCardInUpsiteDown(
                 key, state["Board"].dict_Card_Stocks_UpsiteDown[key][1])
+
+        self.return_stock(state, stock_return)
         error.successColor(str(self.name) + " up The")
 
     def get_card(self, state, Card):
