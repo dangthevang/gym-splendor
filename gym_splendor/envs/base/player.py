@@ -186,7 +186,7 @@ class Player:
             auto_color = 1
             if self.check_return(stock_return, ["auto_color"]):
                 self.__stocks["auto_color"] += 1
-                state["Board"].getStock(["auto_color"])
+                self.return_stock(state, stock_return)
         # -------
         a = self.get_position_card(state, Card)
         show = a["show"]
@@ -200,6 +200,7 @@ class Player:
             state["Board"].deleteCardInUpsiteDown(
                 key, state["Board"].dict_Card_Stocks_UpsiteDown[key][1])
         error.successColor(str(self.name) + " up The")
+        
 
     def get_card(self, state, Card):
         stock_return = {"red": 0,
