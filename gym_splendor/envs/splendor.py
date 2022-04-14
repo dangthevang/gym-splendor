@@ -6,12 +6,13 @@ from matplotlib.pyplot import close
 from gym_splendor.envs.base.board import Board
 from gym_splendor.envs.base.card import Card_Stock,Card_Noble
 from gym_splendor.envs.agents import agents_inteface
+from gym_splendor.envs.base import error
 
 def getType(dict_type):
         for j in dict_type.keys():
             if dict_type[j] == 1:
                 return j
-amount_player = 2
+amount_player = 4
 class SplendporEnv(gym.Env):
     metadata = {'render.modes': ['human']}
     def __init__(self):
@@ -25,13 +26,17 @@ class SplendporEnv(gym.Env):
 
     def step(self, action):
         if self.close() and self.turn % self.amount_player == 0:
+            print("**********************************************************************************************************")
             return self,None,True,None
         else:
-            self.turn += 1
             stocks = action[0]
             card = action[1]
             stock_return = action[2]
+            print("**********************************************************************************************************")
+            error.errorColor(str(self.turn % self.amount_player))
+            self.state["Turn"] = self.turn+1
             self.player[self.turn % self.amount_player].action_space(self.state,stocks,card,stock_return)
+            self.turn = self.turn+1
         return self.state,None,None,None
 
 
@@ -42,28 +47,28 @@ class SplendporEnv(gym.Env):
         self.player = random.sample(agents_inteface.ListPlayer, k=self.amount_player)
         self.pVictory = None
         self.state = {
-            "Turn" :self.turn,
+            "Turn" : 0,
             "Board": self.board,
             "Player": self.player,
         }
         self.setup_board()
 
     def render(self, mode='human', close=False):
-        print("Turn", self.turn)
-        self.board.hien_the()
-        print("Turn",self.board.stocks)
+        print("Turn", self.turn, "Board Stocks",self.board.stocks)
+        # self.board.hien_the()
+        # print("Board Stocks",self.board.stocks)
         t = 0
         for p in self.player:
             print(p.name,p.score,list(p.stocks.values()),end="")
-            print("Cac the da lat: ",end="")
+            print(" Card got: ",end="")
             for i in p.card_open:
                 print(i.id, end=" ")
             t +=1
             if t % 2 == 0:
                 print()
             else:
-                print(end="        ")
-        print("------------------------------")
+                print(end="    ")
+        # print("----------------------------------------------------------------------------------------------------------")
 
     def setup_board(self):
         self.board.Stocks(self.amount_player)
