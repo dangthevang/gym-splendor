@@ -1,5 +1,6 @@
 from ..base.player import Player
 from copy import deepcopy
+import random
 
 class Agent(Player):
     def __init__(self, name):
@@ -18,12 +19,12 @@ class Agent(Player):
             snl_lay = min(3,n)
             stocks = list_nl_target[0:snl_lay]
             stocks_return = self.Tim_nl_tra(stocks)
-
+            # print(stocks, stocks_return)
             nl_trung_nhau = list(set(stocks) & set(stocks_return))
             for i in nl_trung_nhau:
                 stocks.remove(i)
                 stocks_return.remove(i)
-
+            # print(stocks, stocks_return)
             return stocks, None, stocks_return
 
         if state['Board']._Board__stocks['auto_color'] > 0 and self._Player__card_upside_down.__len__() < 3:
@@ -39,15 +40,28 @@ class Agent(Player):
                 stocks.append(stock)
 
             stocks_return = self.Tim_nl_tra(stocks)
-
+            # print(stocks, stocks_return)
             nl_trung_nhau = list(set(stocks) & set(stocks_return))
             for i in nl_trung_nhau:
                 stocks.remove(i)
                 stocks_return.remove(i)
-
+            # print(stocks, stocks_return)
             return stocks, None, stocks_return
         
-        return [], None, []
+        stocks = []
+        for i in range(3):
+            temp_list = [mau for mau in state['Board']._Board__stocks.keys() if mau != 'auto_color' and mau not in stocks]
+            if temp_list.__len__() != 0:
+                stocks.append(random.choice(temp_list))
+
+        stocks_return = self.Tim_nl_tra(stocks)
+        # print(stocks, stocks_return)
+        nl_trung_nhau = list(set(stocks) & set(stocks_return))
+        for i in nl_trung_nhau:
+            stocks.remove(i)
+            stocks_return.remove(i)
+        # print(stocks, stocks_return)
+        return stocks, None, stocks_return
 
     def Tim_the_up(self, board):
         list_card = []
