@@ -191,6 +191,9 @@ class Player:
         a = self.get_position_card(state, Card)
         if 'show' not in a.keys():
             error.errorColor(str(self.name) + " úp thẻ ngu")
+            if auto_color == 1:
+                self.__stocks["auto_color"] -= 1
+                state['Board']._Board__stocks['auto_color'] += 1
         else:
             show = a["show"]
             key = a["key"]
