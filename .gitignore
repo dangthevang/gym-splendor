@@ -1,2 +1,4 @@
 .gym_splendor/*.pyc
 .gym_splendor/envs/*.pyc
+.gym_splendor/envs/base/*.pyc
+.gym_splendor/envs/agents/*.pyc
