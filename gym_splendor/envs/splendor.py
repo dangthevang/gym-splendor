@@ -57,7 +57,7 @@ class SplendporEnv(gym.Env):
 
     def render(self, mode='human', close=False):
         print("Turn", self.turn, "Board Stocks",self.board.stocks)
-        #self.board.hien_the()
+        self.board.hien_the()
         # print("Board Stocks",self.board.stocks)
         t = 0
         for p in self.player:
