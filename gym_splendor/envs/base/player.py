@@ -1,8 +1,11 @@
 from gym_splendor.envs.base import error
 class Player:
     def __init__(self, name):
-        self.message = ""
         self.__name = name
+        self.reset()
+        
+    def reset(self):
+        self.message = ""
         self.__score = 0
         self.__stocks = {
             "red": 0,
