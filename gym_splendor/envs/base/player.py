@@ -147,7 +147,7 @@ class Player:
                     return 0
             return 1
         if self.validate_stock(arr_stock) == 2:
-            if state["Board"].stocks[arr_stock[0]] <= state["Board"].max_init_stock//2:
+            if state["Board"].stocks[arr_stock[0]] < 4:
                 error.errorColor("Không đủ điều kiện trên bàn")
                 return 0
             return 2
@@ -181,14 +181,12 @@ class Player:
         return True
 
     def get_upside_down(self, state, Card, stock_return):
-        auto_color = 0
         
         a = self.get_position_card_on_board(state, Card)
         if a == None:
             return
         else:
             if state["Board"].stocks["auto_color"] >= 1:
-                auto_color = 1
                 if self.check_return(stock_return, ["auto_color"]):
                     self.__stocks["auto_color"] += 1
                     state["Board"].getStock(["auto_color"])
