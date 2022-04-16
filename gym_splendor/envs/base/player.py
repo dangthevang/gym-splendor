@@ -217,15 +217,18 @@ class Player:
                         "auto_color": 0}
         self.__card_open.append(Card)
         self.__score += Card.score
+        
         try:
             a = self.get_position_card(state, Card)
             mine = a["mine"]
         except:
             return
+
         if mine == False:
             state["Board"].deleteUpCard(a["key"], Card)
         else:
             self.__card_upside_down.remove(Card)
+
         error.RecommendColor('Card stocks: ' + str(Card.stocks))
         for i in Card.stocks.keys():
             stocks_late = self.__stocks[i]
@@ -243,8 +246,6 @@ class Player:
                     self.__stocks[i] = stocks_late + self.__stocks_const[i] - Card.stocks[i]
                     stock_return[i] = stocks_late - self.__stocks[i]
         self.__stocks_const[Card.type_stock] += 1
-        
-        
         self.getNoble(state)
         error.RecommendColor('Stock return: ' + str(stock_return))
         error.successColor(str(self.name) + " lật thẻ")
@@ -303,13 +304,17 @@ class Player:
                 if self.__stocks_const[i] < card_Noble.stocks[i]:
                     check = False
             b.append(check)
+        arr = []
         for i in range(len(b)):
             if b[i] == True:
                 card_Noble = state["Board"].dict_Card_Stocks_Show["Noble"][i]
                 self.__score += card_Noble.score
-                self.__card_noble.append(card_Noble)
+
+                arr.append(card_Noble)
                 print("Da lay the noble----------------------------------------------------------------------------------")
-        for i in self.__card_noble:
+        
+        for i in arr:
+            self.__card_noble.append(i)
             state["Board"].deleteCardNoble(i)
             
 
