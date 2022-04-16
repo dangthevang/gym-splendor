@@ -2,38 +2,6 @@ import gym
 import gym_splendor
 import pandas as pd
 
-def main1():
-    env = gym.make('gym_splendor-v0')
-    env.reset()
-    turn_lst = []
-    board_stocks_lst = []
-    player_name_lst = []
-    player_score_lst = []
-    player_stocks_values_lst = []
-    player_card_open_lst = []
-
-    while env.turn < 200:
-        o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state))
-        turn, board_stocks, player_name, player_score, player_stocks_values, player_card_open = env.render()
-        turn_lst.append(turn)
-        board_stocks_lst.append(board_stocks)
-        player_name_lst.append(player_name)
-        player_score_lst.append(player_score)
-        player_stocks_values_lst.append(player_stocks_values)
-        player_card_open_lst.append(player_card_open)
-        print('turn abla ',turn, board_stocks, player_name, player_score, player_stocks_values, player_card_open)
-
-        if done == True:
-            break
-    df = pd.DataFrame({
-        "turn": turn_lst,
-        "board stocks": board_stocks_lst,
-        "player name":player_name_lst,
-        "player score":player_score_lst,
-        "player stocks value":player_stocks_values_lst,
-        "player card open": player_card_open_lst
-    })
-    df.to_csv('gym_splendor/envs/DuDoan/Data/dat1.csv')
 
 def save_df(env):
     obj = env.state
@@ -66,8 +34,10 @@ def save_df(env):
 
 
 def main():
-    for ban in range(50):
-        env = gym.make('gym_splendor-v0')
+    # env = gym.make('gym_splendor-v0')
+    # env.reset()
+    env = gym.make('gym_splendor-v0')
+    for ban in range(10):
         env.reset()
         turn_lst = []
         board_stocks_lst = []
@@ -97,7 +67,7 @@ def main():
             "player stocks value": player_stocks_values_lst,
             "player card open": player_card_open_lst
         })
-        df.to_csv('gym_splendor/envs/DuDoan/Data/dat{}.csv'.format(ban))
+        df.to_csv('gym_splendor/DuDoan/Data/dat{}.csv'.format(ban))
 
 if __name__ == '__main__':
     main()
