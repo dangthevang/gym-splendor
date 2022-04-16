@@ -1,12 +1,13 @@
 from colorama import Fore, Back, Style
+from gym_splendor.envs.agents import agents_inteface
 
-def errorColor(message):
+def errorColor(name, message):
   print(Fore.RED + message, end='')
   print(Style.RESET_ALL)
   pass
 
-def successColor(message):
-  print(Fore.GREEN + message, end='')
+def successColor(name, message):
+  print(Fore.GREEN + name + ' ' + message, end='')
   print(Style.RESET_ALL)
   pass
 

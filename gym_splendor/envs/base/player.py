@@ -106,18 +106,19 @@ class Player:
         l = self.check_input_stock(stocks, state)
         t = self.check_return(stock_return, stocks)
         if t == False:
-            error.errorColor("Không thể lấy nguyên liệu do đầu vào bị lỗi!!!")
+            error.errorColor(self.name, "Không thể lấy nguyên liệu do đầu vào bị lỗi!!!")
             return None
         if l == 1:
             for stock in stocks:
                 self.__stocks[stock] += 1
+                print(self.__stocks[stock])
             state["Board"].getStock(stocks)
             self.return_stock(state, stock_return)
         elif l == 2:
             self.__stocks[stocks[0]] += 2
             state["Board"].getStock(stocks)
             self.return_stock(state, stock_return)
-        error.successColor("Lấy nguyên liệu")            
+        error.successColor(self.name, "Lấy nguyên liệu")            
 
     def validate_stock(self, arr_stock):
         '''
@@ -129,10 +130,10 @@ class Player:
         types_stock = len(list(set(arr_stock)))
         scale = amount_stock/types_stock
         if "auto_color" in arr_stock:
-            error.errorColor("Lỗi đầu vào lấy stock auto_color")
+            error.errorColor(self.name, "Lỗi đầu vào lấy stock auto_color")
             return 0
         if amount_stock > 3 or scale == 3 or scale == 1.5:
-            error.errorColor("Lỗi đầu vào lấy không đúng số lượng loại, hoặc số lượng stock")
+            error.errorColor(self.name, "Lỗi đầu vào lấy không đúng số lượng loại, hoặc số lượng stock")
             return 0
         if scale == 1:
             return 1
@@ -143,12 +144,12 @@ class Player:
         if self.validate_stock(arr_stock) == 1:
             for stock in arr_stock:
                 if state["Board"].stocks[stock] == 0:
-                    error.errorColor("Không đủ điều kiện nguyen lieu trên bàn")
+                    error.errorColor(self.name, "Không đủ điều kiện nguyen lieu trên bàn")
                     return 0
             return 1
         if self.validate_stock(arr_stock) == 2:
             if state["Board"].stocks[arr_stock[0]] <= len(state["Player"])//2:
-                error.errorColor("Không đủ điều kiện trên bàn")
+                error.errorColor(self.name, "Không đủ điều kiện trên bàn")
                 return 0
             return 2
 
@@ -160,7 +161,7 @@ class Player:
 
     def check_get_card(self, Card):
         if Card == None:
-            error.errorColor("Thẻ truyền vào bị rỗng")
+            error.errorColor(self.name, "Thẻ truyền vào bị rỗng")
             return False
         auto_color = self.__stocks["auto_color"]
         for i in Card.stocks.keys():
@@ -199,7 +200,7 @@ class Player:
                 state["Board"].dict_Card_Stocks_UpsiteDown[key][1])
             state["Board"].deleteCardInUpsiteDown(
                 key, state["Board"].dict_Card_Stocks_UpsiteDown[key][1])
-        error.successColor("Up The")
+        error.successColor(self.name, "Up The")
 
     def get_card(self, state, Card):
         stock_return = {"red": 0,
@@ -235,7 +236,7 @@ class Player:
             self.__card_upside_down.remove(Card)
         self.getNoble(state)
         error.RecommendColor(stock_return)
-        error.successColor("Lật The")
+        error.successColor(self.name, "Lật The")
         stock_return = list(self.coverdicttolist(stock_return))
         state["Board"].postStock(stock_return)
     
@@ -286,7 +287,6 @@ class Player:
                 state["Board"].deleteCardNoble(i)
             except:
                 continue
-
     def check_upsite_down(self, card):
         if len(self.__card_upside_down) < 3 and card !=None:
             return True
