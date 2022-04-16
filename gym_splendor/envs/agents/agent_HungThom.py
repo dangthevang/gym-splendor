@@ -1,11 +1,16 @@
 from ..base.player import Player
 from copy import deepcopy
+import random
+
 
 class Agent(Player):
     def __init__(self, name):
         super().__init__(name)
 
     def action(self, state):
+
+        # print(self.check_winner(state))
+
         card = self.check_lat_the(state['Board'])
 
         if card != None:
@@ -15,15 +20,15 @@ class Agent(Player):
         list_nl_target = self.board_nl_target(state['Board'])
         n = list_nl_target.__len__()
         if n >= 2:
-            snl_lay = min(3,n)
+            snl_lay = min(3, n)
             stocks = list_nl_target[0:snl_lay]
             stocks_return = self.Tim_nl_tra(stocks)
-
+            # print(stocks, stocks_return)
             nl_trung_nhau = list(set(stocks) & set(stocks_return))
             for i in nl_trung_nhau:
                 stocks.remove(i)
                 stocks_return.remove(i)
-
+            # print(stocks, stocks_return)
             return stocks, None, stocks_return
 
         if state['Board']._Board__stocks['auto_color'] > 0 and self._Player__card_upside_down.__len__() < 3:
@@ -39,15 +44,29 @@ class Agent(Player):
                 stocks.append(stock)
 
             stocks_return = self.Tim_nl_tra(stocks)
-
+            # print(stocks, stocks_return)
             nl_trung_nhau = list(set(stocks) & set(stocks_return))
             for i in nl_trung_nhau:
                 stocks.remove(i)
                 stocks_return.remove(i)
-
+            # print(stocks, stocks_return)
             return stocks, None, stocks_return
-        
-        return [], None, []
+
+        stocks = []
+        for i in range(3):
+            temp_list = [mau for mau in state['Board']._Board__stocks.keys() if
+                         mau not in (['auto_color'] + stocks) and state['Board']._Board__stocks[mau] > 0]
+            if temp_list.__len__() != 0:
+                stocks.append(random.choice(temp_list))
+
+        stocks_return = self.Tim_nl_tra(stocks)
+        # print(stocks, stocks_return)
+        nl_trung_nhau = list(set(stocks) & set(stocks_return))
+        for i in nl_trung_nhau:
+            stocks.remove(i)
+            stocks_return.remove(i)
+        # print(stocks, stocks_return)
+        return stocks, None, stocks_return
 
     def Tim_the_up(self, board):
         list_card = []
@@ -76,11 +95,11 @@ class Agent(Player):
             return []
 
         list_stock_return = []
-        for i in range(snl-10):
+        for i in range(snl - 10):
             x = self.lua_chon_nl_tra(nl_hien_tai)
             list_stock_return.append(x)
             nl_hien_tai[x] -= 1
-        
+
         return list_stock_return
 
     def lua_chon_nl_tra(self, nl_hien_tai):
@@ -90,7 +109,7 @@ class Agent(Player):
             if nl_hien_tai[key] > 0:
                 dict_nl[key] = x[key] + nl_hien_tai[key]
 
-        dict_nl_bo = {k:v for k,v in sorted(dict_nl.items(), key = lambda item: item[1], reverse=True)}
+        dict_nl_bo = {k: v for k, v in sorted(dict_nl.items(), key=lambda item: item[1], reverse=True)}
 
         return list(dict_nl_bo.keys())[0]
 
@@ -112,7 +131,7 @@ class Agent(Player):
         for key in x.keys():
             dict_nl[key] = x[key] - y[key]
 
-        dict_nl_can = {k:v for k,v in sorted(dict_nl.items(), key = lambda item: item[1], reverse=True)}
+        dict_nl_can = {k: v for k, v in sorted(dict_nl.items(), key=lambda item: item[1], reverse=True)}
         for key in x.keys():
             dict_nl_can[key] = x[key]
 
@@ -138,3 +157,26 @@ class Agent(Player):
         max_value = max(value_cards)
 
         return list_card[value_cards.index(max_value)]
+
+    #####################################################################################################
+
+    # def check_winner(self, state):
+    #     name = ''
+    #     score_max = 14
+    #     player_win = None
+    #     if state['Turn']%4 == 0:
+    #         for player in list(state['Player']):
+    #             if player.score > score_max:
+    #                 score_max = player.score
+    #         if score_max > 14:
+
+    #             for player in list(state['Player']):
+    #                 if player.score >= score_max:
+    #                     score_max = player.score
+    #                     player_win = player
+    #                 elif player.score == score_max:
+    #                     if len(player.card_open) < len(player_win.card_open):
+    #                         player_win = player
+    #             if score_max > 14:
+    #                 print('Tap trung vao day nao')
+    #                 print(player_win.name, 'win với ', score_max, 'ở turn ',  state['Turn']/4)
