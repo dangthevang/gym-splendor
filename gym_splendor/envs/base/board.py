@@ -120,6 +120,6 @@ class Board:
             for j in self.__dict_Card_Stocks_Show[i]:
                 print(j.id, end=" ")
             if i != 'Noble':
-                print('     |     ', end='')
+                print(' | ', end='')
 
         print()

@@ -6,7 +6,7 @@ class Player:
 
     def reset(self):
         self.message = ""
-        self.__score = 0 
+        self.__score = 0
         self.__stocks = {
             "red": 0,
             "blue": 0,
@@ -230,7 +230,7 @@ class Player:
         else:
             self.__card_upside_down.remove(Card)
 
-        error.RecommendColor('Card stocks: ' + str(Card.stocks))
+        
         for i in Card.stocks.keys():
             stocks_late = self.__stocks[i]
             if stocks_late + self.__stocks_const[i] < Card.stocks[i]:
@@ -248,7 +248,7 @@ class Player:
                     stock_return[i] = stocks_late - self.__stocks[i]
         self.__stocks_const[Card.type_stock] += 1
         self.getNoble(state)
-        error.RecommendColor('Stock return: ' + str(stock_return))
+        error.RecommendColor('Card stocks: ' + str(Card.stocks)+'   Stock return: ' + str(stock_return))
         error.successColor(str(self.name) + " lật thẻ")
         stock_return = list(self.coverdicttolist(stock_return))
         state["Board"].postStock(stock_return)
