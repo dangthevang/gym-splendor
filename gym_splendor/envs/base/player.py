@@ -191,6 +191,7 @@ class Player:
                 auto_color = 1
                 if self.check_return(stock_return, ["auto_color"]):
                     self.__stocks["auto_color"] += 1
+                    state["Board"].getStock(["auto_color"])
                     self.return_stock(state, stock_return)
             # -------
             show = a["show"]
