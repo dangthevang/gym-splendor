@@ -10,6 +10,7 @@ class Agent(Player):
         card = self.check_lat_the(state['Board'])
 
         if card != None:
+            # Lấy thẻ
             return [], card, []
 
         list_nl_target = self.board_nl_target(state['Board'])
@@ -18,85 +19,69 @@ class Agent(Player):
             snl_lay = min(3,n)
             stocks = list_nl_target[0:snl_lay]
             stocks_return = self.Tim_nl_tra(stocks)
-            
+            # print(stocks, stocks_return)
             nl_trung_nhau = list(set(stocks) & set(stocks_return))
             for i in nl_trung_nhau:
                 stocks.remove(i)
                 stocks_return.remove(i)
-            
-            if stocks.__len__() != 0:
-                return stocks, None, stocks_return
+            # print(stocks, stocks_return)
+            return stocks, None, stocks_return
 
-        if (state['Board'].stocks['auto_color'] > 0 and self.card_upside_down.__len__() < 3) or (self.card_upside_down.__len__() < 3 and sum(state['Board'].stocks.values()) == state['Board'].stocks['auto_color']):
+        if state['Board']._Board__stocks['auto_color'] > 0 and self._Player__card_upside_down.__len__() < 3:
             card = self.Tim_the_up(state['Board'])
-            if card != None:
-                stocks_return = self.Tim_nl_tra(['auto_color'])
+            stocks_return = self.Tim_nl_tra(['auto_color'])
 
-                return [], card, stocks_return
+            return [], card, stocks_return
 
         if n == 1:
             stock = list_nl_target[0]
             stocks = [stock]
-            if state['Board'].stocks[stock] >= 4:
+            if state['Board']._Board__stocks[stock] >= 4:
                 stocks.append(stock)
 
-                stocks_return = self.Tim_nl_tra(stocks)
-                
-                nl_trung_nhau = list(set(stocks) & set(stocks_return))
-                for i in nl_trung_nhau:
-                    stocks.remove(i)
-                    stocks_return.remove(i)
-                
-                if stocks.__len__() >= 2:
-                    return stocks, None, stocks_return
+            stocks_return = self.Tim_nl_tra(stocks)
+            # print(stocks, stocks_return)
+            nl_trung_nhau = list(set(stocks) & set(stocks_return))
+            for i in nl_trung_nhau:
+                stocks.remove(i)
+                stocks_return.remove(i)
+            # print(stocks, stocks_return)
+            return stocks, None, stocks_return
         
         stocks = []
-        for i in range(min(3, 10-sum(self.stocks.values()))):
-            temp_list = [mau for mau in state['Board'].stocks.keys() if mau not in (['auto_color'] + stocks) and state['Board'].stocks[mau] > 0]
-            if temp_list.__len__() > 0:
-                stocks.append(random.choice(temp_list))
-        
-        if stocks.__len__() > 0:
-            return stocks, None, []
-
         for i in range(3):
-            temp_list = [mau for mau in state['Board'].stocks.keys() if mau not in (['auto_color'] + stocks) and state['Board'].stocks[mau] > 0]
-            if temp_list.__len__() > 0:
+            temp_list = [mau for mau in state['Board']._Board__stocks.keys() if mau != 'auto_color' and mau not in stocks]
+            if temp_list.__len__() != 0:
                 stocks.append(random.choice(temp_list))
 
-        stocks_return = []
-        nl_thua = max(sum(self.stocks.values()) + stocks.__len__() - 10, 0)
-        pl_st = deepcopy(self.stocks)
-        for i in range(nl_thua):
-            temp_list = [mau for mau in pl_st.keys() if mau != 'auto_color' and pl_st[mau] > 0]
-            mau_choice = random.choice(temp_list)
-            stocks_return.append(mau_choice)
-            pl_st[mau_choice] -= 1
-        
+        stocks_return = self.Tim_nl_tra(stocks)
+        # print(stocks, stocks_return)
+        nl_trung_nhau = list(set(stocks) & set(stocks_return))
+        for i in nl_trung_nhau:
+            stocks.remove(i)
+            stocks_return.remove(i)
+        # print(stocks, stocks_return)
         return stocks, None, stocks_return
 
     def Tim_the_up(self, board):
         list_card = []
-        hand_vc = deepcopy(self.stocks_const)
-        for type_card in board.dict_Card_Stocks_Show.keys():
+        hand_vc = deepcopy(self._Player__stocks_const)
+        for type_card in board._Board__dict_Card_Stocks_Show.keys():
             if type_card != 'Noble':
-                for card in board.dict_Card_Stocks_Show[type_card]:
+                for card in board._Board__dict_Card_Stocks_Show[type_card]:
                     nl_thieu = {}
-                    for mau in card.stocks.keys():
-                        nl_thieu[mau] = max(0, card.stocks[mau] - hand_vc[mau])
+                    for mau in card._Card__stocks.keys():
+                        nl_thieu[mau] = max(0, card._Card__stocks[mau] - hand_vc[mau])
                         if sum(nl_thieu.values()) <= 10:
                             list_card.append(card)
 
-        value_cards = [car.score / sum(list(car.stocks.values())) for car in list_card]
-        if value_cards.__len__() == 0:
-            return None
-
+        value_cards = [car._Card__score / sum(list(car._Card__stocks.values())) for car in list_card]
         max_value = max(value_cards)
 
         return list_card[value_cards.index(max_value)]
 
     def Tim_nl_tra(self, stocks):
-        nl_hien_tai = deepcopy(self.stocks)
+        nl_hien_tai = deepcopy(self._Player__stocks)
         for i in stocks:
             nl_hien_tai[i] += 1
 
@@ -113,13 +98,13 @@ class Agent(Player):
         return list_stock_return
 
     def lua_chon_nl_tra(self, nl_hien_tai):
-        x = deepcopy(self.stocks_const)
+        x = deepcopy(self._Player__stocks_const)
         dict_nl = {}
         for key in x.keys():
             if nl_hien_tai[key] > 0:
                 dict_nl[key] = x[key] + nl_hien_tai[key]
 
-        dict_nl_bo = {k:v for k,v in sorted(dict_nl.items(), key = lambda item: item[1], reverse=False)}
+        dict_nl_bo = {k:v for k,v in sorted(dict_nl.items(), key = lambda item: item[1], reverse=True)}
 
         return list(dict_nl_bo.keys())[0]
 
@@ -133,9 +118,9 @@ class Agent(Player):
         return list_nl_can
 
     def board_nl(self, board):
-        x = deepcopy(board.stocks)
+        x = deepcopy(board._Board__stocks)
         x.pop('auto_color')
-        y = deepcopy(self.stocks_const)
+        y = deepcopy(self._Player__stocks_const)
 
         dict_nl = {}
         for key in x.keys():
@@ -150,20 +135,20 @@ class Agent(Player):
     def check_lat_the(self, board):
         list_card = []
 
-        for card in self.card_upside_down:
+        for card in self._Player__card_upside_down:
             if self.check_get_card(card):
                 list_card.append(card)
 
-        for type_card in board.dict_Card_Stocks_Show.keys():
+        for type_card in board._Board__dict_Card_Stocks_Show.keys():
             if type_card != 'Noble':
-                for card in board.dict_Card_Stocks_Show[type_card]:
+                for card in board._Board__dict_Card_Stocks_Show[type_card]:
                     if self.check_get_card(card):
                         list_card.append(card)
 
         if list_card.__len__() == 0:
             return None
 
-        value_cards = [car.score / sum(list(car.stocks.values())) for car in list_card]
+        value_cards = [car._Card__score / sum(list(car._Card__stocks.values())) for car in list_card]
         max_value = max(value_cards)
 
         return list_card[value_cards.index(max_value)]

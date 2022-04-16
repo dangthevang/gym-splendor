@@ -6,7 +6,7 @@ class Player:
 
     def reset(self):
         self.message = ""
-        self.__score = 0
+        self.__score = 0 
         self.__stocks = {
             "red": 0,
             "blue": 0,
@@ -312,7 +312,7 @@ class Player:
                 self.__score += card_Noble.score
 
                 arr.append(card_Noble)
-                print("Da lay the noble----------------------------------------------------------------------------------")
+                print("Da lay the noble ####################################################################")
         
         for i in arr:
             self.__card_noble.append(i)
