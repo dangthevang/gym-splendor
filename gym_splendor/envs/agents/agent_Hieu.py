@@ -2,6 +2,7 @@ from ..base.player import Player
 import random
 import math
 import json
+import pandas as pd
 import os
 '''
 format state:
@@ -15,16 +16,13 @@ format state:
     -mình đã lấy: 2
     -mình đang úp: 3
 '''
+file_train = pd.read_csv('./TRAIN_HIEU/file_train.csv')
 
 
 class Agent(Player):
     def __init__(self, name):
-        try:
-            os.mkdir('./TRAIN_HIEU')
-
-        except:
-            pass
         super().__init__(name)
+
 
 
 
@@ -125,56 +123,35 @@ class Agent(Player):
 
     def NL_board(self, state):
         board = state['Board']
-        list_ = ['-'.join(str(i) for i in list(board.stocks.values())) +'/'+
-                '-'.join(str(i) for i in list(self.stocks.values())) +'/'+
-                '-'.join(str(i) for i in list(self.stocks_const.values())) +'/'+
-                self.board_card_to_str(state)]
-                #  + self_card_to_str(self)
-        return list_
-
-
-    def board_card_to_str(self, state):
         list_card_open = []
-        for i in state['Board'].dict_Card_Stocks_Show.keys():
-            for j in state['Board'].dict_Card_Stocks_Show[i]:
+        list_score = [player.score for player in state['Player']]
+        
+        for i in board.dict_Card_Stocks_Show.keys():
+            for j in board.dict_Card_Stocks_Show[i]:
                 list_card_open.append((convert_card_to_id(j.id)))
-        list_card = []
+        list_all_card = []
+        list_player_card = [convert_card_to_id(card.id) for card in self.card_open]
+        list_player_noble = [convert_card_to_id(card.id) for card in self.card_noble]
+        list_player_upside_down = [convert_card_to_id(card.id) for card in self.card_upside_down]
+        list_player_card_test = [card.id for card in self.card_open]
+        print('CHECK', list_player_card, list_player_noble, list_player_card_test)
         for i in range(1, 101):
             if i in list_card_open:
-                list_card.append(1)
-            elif i in self.card_open or i in self.card_noble:
-                list_card.append(2)
-            elif i in self.card_upside_down:
-                list_card.append(3)
+                list_all_card.append(1)
+            elif i in list_player_card or i in list_player_noble:
+                list_all_card.append(2)
+            elif i in list_player_upside_down:
+                list_all_card.append(3)
             else:
-                list_card.append(0)
-        return '-'.join(str(i) for i in list_card)
-    
-    # def check_winner(self, state):
-    #     name = ''
-    #     score_max = 14
-    #     player_win = None
-    #     if state['Turn']%4 == 0:
-    #         for player in list(state['Player']):
-    #             if player.score > score_max:
-    #                 score_max = player.score 
-    #         if score_max > 14:
+                list_all_card.append(0)
 
-    #             for player in list(state['Player']):
-    #                 if player.score >= score_max:
-    #                     score_max = player.score 
-    #                     player_win = player
-    #                 elif player.score == score_max:
-    #                     if len(player.card_open) < len(player_win.card_open):
-    #                         player_win = player
-    #             if score_max > 14:
-    #                 print('Tap trung vao day nao')
-    #                 print(player_win.name, 'win với ', score_max, 'ở turn ',  state['Turn']/4)
+        list_ = ['-'.join(str(i) for i in list_score) +'/'+
+                '-'.join(str(i) for i in list(board.stocks.values())) +'/'+
+                '-'.join(str(i) for i in list(self.stocks.values())) +'/'+
+                '-'.join(str(i) for i in list(self.stocks_const.values())) +'/'+
+                '-'.join(str(i) for i in list_all_card)]
 
-
-            
-
-
+        return list_
 
 
 def convert_card_to_id(id):
@@ -186,27 +163,7 @@ def convert_card_to_id(id):
         return int(id.replace('II_', '')) + 40
     elif 'I_' in id:
         return int(id.replace('I_', ''))
-
-
-# def self_card_to_str(self):
-#     list_card_open = []
-#     list_card_upsidedown = []
-#     loaithe = ['I', 'II', 'III', 'Noble']
-#     for i in loaithe:
-#         for j in self.card_open + self.card_upside_down + self.card_noble:
-#             list_card_open.append((convert_card_to_id(j.id)))
-#         for j in self.card_upside_down:
-#             list_card_upsidedown.append((convert_card_to_id(j.id)))
-#     list_card = []
-#     list_card_down = []
-#     for i in range(1, 101):
-#         if i not in list_card_open:
-#             list_card.append(0)
-#         else:
-#             list_card.append(1)
-#     for i in range(1, 101):
-#         if i not in list_card_open:
-#             list_card_down.append(0)
-#         else:
-#             list_card_down.append(1)
-#     return ['-'.join(str(i) for i in list_card)] + ['-'.join(str(i) for i in list_card_down)]
+'''
+['13-14-14-2/7-6-5-5-6-5/0-0-0-1-0-0/4-15-1-2-3
+/0-2-0-0-0-0-0-0-1-0-0-2-0-0-2-1-0-0-1-0-2-2-0-0-0-0-0-1-2-0-0-2-0-2-2-2-0-0-0-0-0-0-0-0-0-0-0-0-0-1-0-0-0-0-0-0-0-0-0-0-1-0-0-0-0-0-0-1-0-1-0-0-0-0-0-0-0-0-0-1-0-0-0-0-1-0-0-1-1-0-0-1-0-0-0-1-0-1-1-1']
+'''
