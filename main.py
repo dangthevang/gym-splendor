@@ -4,7 +4,7 @@ import gym_splendor
 def main():
     env = gym.make('gym_splendor-v0')
     env.reset()
-    while env.turn <100:
+    while env.turn <10:
         o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state))
         env.render()
         if done == True:
