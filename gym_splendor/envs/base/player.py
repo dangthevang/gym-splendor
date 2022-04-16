@@ -1,4 +1,3 @@
-from socket import ntohl
 from gym_splendor.envs.base import error
 class Player:
     def __init__(self, name):
@@ -176,12 +175,14 @@ class Player:
         return True
 
     def check_return(self, stock_return, stocks):
+        stock_current = self.stocks
         if sum(self.__stocks.values()) + len(stocks) > 10:
-            stock_current = self.stocks
             for stock in stock_return:
                 stock_current[stock] -= 1
                 if stock_current[stock] < 0:
                     return False
+        if sum(stock_current.values()) + len(stocks) > 10:
+            return False
         return True
 
     def get_upside_down(self, state, Card, stock_return):
