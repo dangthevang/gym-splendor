@@ -134,7 +134,14 @@ class Agent(Player):
         list_player_noble = [convert_card_to_id(card.id) for card in self.card_noble]
         list_player_upside_down = [convert_card_to_id(card.id) for card in self.card_upside_down]
         list_player_card_test = [card.id for card in self.card_open]
-        print('CHECK', list_player_card, list_player_noble, list_player_card_test)
+
+        list_card_check = []
+        for player in state['Player']:
+            for card in player.card_open:
+                if convert_card_to_id(card.id) <= 40:
+                    list_card_check.append(card.id)
+
+        print('CHECK', len(list_card_check),list_player_card, list_player_noble, list_player_card_test)
         for i in range(1, 101):
             if i in list_card_open:
                 list_all_card.append(1)
