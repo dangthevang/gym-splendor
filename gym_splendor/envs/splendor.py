@@ -45,6 +45,8 @@ class SplendporEnv(gym.Env):
         self.amount_player = amount_player
         self.board = Board()
         self.player = random.sample(agents_inteface.ListPlayer, k=self.amount_player)
+        for p in self.player:
+            p.reset()
         self.pVictory = None
         self.state = {
             "Turn" : 0,
@@ -55,7 +57,7 @@ class SplendporEnv(gym.Env):
 
     def render(self, mode='human', close=False):
         print("Turn", self.turn, "Board Stocks",self.board.stocks)
-        #self.board.hien_the()
+        self.board.hien_the()
         # print("Board Stocks",self.board.stocks)
         t = 0
         # for p in self.player:
