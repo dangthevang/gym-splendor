@@ -182,24 +182,28 @@ class Player:
 
     def get_upside_down(self, state, Card, stock_return):
         auto_color = 0
-        if state["Board"].stocks["auto_color"] >= 1:
-            auto_color = 1
-            if self.check_return(stock_return, ["auto_color"]):
-                self.__stocks["auto_color"] += 1
-                self.return_stock(state, stock_return)
-        # -------
-        a = self.get_position_card(state, Card)
-        show = a["show"]
-        key = a["key"]
-        if show == True:
-            self.__card_upside_down.append(Card)
-            state["Board"].deleteUpCard(key, Card)
+        
+        a = self.get_position_card_on_board(state, Card)
+        if a == None:
+            return
         else:
-            self.__card_upside_down.append(
-                state["Board"].dict_Card_Stocks_UpsiteDown[key][1])
-            state["Board"].deleteCardInUpsiteDown(
-                key, state["Board"].dict_Card_Stocks_UpsiteDown[key][1])
-        error.successColor(str(self.name) + " up The")
+            if state["Board"].stocks["auto_color"] >= 1:
+                auto_color = 1
+                if self.check_return(stock_return, ["auto_color"]):
+                    self.__stocks["auto_color"] += 1
+                    self.return_stock(state, stock_return)
+            # -------
+            show = a["show"]
+            key = a["key"]
+            if show == True:
+                self.__card_upside_down.append(Card)
+                state["Board"].deleteUpCard(key, Card)
+            else:
+                self.__card_upside_down.append(
+                    state["Board"].dict_Card_Stocks_UpsiteDown[key][1])
+                state["Board"].deleteCardInUpsiteDown(
+                    key, state["Board"].dict_Card_Stocks_UpsiteDown[key][1])
+            error.successColor(str(self.name) + " up The")
         
 
     def get_card(self, state, Card):
@@ -245,7 +249,6 @@ class Player:
             for i in range(value):
                 yield key
 
-
     def get_position_card(self, state, card):
         for i in self.__card_upside_down:
             if i.id == card.id:
@@ -258,6 +261,22 @@ class Player:
                     return{
                         "key": i,
                         "mine": False,
+                        "show": True,
+                    }
+        for i in state["Board"].dict_Card_Stocks_UpsiteDown.keys():
+            for j in state["Board"].dict_Card_Stocks_UpsiteDown[i]:
+                if j.id == card.id:
+                    return{
+                        "key": i,
+                        "show": False,
+                    }
+
+    def get_position_card_on_board(self, state, card):
+        for i in state["Board"].dict_Card_Stocks_Show.keys():
+            for j in state["Board"].dict_Card_Stocks_Show[i]:
+                if j.id == card.id:
+                    return{
+                        "key": i,
                         "show": True,
                     }
         for i in state["Board"].dict_Card_Stocks_UpsiteDown.keys():
