@@ -182,6 +182,8 @@ class Player:
                 stock_current[stock] -= 1
                 if stock_current[stock] < 0:
                     return False
+            if sum(stock_current.values()) + len(self.stocks) > 10:
+                return False
         return True
 
     def get_upside_down(self, state, Card, stock_return):
