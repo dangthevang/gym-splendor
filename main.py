@@ -5,7 +5,7 @@ import time
 def main():
     env = gym.make('gym_splendor-v0')
     env.reset()
-    while env.turn < 8:
+    while env.turn < 100:
         print("**********************************************************************************************************")
         o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state))
         env.render()
