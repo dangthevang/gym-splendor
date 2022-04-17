@@ -1,4 +1,5 @@
 import copy
+from gym_splendor.envs.base import error
 
 class Board:
     def __init__(self):
@@ -65,11 +66,10 @@ class Board:
         return self
     
     def deleteCardNoble(self, CardNoble):
-        try:
-            self.__dict_Card_Stocks_Show["Noble"].remove(CardNoble)
-        except:
-            pass      
-        return self
+        card = self.equal(CardNoble,"Noble")
+        print(card)
+        self.__dict_Card_Stocks_Show["Noble"].remove(card)
+
 
 # Thêm thẻ Nguyên liệu
     def appendUpCard(self, key, card_stock):
@@ -83,19 +83,22 @@ class Board:
 # Xóa thẻ trên bàn chơi
     def deleteUpCard(self, key, card_stock):
         try:
-            try:
-                a = self.__dict_Card_Stocks_UpsiteDown[key][0]
-            except:
-                a = None
-            if a != None:
-                self.__dict_Card_Stocks_Show[key] = [a if i.id == card_stock.id else i for i in self.__dict_Card_Stocks_Show[key] ]
-                self.deleteCardInUpsiteDown(key,a)
-            else:
-                self.__dict_Card_Stocks_Show[key].remove(card_stock)
+            a = self.__dict_Card_Stocks_UpsiteDown[key][0]
         except:
-            pass
-        return self
-    
+            a = None
+
+        if a != None:
+            self.__dict_Card_Stocks_Show[key] = [a if i.id == card_stock.id else i for i in self.__dict_Card_Stocks_Show[key] ]
+            self.deleteCardInUpsiteDown(key,a)
+        else:
+            card = self.equal(card_stock,key)
+            self.__dict_Card_Stocks_Show[key].remove(card)
+
+            
+    def equal(self, card_, field):
+        for card in self.__dict_Card_Stocks_Show[field]:
+                if card_.id == card.id:
+                    return card
 
 # Lấy thông tin các thẻ trên bàn
     def getInforCards(self):

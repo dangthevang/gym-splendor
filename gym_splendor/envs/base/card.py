@@ -1,8 +1,11 @@
 class Card:
+    tt = 0
     def __init__(self,id, score, dict_buy):
         self.__score = score
         self.__stocks = dict_buy
         self.__id = id
+        self.stt = Card.tt+1
+        Card.tt = self.stt
     @property
     def id(self):
         return self.__id
