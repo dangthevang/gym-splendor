@@ -116,10 +116,10 @@ class Player:
             for stock in stocks:
                 self.__stocks[stock] += 1
             state["Board"].getStock(stocks)
-            self.return_stock(state, stock_return)
         elif l == 2:
             self.__stocks[stocks[0]] += 2
             state["Board"].getStock(stocks)
+        if sum(self.__stocks.values())>10 :
             self.return_stock(state, stock_return)
         error.successColor(str(self.name) + " lấy nguyên liệu")            
 
@@ -195,7 +195,8 @@ class Player:
                 if self.check_return(stock_return, ["auto_color"]):
                     self.__stocks["auto_color"] += 1
                     state["Board"].getStock(["auto_color"])
-                    self.return_stock(state, stock_return)
+                    if sum(self.__stocks.values())>10 :
+                        self.return_stock(state, stock_return)
             # -------
             show = a["show"]
             key = a["key"]
