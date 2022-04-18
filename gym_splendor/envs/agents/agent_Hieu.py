@@ -141,7 +141,7 @@ class Agent(Player):
                 if convert_card_to_id(card.id) <= 40:
                     list_card_check.append(card.id)
 
-        print('CHECK', len(list_card_check),list_player_card, list_player_noble, list_player_card_test)
+        # print('CHECK', len(list_card_check),list_player_card, list_player_noble, list_player_card_test)
         for i in range(1, 101):
             if i in list_card_open:
                 list_all_card.append(1)
