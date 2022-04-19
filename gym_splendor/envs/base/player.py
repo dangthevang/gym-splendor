@@ -90,11 +90,11 @@ class Player:
         self.__card_noble = value
 
     def action_space(self, state, stocks=[], card=None, stock_return=[], prioritize=0):
-        if prioritize == 1:
+        if prioritize == 1 and len(stocks) != 0:
             self.get_stocks(stocks, state, stock_return)
-        elif prioritize == 2:
+        elif prioritize == 2 and self.check_get_card(card) == True:
             self.get_card(state, card)
-        elif prioritize == 3:
+        elif prioritize == 3 and self.check_upsite_down(card) == True:
             self.get_upside_down(state, card, stock_return)
         else:
             if len(stocks) != 0:
