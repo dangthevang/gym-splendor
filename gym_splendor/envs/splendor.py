@@ -24,21 +24,25 @@ class SplendporEnv(gym.Env):
         self.state = {}
         # self.render()
 
+
     def step(self, action):
         if self.close() and self.turn % self.amount_player == 0:
-            # print("**********************************************************************************************************")
+            # print("********************************************************************************************************")
             return self,None,True,None
         else:
             stocks = action[0]
             card = action[1]
             stock_return = action[2]
-            # print("**********************************************************************************************************")
+            if len(action) == 4:
+                prioritize = action[3]
+            else:
+                prioritize = 0
+            # print("********************************************************************************************************")
             error.errorColor(str(self.turn % self.amount_player))
             self.state["Turn"] = self.turn+1
-            self.player[self.turn % self.amount_player].action_space(self.state,stocks,card,stock_return)
+            self.player[self.turn % self.amount_player].action_space(self.state,stocks,card,stock_return, prioritize)
             self.turn = self.turn+1
         return self.state,None,None,None
-
 
     def reset(self):
         self.turn = 0

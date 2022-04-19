@@ -4,19 +4,39 @@ import os
 import pandas as pd
 
 
-def main():
-    env = gym.make('gym_splendor-v0')
-    env.reset()
-    while env.turn < 200:
-        o, a, done, t = env.step(
-            env.player[env.turn % env.amount_player].action(env.state))
-        env.render()
-        if done == True:
-            break
+# def check_winner(state):
+#     score_max = 14
+#     player_win = None
+#     if state['Turn']%4 == 0:
+#         for player in list(state['Player']):
+#             if player.score > score_max:
+#                 score_max = player.score
+#         if score_max > 14:
 
+            # for player in list(state['Player']):
+#                 if player.score >= score_max:
+#                     score_max = player.score
+#                     player_win = player
+#                 elif player.score == score_max:
+#                     if len(player.card_open) < len(player_win.card_open):
+#                         player_win = player
+#             if score_max > 14:
+#                 print('Tap trung vao day nao')
+#                 print(player_win.name, 'win với ', score_max, 'ở turn ',  state['Turn']/4)
 
-if __name__ == '__main__':
-    main()
+# def main():
+#     env = gym.make('gym_splendor-v0')
+#     env.reset()
+#     while env.turn < 200:
+#         o, a, done, t = env.step(
+#             env.player[env.turn % env.amount_player].action(env.state))
+#         env.render()
+#         if done == True:
+#             break
+#     check_winner(env.state)
+
+# if __name__ == '__main__':
+#     main()
 
 
 # def create_train(link_folder):
@@ -51,26 +71,11 @@ if __name__ == '__main__':
 #     pass
 # create_train(link_folder)
 
-
-# def check_winner(self, state):
-#     name = ''
-#     score_max = 14
-#     player_win = None
-#     if state['Turn']%4 == 0:
-#         for player in list(state['Player']):
-#             if player.score > score_max:
-#                 score_max = player.score
-#         if score_max > 14:
-
-#             for player in list(state['Player']):
-#                 if player.score >= score_max:
-#                     score_max = player.score
-#                     player_win = player
-#                 elif player.score == score_max:
-#                     if len(player.card_open) < len(player_win.card_open):
-#                         player_win = player
-#             if score_max > 14:
-#                 print('Tap trung vao day nao')
-#                 print(player_win.name, 'win với ', score_max, 'ở turn ',  state['Turn']/4)
-
+def create_list_action():
+    list_stock = ['red', 'blue', 'green', 'white', 'black', 'auto_color']
+    list_card = [i for i in range(1,91)]
+     
+list_stock = ['red', 'blue', 'green', 'white', 'black', 'auto_color']
+list_card = [i for i in range(1,91)]
+list_stock
 

@@ -37,6 +37,7 @@ class Agent(Player):
         card = self.Checklatthe(state["Board"])
         nlnhamtoi = list(self.check_board_nl(state["Board"]).keys())
         if card != None:
+            print("TOANG", stocks, card, stock_return)
             return stocks, card, stock_return
         if len(nlnhamtoi) >= 3:
             stocks = nlnhamtoi[:3]
@@ -145,8 +146,8 @@ class Agent(Player):
                 if convert_card_to_id(card.id) <= 40:
                     list_card_check.append(card.id)
 
-        print('CHECK', len(list_card_check), list_player_card,
-              list_player_noble, list_player_card_test)
+        # print('CHECK', len(list_card_check), list_player_card,
+            #   list_player_noble, list_player_card_test)
         for i in range(1, 101):
             if i in list_card_open:
                 list_all_card.append(1)

@@ -4,9 +4,11 @@ import random
 
 class Agent(Player):
     def __init__(self, name):
+        
         super().__init__(name)
 
     def action(self, state):
+        print('CHECK ', self.turn)
         the_co_the_lay = self.list_card_can_buy(state['Board'])
         # print('1111', the_co_the_lay)
         pick_token = self.value_function2(state['Board'])
