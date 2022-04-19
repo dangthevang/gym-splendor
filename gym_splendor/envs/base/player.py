@@ -90,11 +90,11 @@ class Player:
         self.__card_noble = value
 
     def action_space(self, state, stocks=[], card=None, stock_return=[], prioritize=0):
-        if prioritize == 1:
+        if prioritize == 1 and len(stocks) != 0:
             self.get_stocks(stocks, state, stock_return)
-        elif prioritize == 2:
+        elif prioritize == 2 and self.check_get_card(card) == True:
             self.get_card(state, card)
-        elif prioritize == 3:
+        elif prioritize == 3 and self.check_upsite_down(card) == True:
             self.get_upside_down(state, card, stock_return)
         else:
             if len(stocks) != 0:
@@ -116,10 +116,10 @@ class Player:
             for stock in stocks:
                 self.__stocks[stock] += 1
             state["Board"].getStock(stocks)
-            self.return_stock(state, stock_return)
         elif l == 2:
             self.__stocks[stocks[0]] += 2
             state["Board"].getStock(stocks)
+        if sum(self.__stocks.values())>10 :
             self.return_stock(state, stock_return)
         error.successColor(str(self.name) + " lấy nguyên liệu")            
 
@@ -182,6 +182,8 @@ class Player:
                 stock_current[stock] -= 1
                 if stock_current[stock] < 0:
                     return False
+            if sum(stock_current.values()) + len(self.stocks) > 10:
+                return False
         return True
 
     def get_upside_down(self, state, Card, stock_return):
@@ -193,7 +195,8 @@ class Player:
                 if self.check_return(stock_return, ["auto_color"]):
                     self.__stocks["auto_color"] += 1
                     state["Board"].getStock(["auto_color"])
-                    self.return_stock(state, stock_return)
+                    if sum(self.__stocks.values())>10 :
+                        self.return_stock(state, stock_return)
             # -------
             show = a["show"]
             key = a["key"]
