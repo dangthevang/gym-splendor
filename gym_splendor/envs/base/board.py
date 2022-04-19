@@ -112,8 +112,9 @@ class Board:
             self.__stocks[stock] +=1
         return self
     def hien_the(self):
-        for i in self.__dict_Card_Stocks_Show.keys():
-            print(i,end=": ")
-            for j in self.__dict_Card_Stocks_Show[i]:
-                print(j.id, end=" ")
-            print()
+        pass
+        # for i in self.__dict_Card_Stocks_Show.keys():
+        #     print(i,end=": ")
+        #     for j in self.__dict_Card_Stocks_Show[i]:
+        #         print(j.id, end=" ")
+        #     print()
