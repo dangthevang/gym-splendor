@@ -29,6 +29,7 @@ class Agent(Player):
 
     def action(self, state):
         board = state['Board']
+        print(self.stocks)
         stocks = []
         card = None
         stock_return = []
@@ -184,7 +185,7 @@ class Agent(Player):
         for stock in self.stocks.keys():
             sum_stock += self.stocks[stock]
             if self.stocks[stock] > 0:
-                stock_1.append((stock))
+                stock_1.append(stock)
             if self.stocks[stock] > 1:
                 stock_2.append(stock)
             if self.stocks[stock] > 2:
