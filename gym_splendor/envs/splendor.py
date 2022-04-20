@@ -70,12 +70,12 @@ class SplendporEnv(gym.Env):
             for i in p.card_open:
                 print(i.id, end=" ")
             print()
-            # t +=1
-            # if t % 2 == 0:
-            #     print()
-            # else:
-            #     print(end="    ")
-        # print("----------------------------------------------------------------------------------------------------------")
+            t +=1
+            if t % 2 == 0:
+                print()
+            else:
+                print(end="    ")
+        print("----------------------------------------------------------------------------------------------------------")
 
     def setup_board(self):
         self.board.Stocks(self.amount_player)

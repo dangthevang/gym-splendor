@@ -22,12 +22,12 @@ def check_winner(state):
                         player_win = player
             if score_max > 14:
                 print('Tap trung vao day nao')
-                print(player_win.name, 'win với ', score_max, 'ở turn ',  state['Turn']/4)
+                print(player_win.name, 'win với ', score_max, 'ở turn ',  state['Turn']/4) 
 
 def main():
     env = gym.make('gym_splendor-v0')
     env.reset()
-    while env.turn < 200:
+    while env.turn < 10000:
         o, a, done, t = env.step(
             env.player[env.turn % env.amount_player].action(env.state))
         env.render()
@@ -45,7 +45,7 @@ if __name__ == '__main__':
 #     list_stock_full = ['red', 'blue', 'green', 'white', 'black', 'auto_color']
 #     #get_stock
 #     get_3 = list(itertools.combinations(list_stock,3))          #length = 10
-#     get_2 = [(i,i) for i in list_stock]                         #length = 5
+#     get_2 = [(i,i) for i in list_stock]  +  list(itertools.combinations(list_stock,2))                     #length = 5
 #     #stock return
 #     return_3 = list(itertools.combinations_with_replacement(list_stock_full,3))
 #     return_2 = list(itertools.combinations_with_replacement(list_stock_full,2))
@@ -54,15 +54,20 @@ if __name__ == '__main__':
 #     list_card = [i for i in range(1,91)]
 #     list_action = []
 #     for get in get_3:
+#         list_action.append((get, None, []))
 #         for return_stock in return_3 + return_2 + return_1:
 #             list_action.append((get, None, return_stock))
 #     for get in get_2:
+#         list_action.append((get, None, []))
 #         for return_stock in return_2 + return_1:
 #             list_action.append((get, None, return_stock))
-    
+#     for get in list_stock:
+#         list_action.append((get, None, []))
+#         for return_stock in return_1:
+#             list_action.append((get, None, return_stock))
 #     for card in list_card:
 #         list_action.append(([], card, []))                      #lấy thẻ
-#         list_action.append((['auto_color'], card, []))          #úp thẻ
+#         list_action.append((['auto_color'], card, []))          #úp thẻ ko trả gì
 #         for return_stock in return_1:
 #             list_action.append((['auto_color'], card, [return_stock])) #úp thẻ trả nguyên liệu
 
