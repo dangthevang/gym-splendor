@@ -67,7 +67,7 @@ class Board:
     
     def deleteCardNoble(self, CardNoble):
         card = self.equal(CardNoble,"Noble")
-        print(card)
+        # print(card)
         self.__dict_Card_Stocks_Show["Noble"].remove(card)
 
 

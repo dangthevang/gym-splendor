@@ -30,7 +30,7 @@ class Agent(Player):
         stocks = []
         card = None
         stock_return = []
-        print(self.NL_board(state))
+        # print(self.NL_board(state))
         # self.check_winner(state)
         
         card = self.Checklatthe(state["Board"])
