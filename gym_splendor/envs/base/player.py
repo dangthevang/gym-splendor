@@ -178,11 +178,14 @@ class Player:
     def check_return(self, stock_return, stocks):
         if sum(self.__stocks.values()) + len(stocks) > 10:
             stock_current = self.stocks
+            for stock in stocks:
+                stock_current[stock] +=1
+                
             for stock in stock_return:
                 stock_current[stock] -= 1
                 if stock_current[stock] < 0:
                     return False
-            if sum(stock_current.values()) + len(self.stocks) > 10:
+            if sum(stock_current.values())> 10:
                 return False
         return True
 
