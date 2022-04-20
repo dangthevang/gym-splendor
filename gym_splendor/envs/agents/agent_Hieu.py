@@ -27,17 +27,29 @@ class Agent(Player):
         super().__init__(name)
 
     def action(self, state):
+        board = state['Board']
         stocks = []
         card = None
         stock_return = []
         print(self.str_state(state))
         list_action_possible = self.action_possible(state)
-        print('ALL ACTION', list_action_possible)
-        
-        
+        # print('ALL ACTION', list_action_possible)
         id = random.randint(0, len(list_action_possible) -1)
         action = list(list_action_possible[id])
-        action[0]  = []
+        try:
+            if action[0][0] == 'auto_color':
+                action[0] = []
+        except:
+            pass
+        list_card_show = board.dict_Card_Stocks_Show['I'] + board.dict_Card_Stocks_Show['II'] + \
+            board.dict_Card_Stocks_Show['III'] + self.card_upside_down
+        for card_ in list_card_show:
+            if card_.id == action[1]:
+                card = card_
+        action[1] = card
+        action[0] = list(action[0])
+        # action[2] = list(action[2])
+        
         print("TOANG", action[0], action[1], action[2])
         return action[0], action[1], action[2]
         return stocks, card, stock_return
@@ -62,13 +74,14 @@ class Agent(Player):
                 card_can_action_other.append(card)
 
         list_action = self.create_list_action(stock_2_get, stock_3_get, card_can_get, card_can_action_other)
+        
         list_str_action = [str(item) for item in list_action]
         for i in range(len(list_all_action)):
             if list_all_action[i] in list_str_action:
                 list_check[i] = True
         file_train['CHECK'] = list_check
         df = file_train[file_train['CHECK'] == True].reset_index(drop=True)
-  
+        print(len(list_action), len(df))
         
         return list_action
 
@@ -93,28 +106,33 @@ class Agent(Player):
     def create_list_action(self, stock_2_get, stock_3_get, card_can_get, card_can_action_other):
         #get_stock
         get_3 = list(itertools.combinations(stock_3_get,3))          
-        get_2 = [(i,i) for i in stock_2_get]                         
+        get_2 = [(i,i) for i in stock_2_get]  
         #stock return
-        stock_return_1, stock_return_2, stock_return_3 = self.stock_player()
-        return_3 = list(itertools.combinations_with_replacement(stock_return_3,3))
-        return_2 = list(itertools.combinations_with_replacement(stock_return_2,2))
-        return_1 = stock_return_1
+        return_1, return_2, return_3 = self.stock_player_return()
         #card
         list_action = []
+        
         for get in get_3:
-            for return_stock in return_3 + return_2 + return_1:
-                list_action.append((get, None, return_stock))       #lấy 2 stock trả lại stock dư
+            if len(return_3) == 0:
+                list_action.append((get, None, []))       #lấy 2 stock trả lại stock dư
+            else:
+                for return_stock in return_3:
+                    list_action.append((get, None, list(return_stock)))
         for get in get_2:
-            for return_stock in return_2 + return_1:
-                list_action.append((get, None, return_stock))       #lấy 2 stock trả lại stock dư
+            if len(return_2) == 0:
+                list_action.append((get, None, []))
+            else:
+                for return_stock in return_2:
+                    list_action.append((get, None, list(return_stock)))       #lấy 2 stock trả lại stock dư
         for card in card_can_get:
             list_action.append(([], card, []))                      #lấy thẻ
-            for return_stock in return_1:
-                list_action.append((['auto_color'], card, [return_stock])) #úp thẻ trả nguyên liệu
+            if len(return_1) == 0:
+                for return_stock in return_1:
+                    list_action.append((['auto_color'], card, list(return_stock))) #úp thẻ trả nguyên liệu
         for card in card_can_action_other:
             list_action.append((['auto_color'], card, []))          #úp thẻ
             for return_stock in return_1:
-                list_action.append((['auto_color'], card, [return_stock])) #úp thẻ trả nguyên liệu
+                list_action.append((['auto_color'], card, list(return_stock))) #úp thẻ trả nguyên liệu
 
         return list_action
 
@@ -157,18 +175,36 @@ class Agent(Player):
         return list_[0]
 
 
-    def stock_player(self):
+    def stock_player_return(self):
         stock_3 = []
         stock_2 = []
         stock_1 = []
+        sum_stock = 0
         for stock in self.stocks.keys():
+            sum_stock += self.stocks[stock]
             if self.stocks[stock] > 0:
-                stock_1.append(stock)
-            elif self.stocks[stock] > 1:
+                stock_1.append((stock))
+            if self.stocks[stock] > 1:
                 stock_2.append(stock)
-            elif self.stocks[stock] > 2:
+            if self.stocks[stock] > 2:
                 stock_3.append(stock)
-        return stock_1, stock_2, stock_3
+
+        return_3 = list(itertools.combinations_with_replacement(stock_1,3)) + [(i,i,i) for i in stock_3]
+        return_2 = list(itertools.combinations_with_replacement(stock_1,2)) + [(i,i) for i in stock_2]
+        return_1 = stock_1
+
+        if sum_stock == 10:
+            all_return_3 = return_3
+            all_return_2 = return_2
+            return return_1, all_return_2, all_return_3
+        elif sum_stock == 9:
+            all_return_3 = return_2
+            all_return_2 = return_1
+            return [], all_return_2, all_return_3
+        elif sum_stock == 8:
+            all_return_3 = return_1
+            return [], [], all_return_3
+        return [], [], []
 
     def stock_board(self, board):
         stock_3 = []
@@ -177,7 +213,7 @@ class Agent(Player):
             if stock != "auto_color":
                 if board.stocks[stock] > 0:
                     stock_3.append(stock)
-                elif board.stocks[stock] > 3:
+                if board.stocks[stock] > 3:
                     stock_2.append(stock)
         
         return stock_2, stock_3
