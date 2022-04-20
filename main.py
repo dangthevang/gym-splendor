@@ -35,6 +35,8 @@ def main():
             break
     check_winner(env.state)
 
+    return check_winner(env.state)
+
 if __name__ == '__main__':
     main()
 
@@ -65,6 +67,8 @@ if __name__ == '__main__':
 #             list_action.append((['auto_color'], card, [return_stock])) #úp thẻ trả nguyên liệu
 
 #     return list_action
+
+
 
 # def create_train(link_folder):
 #     list_stock = ['red', 'blue', 'green', 'white', 'black', 'auto_color']

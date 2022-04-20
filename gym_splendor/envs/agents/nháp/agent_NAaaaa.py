@@ -10,29 +10,12 @@ class Agent(Player):
         if self.hanh_dong(state['Board'], state) == None:
             
             stocks = []
-            for i in range(min(3, 10-sum(self.stocks.values()))):
-                temp_list = [mau for mau in state['Board'].stocks.keys() if mau not in (['auto_color'] + stocks) and state['Board'].stocks[mau] > 0]
+            for i in range(min(3, 10-sum(self._Player__stocks.values()))):
+                temp_list = [mau for mau in state['Board']._Board__stocks.keys() if mau not in (['auto_color'] + stocks) and state['Board']._Board__stocks[mau] > 0]
                 if temp_list.__len__() > 0:
                     stocks.append(random.choice(temp_list))
-            
-            if stocks.__len__() > 0:
-                return stocks, None, []
-
-            for i in range(3):
-                temp_list = [mau for mau in state['Board'].stocks.keys() if mau not in (['auto_color'] + stocks) and state['Board'].stocks[mau] > 0]
-                if temp_list.__len__() > 0:
-                    stocks.append(random.choice(temp_list))
-
-            stocks_return = []
-            nl_thua = max(sum(self.stocks.values()) + stocks.__len__() - 10, 0)
-            pl_st = deepcopy(self.stocks)
-            for i in range(nl_thua):
-                temp_list = [mau for mau in pl_st.keys() if mau != 'auto_color' and pl_st[mau] > 0]
-                mau_choice = random.choice(temp_list)
-                stocks_return.append(mau_choice)
-                pl_st[mau_choice] -= 1
-            
-            return stocks, None, stocks_return
+            # print('1111', stocks)
+            return stocks, None, []
         
         a = self.hanh_dong(state['Board'], state)
         if a != None and a[0] != None and a[0] == '3':
@@ -51,9 +34,8 @@ class Agent(Player):
             for i in nl_trung_nhau:
                 stocks.remove(i)
                 stocks_return.remove(i)
-            
-            if stocks.__len__() != 0:
-                return stocks, None, stocks_return
+            # print('2222', stocks, stocks_return)
+            return stocks, None, stocks_return
 
         if a != None and a[0] != None and a[0] == '2':
             stocks = [str(a[1:]), str(a[1:])]
@@ -69,9 +51,11 @@ class Agent(Player):
             for i in nl_trung_nhau:
                 stocks.remove(i)
                 stocks_return.remove(i)
-                
-            if stocks != stocks_return:
-                return stocks, None, stocks_return
+            # print(nl_trung_nhau)
+            # print('3333', stocks, stocks_return)
+            if stocks == stocks_return:
+                return [], None, []
+            return stocks, None, stocks_return
         
         if a != None and a[0] != None and a[0] == 'U':
             for the in self.list_the_co_the_up(state['Board']):
@@ -84,39 +68,22 @@ class Agent(Player):
                             if temp[key] != 0:
                                 for i in range(temp[key]):
                                     stocks_return.append(key)
-                                    
+                    # print('4444', stocks_return)
                     return [], the, stocks_return
         
         if a != None and a[0] != None and a[0] == 'M':
             for the in self.list_the_co_the_mua(state['Board']):
                 if the._Card__id == a[1:]:
-                    
+                    # print('5555')
                     return [], the, []
 
         stocks = []
-        for i in range(min(3, 10-sum(self.stocks.values()))):
-            temp_list = [mau for mau in state['Board'].stocks.keys() if mau not in (['auto_color'] + stocks) and state['Board'].stocks[mau] > 0]
+        for i in range(min(3, 10-sum(self._Player__stocks.values()))):
+            temp_list = [mau for mau in state['Board']._Board__stocks.keys() if mau not in (['auto_color'] + stocks) and state['Board']._Board__stocks[mau] > 0]
             if temp_list.__len__() > 0:
                 stocks.append(random.choice(temp_list))
-        
-        if stocks.__len__() > 0:
-            return stocks, None, []
-
-        for i in range(3):
-            temp_list = [mau for mau in state['Board'].stocks.keys() if mau not in (['auto_color'] + stocks) and state['Board'].stocks[mau] > 0]
-            if temp_list.__len__() > 0:
-                stocks.append(random.choice(temp_list))
-
-        stocks_return = []
-        nl_thua = max(sum(self.stocks.values()) + stocks.__len__() - 10, 0)
-        pl_st = deepcopy(self.stocks)
-        for i in range(nl_thua):
-            temp_list = [mau for mau in pl_st.keys() if mau != 'auto_color' and pl_st[mau] > 0]
-            mau_choice = random.choice(temp_list)
-            stocks_return.append(mau_choice)
-            pl_st[mau_choice] -= 1
-        
-        return stocks, None, stocks_return
+        # print('6666', stocks)
+        return stocks, None, []
 
     def hanh_dong(self, board, state):
         a = self.dict_up(board)
@@ -264,8 +231,6 @@ class Agent(Player):
         dict_nl = {}
         temp = ['red', 'blue', 'green', 'white', 'black']
         the = self.the_t2(board)
-        if the == None:
-            return -100
         for nguyenlieu in temp:
             so_nl_thieu = 0
 
@@ -357,41 +322,8 @@ class Agent(Player):
                     dict_nl[nlieu] += the._Card__stocks[nlieu]
         
         dict_static = {}
-        tong = sum(dict_nl.values()) + 0.01
+        tong = sum(dict_nl.values())
         for i in dict_nl.keys():
             dict_static[i] = dict_nl[i] / tong
 
         return dict_static
-
-    def validate_stock_no_print(self, arr_stock):
-        '''
-        0: arr_stock bi loi khong dung dinh dang
-        1: lay 1,2,3 loai nguyen lieu
-        2: lay 2 cua loai 1 nguyen lieu
-        '''
-        amount_stock = len(arr_stock)
-        types_stock = len(list(set(arr_stock)))
-        scale = amount_stock/types_stock
-        if "auto_color" in arr_stock:
-            # error.errorColor(str(self.name) + " lỗi đầu vào lấy stock auto_color")
-            return 0
-        if amount_stock > 3 or scale == 3 or scale == 1.5:
-            # error.errorColor(str(self.name) + " lỗi đầu vào lấy không đúng số lượng loại, hoặc số lượng stock")
-            return 0
-        if scale == 1:
-            return 1
-        if scale == 2:
-            return 2
-
-    def check_input_stock_no_print(self, arr_stock, state):
-        if self.validate_stock(arr_stock) == 1:
-            for stock in arr_stock:
-                if state["Board"].stocks[stock] == 0:
-                    # error.errorColor(str(self.name) + " không đủ điều kiện nguyen lieu trên bàn")
-                    return 0
-            return 1
-        if self.validate_stock_no_print(arr_stock) == 2:
-            if state["Board"].stocks[arr_stock[0]] < 4:
-                # error.errorColor("Không đủ điều kiện trên bàn")
-                return 0
-            return 2

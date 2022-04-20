@@ -1,4 +1,5 @@
 from ..base.player import Player
+from copy import deepcopy
 import random
 import math
 import json
@@ -228,6 +229,7 @@ class Agent(Player):
         return card_can_get
 
 
+        return choice
 
 def convert_card_to_id(id):
     if 'Noble_' in id:

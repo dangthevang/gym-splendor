@@ -1,4 +1,3 @@
-from socket import ntohl
 from gym_splendor.envs.base import error
 class Player:
     def __init__(self, name):
@@ -176,14 +175,14 @@ class Player:
         return True
 
     def check_return(self, stock_return, stocks):
+        stock_current = self.stocks
         if sum(self.__stocks.values()) + len(stocks) > 10:
-            stock_current = self.stocks
             for stock in stock_return:
                 stock_current[stock] -= 1
                 if stock_current[stock] < 0:
                     return False
-            if sum(stock_current.values()) + len(stocks) > 10:
-                return False
+        if sum(stock_current.values()) + len(stocks) > 10:
+            return False
         return True
 
     def get_upside_down(self, state, Card, stock_return):
@@ -232,7 +231,7 @@ class Player:
         else:
             self.__card_upside_down.remove(Card)
 
-        error.RecommendColor('Card stocks: ' + str(Card.stocks))
+        
         for i in Card.stocks.keys():
             stocks_late = self.__stocks[i]
             if stocks_late + self.__stocks_const[i] < Card.stocks[i]:
@@ -250,7 +249,7 @@ class Player:
                     stock_return[i] = stocks_late - self.__stocks[i]
         self.__stocks_const[Card.type_stock] += 1
         self.getNoble(state)
-        error.RecommendColor('Stock return: ' + str(stock_return))
+        error.RecommendColor('Card stocks: ' + str(Card.stocks)+'   Stock return: ' + str(stock_return))
         error.successColor(str(self.name) + " lật thẻ")
         stock_return = list(self.coverdicttolist(stock_return))
         state["Board"].postStock(stock_return)
@@ -314,7 +313,7 @@ class Player:
                 self.__score += card_Noble.score
 
                 arr.append(card_Noble)
-                print("Da lay the noble----------------------------------------------------------------------------------")
+                print("Da lay the noble ####################################################################")
         
         for i in arr:
             self.__card_noble.append(i)
