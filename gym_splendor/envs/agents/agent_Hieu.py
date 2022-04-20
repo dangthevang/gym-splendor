@@ -4,6 +4,7 @@ import math
 import json
 import pandas as pd
 import os
+import itertools
 '''
 format state:
 0 Scores
@@ -21,8 +22,6 @@ file_train = pd.read_csv('./TRAIN_HIEU/file_train.csv')
 
 class Agent(Player):
 
-    
-
     def __init__(self, name):
         self.file_train = file_train
         super().__init__(name)
@@ -31,99 +30,96 @@ class Agent(Player):
         stocks = []
         card = None
         stock_return = []
-        print(self.NL_board(state))
-        # self.check_winner(state)
-
-        card = self.Checklatthe(state["Board"])
-        nlnhamtoi = list(self.check_board_nl(state["Board"]).keys())
-        if card != None:
-            print("TOANG", stocks, card, stock_return)
-            return stocks, card, stock_return
-        if len(nlnhamtoi) >= 3:
-            stocks = nlnhamtoi[:3]
-        stock_return = list(self.TimNguyenLieuTra(stocks))
-        print("TOANG", stocks, card, stock_return)
+        print(self.str_state(state))
+        list_action_possible = self.action_possible(state)
+        print('ALL ACTION', list_action_possible)
+        
+        
+        id = random.randint(0, len(list_action_possible) -1)
+        action = list(list_action_possible[id])
+        action[0]  = []
+        print("TOANG", action[0], action[1], action[2])
+        return action[0], action[1], action[2]
         return stocks, card, stock_return
 
-    def board_nl(self, board):
-        x = board.stocks
-        y = self.stocks_const
-        x.pop("auto_color")
-        dic_nl = {}
-        for i in x.keys():
-            nl = x[i] - y[i]
-            dic_nl[i] = nl
-        dict_nl = {k: v for k, v in sorted(
-            dic_nl.items(), key=lambda item: item[1], reverse=True)}
-        return dict_nl
+    def action_possible(self, state):
+        list_all_action = list(file_train['action'])
+        list_check = [False]*len(file_train)
+        board = state['Board']
+        card_can_get = self.list_card_can_buy(board)
+        card_can_action = [convert_card_to_id(card.id) for card in
+                     board.dict_Card_Stocks_Show['I'] +
+                     board.dict_Card_Stocks_Show['II']
+                     + board.dict_Card_Stocks_Show['III']
+                     + self.card_upside_down]
+        card_upside_down = [convert_card_to_id(card.id) for card in self.card_upside_down]
+        stock_2_get, stock_3_get = self.stock_board(board)
+        card_can_action_other = []
+        card_check = card_upside_down + card_can_get
+        
+        for card in card_can_action:
+            if card not in card_check:
+                card_can_action_other.append(card)
 
-    def check_board_nl(self, board):
-        dict_check_nl = {}
-        for i in self.board_nl(board):
-            if self.board_nl(board)[i] > 0:
-                dict_check_nl[i] = self.board_nl(board)[i]
-        return dict_check_nl
+        list_action = self.create_list_action(stock_2_get, stock_3_get, card_can_get, card_can_action_other)
+        list_str_action = [str(item) for item in list_action]
+        for i in range(len(list_all_action)):
+            if list_all_action[i] in list_str_action:
+                list_check[i] = True
+        file_train['CHECK'] = list_check
+        df = file_train[file_train['CHECK'] == True].reset_index(drop=True)
+  
+        
+        return list_action
 
-    def Checklatthe(self, board):
-        list_card = []
-        for type_card in board.dict_Card_Stocks_Show.keys():
-            if type_card != "Noble":
-                for card in board.dict_Card_Stocks_Show[type_card]:
-                    if self.check_get_card(card):
-                        list_card.append(card)
-        ti_so = []
-        for i in list_card:
-            x = i.score
-            y = sum(list(i.stocks.values()))
-            dinh_gia = x/y
-            ti_so.append(dinh_gia)
-        dinh_gia_max = 0
-        for i in ti_so:
-            if dinh_gia_max < i:
-                dinh_gia_max = i
-        for i in range(len(ti_so)):
-            if ti_so[i] == dinh_gia_max:
-                return list_card[i]
+    def reference_file(self, state):
+        list_stock = ['red', 'blue', 'green', 'white', 'black', 'auto_color']
+        list_columns_reference = []
+        list_str_state = [item.split('-') for item in self.str_state(state).split('/')]
+        for id in range(len(list_str_state[1])):
+            list_columns_reference.append(f'{int(list_str_state[id])}_{list_stock[id]}_board')
+        for id in range(len(list_str_state[2])):
+            list_columns_reference.append(f'{int(list_str_state[id])}_{list_stock[id]}_player')
+        for id in range(len(list_str_state[3])):
+            list_columns_reference.append(f'{int(list_str_state[id])}_{list_stock[id]}_const')
+        for id in range(len(list_str_state[4])):
+            if int(list_str_state[id]) != 0:
+                list_columns_reference.append(f'card_{id+1}_Y')
+        return list_columns_reference
 
-    def TimNguyenLieuTra(self, arr):
-        dict_hien_tai = self.stocks.copy()
-        for i in arr:
-            dict_hien_tai[i] += 1
-        snl = sum(list(dict_hien_tai.values()))
-        dict_tra = {
-            "red": 0,
-            "blue": 0,
-            "green": 0,
-            "white": 0,
-            "black": 0,
-            "auto_color": 0,
-        }
-        if snl <= 10:
-            return dict_tra
-        else:
-            for i in range(snl - 10):
-                x = self.NLTTvaNLC(self.stocks_const, dict_hien_tai)
-                dict_hien_tai[x] -= 1
-                dict_tra[x] += 1
-        for key, value in dict_tra.items():
-            for i in range(value):
-                yield key
 
-    def NLTTvaNLC(self, const_stock, stock):
-        x = const_stock
-        y = stock
-        dict_nl_can_bo = {}
-        for i in x.keys():
-            if y[i] > 0:
-                nl_can_bo = x[i] - y[i]
-            else:
-                nl_can_bo = -10
-            dict_nl_can_bo[i] = nl_can_bo
-        dict_nl_can_bo = {k: v for k, v in sorted(
-            dict_nl_can_bo.items(), key=lambda item: item[1], reverse=True)}
-        return list(dict_nl_can_bo.keys())[0]
 
-    def NL_board(self, state):
+
+    def create_list_action(self, stock_2_get, stock_3_get, card_can_get, card_can_action_other):
+        #get_stock
+        get_3 = list(itertools.combinations(stock_3_get,3))          
+        get_2 = [(i,i) for i in stock_2_get]                         
+        #stock return
+        stock_return_1, stock_return_2, stock_return_3 = self.stock_player()
+        return_3 = list(itertools.combinations_with_replacement(stock_return_3,3))
+        return_2 = list(itertools.combinations_with_replacement(stock_return_2,2))
+        return_1 = stock_return_1
+        #card
+        list_action = []
+        for get in get_3:
+            for return_stock in return_3 + return_2 + return_1:
+                list_action.append((get, None, return_stock))       #lấy 2 stock trả lại stock dư
+        for get in get_2:
+            for return_stock in return_2 + return_1:
+                list_action.append((get, None, return_stock))       #lấy 2 stock trả lại stock dư
+        for card in card_can_get:
+            list_action.append(([], card, []))                      #lấy thẻ
+            for return_stock in return_1:
+                list_action.append((['auto_color'], card, [return_stock])) #úp thẻ trả nguyên liệu
+        for card in card_can_action_other:
+            list_action.append((['auto_color'], card, []))          #úp thẻ
+            for return_stock in return_1:
+                list_action.append((['auto_color'], card, [return_stock])) #úp thẻ trả nguyên liệu
+
+        return list_action
+
+    
+    def str_state(self, state):
         board = state['Board']
         list_card_open = []
         list_score = [player.score for player in state['Player']]
@@ -138,16 +134,12 @@ class Agent(Player):
             card.id) for card in self.card_noble]
         list_player_upside_down = [convert_card_to_id(
             card.id) for card in self.card_upside_down]
-        list_player_card_test = [card.id for card in self.card_open]
 
         list_card_check = []
         for player in state['Player']:
             for card in player.card_open:
                 if convert_card_to_id(card.id) <= 40:
                     list_card_check.append(card.id)
-
-        # print('CHECK', len(list_card_check), list_player_card,
-            #   list_player_noble, list_player_card_test)
         for i in range(1, 101):
             if i in list_card_open:
                 list_all_card.append(1)
@@ -157,14 +149,48 @@ class Agent(Player):
                 list_all_card.append(3)
             else:
                 list_all_card.append(0)
-
         list_ = ['-'.join(str(i) for i in list_score) + '/' +
                  '-'.join(str(i) for i in list(board.stocks.values())) + '/' +
                  '-'.join(str(i) for i in list(self.stocks.values())) + '/' +
                  '-'.join(str(i) for i in list(self.stocks_const.values())) + '/' +
                  '-'.join(str(i) for i in list_all_card)]
+        return list_[0]
 
-        return list_
+
+    def stock_player(self):
+        stock_3 = []
+        stock_2 = []
+        stock_1 = []
+        for stock in self.stocks.keys():
+            if self.stocks[stock] > 0:
+                stock_1.append(stock)
+            elif self.stocks[stock] > 1:
+                stock_2.append(stock)
+            elif self.stocks[stock] > 2:
+                stock_3.append(stock)
+        return stock_1, stock_2, stock_3
+
+    def stock_board(self, board):
+        stock_3 = []
+        stock_2 = []
+        for stock in board.stocks.keys():
+            if stock != "auto_color":
+                if board.stocks[stock] > 0:
+                    stock_3.append(stock)
+                elif board.stocks[stock] > 3:
+                    stock_2.append(stock)
+        
+        return stock_2, stock_3
+
+    def list_card_can_buy(self, board):
+        card_can_get = []
+        list_card_show = board.dict_Card_Stocks_Show['I'] + board.dict_Card_Stocks_Show['II'] + \
+            board.dict_Card_Stocks_Show['III'] + self.card_upside_down
+        for card in list_card_show:
+            if self.check_get_card(card) == True:
+                card_can_get.append(convert_card_to_id(card.id))
+        return card_can_get
+
 
 
 def convert_card_to_id(id):
@@ -176,11 +202,3 @@ def convert_card_to_id(id):
         return int(id.replace('II_', '')) + 40
     elif 'I_' in id:
         return int(id.replace('I_', ''))
-
-
-'''
-['13-14-14-2/7-6-5-5-6-5/0-0-0-1-0-0/4-15-1-2-3
-/0-2-0-0-0-0-0-0-1-0-0-2-0-0-2-1-0-0-1-0-2-2-0-0-0-0-0-1-2-0-0-2-0-2-2-2-0-0-0-0-0-0-0-0-0-0-0-0-0-1-0-0-0-0-0-0-0-0-0-0-1-0-0-0-0-0-0-1-0-1-0-0-0-0-0-0-0-0-0-1-0-0-0-0-1-0-0-1-1-0-0-1-0-0-0-1-0-1-1-1']
-'''
-
-
