@@ -119,4 +119,7 @@ class Board:
             print(i,end=": ")
             for j in self.__dict_Card_Stocks_Show[i]:
                 print(j.id, end=" ")
-            print()
+            if i != 'Noble':
+                print(' | ', end='')
+
+        print()

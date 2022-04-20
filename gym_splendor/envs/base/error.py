@@ -11,6 +11,6 @@ def successColor(message):
   pass
 
 def RecommendColor(message):
-  print(Fore.CYAN , message, end='')
+  print(Fore.CYAN + message, end='')
   print(Style.RESET_ALL)
   pass

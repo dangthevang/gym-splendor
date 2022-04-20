@@ -1,4 +1,3 @@
-from socket import ntohl
 from gym_splendor.envs.base import error
 class Player:
     def __init__(self, name):
@@ -116,10 +115,10 @@ class Player:
             for stock in stocks:
                 self.__stocks[stock] += 1
             state["Board"].getStock(stocks)
+            self.return_stock(state, stock_return)
         elif l == 2:
             self.__stocks[stocks[0]] += 2
             state["Board"].getStock(stocks)
-        if sum(self.__stocks.values())>10 :
             self.return_stock(state, stock_return)
         error.successColor(str(self.name) + " lấy nguyên liệu")            
 
@@ -176,15 +175,28 @@ class Player:
         return True
 
     def check_return(self, stock_return, stocks):
-        if sum(self.__stocks.values()) + len(stocks) > 10:
-            stock_current = self.stocks
+        stock_current = self.stocks.copy()
+        for stock in stocks:
+            stock_current[stock] += 1
+        
+        if sum(stock_current.values()) > 10:
             for stock in stock_return:
                 stock_current[stock] -= 1
                 if stock_current[stock] < 0:
                     return False
-            if sum(stock_current.values()) + len(self.stocks) > 10:
-                return False
+        
+        if sum(stock_current.values()) > 10:
+            return False
+        
         return True
+        # if sum(self.__stocks.values()) + len(stocks) > 10:
+        #     for stock in stock_return:
+        #         stock_current[stock] -= 1
+        #         if stock_current[stock] < 0:
+        #             return False
+        # if sum(stock_current.values()) + len(stocks) > 10:
+        #     return False
+        # return True
 
     def get_upside_down(self, state, Card, stock_return):
         a = self.get_position_card_on_board(state, Card)
@@ -195,8 +207,7 @@ class Player:
                 if self.check_return(stock_return, ["auto_color"]):
                     self.__stocks["auto_color"] += 1
                     state["Board"].getStock(["auto_color"])
-                    if sum(self.__stocks.values())>10 :
-                        self.return_stock(state, stock_return)
+                    self.return_stock(state, stock_return)
             # -------
             show = a["show"]
             key = a["key"]
@@ -232,7 +243,7 @@ class Player:
         else:
             self.__card_upside_down.remove(Card)
 
-        error.RecommendColor('Card stocks: ' + str(Card.stocks))
+        
         for i in Card.stocks.keys():
             stocks_late = self.__stocks[i]
             if stocks_late + self.__stocks_const[i] < Card.stocks[i]:
@@ -250,7 +261,7 @@ class Player:
                     stock_return[i] = stocks_late - self.__stocks[i]
         self.__stocks_const[Card.type_stock] += 1
         self.getNoble(state)
-        error.RecommendColor('Stock return: ' + str(stock_return))
+        error.RecommendColor('Card stocks: ' + str(Card.stocks)+'   Stock return: ' + str(stock_return))
         error.successColor(str(self.name) + " lật thẻ")
         stock_return = list(self.coverdicttolist(stock_return))
         state["Board"].postStock(stock_return)
@@ -314,7 +325,7 @@ class Player:
                 self.__score += card_Noble.score
 
                 arr.append(card_Noble)
-                print("Da lay the noble----------------------------------------------------------------------------------")
+                print("Da lay the noble ####################################################################")
         
         for i in arr:
             self.__card_noble.append(i)

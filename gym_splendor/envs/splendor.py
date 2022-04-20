@@ -32,10 +32,14 @@ class SplendporEnv(gym.Env):
             stocks = action[0]
             card = action[1]
             stock_return = action[2]
+            if len(action) == 4:
+                prioritize = action[3]
+            else:
+                prioritize = 0
             # print("**********************************************************************************************************")
             error.errorColor(str(self.turn % self.amount_player))
             self.state["Turn"] = self.turn+1
-            self.player[self.turn % self.amount_player].action_space(self.state,stocks,card,stock_return)
+            self.player[self.turn % self.amount_player].action_space(self.state,stocks,card,stock_return, prioritize)
             self.turn = self.turn+1
         return self.state,None,None,None
 
@@ -62,15 +66,16 @@ class SplendporEnv(gym.Env):
         t = 0
         for p in self.player:
             print(p.name,p.score,list(p.stocks.values()),list(p.stocks_const.values()),end="")
-            # print(" Card got: ",end="")
-            # for i in p.card_open:
-            #     print(i.id, end=" ")
-            t +=1
-            if t % 2 == 0:
-                print()
-            else:
-                print(end="    ")
-        print("----------------------------------------------------------------------------------------------------------")
+            print(" Card got: ",end="")
+            for i in p.card_open:
+                print(i.id, end=" ")
+            print()
+            # t +=1
+            # if t % 2 == 0:
+            #     print()
+            # else:
+            #     print(end="    ")
+        # print("----------------------------------------------------------------------------------------------------------")
 
     def setup_board(self):
         self.board.Stocks(self.amount_player)
