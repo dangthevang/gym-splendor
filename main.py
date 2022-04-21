@@ -27,13 +27,13 @@ def check_winner(state):
 def main():
     env = gym.make('gym_splendor-v0')
     env.reset()
-    while env.turn < 10000:
+    while env.turn < 250:
         o, a, done, t = env.step(
             env.player[env.turn % env.amount_player].action(env.state))
         env.render()
         if done == True:
             break
-    check_winner(env.state)
+    # check_winner(env.state)
 
     return check_winner(env.state)
 
@@ -45,10 +45,18 @@ if __name__ == '__main__':
 #     list_stock_full = ['red', 'blue', 'green', 'white', 'black', 'auto_color']
 #     #get_stock
 #     get_3 = list(itertools.combinations(list_stock,3))          #length = 10
-#     get_2 = [(i,i) for i in list_stock]  +  list(itertools.combinations(list_stock,2))                     #length = 5
+#     for i in range(len(get_3)):
+#         get_3[i] = tuple(sorted(get_3[i]))
+#     get_2 = [(i,i) for i in list_stock]  +  list(itertools.combinations(list_stock,2))                     
+#     for i in range(len(get_2)):
+#         get_2[i] = tuple(sorted(get_2[i]))
 #     #stock return
 #     return_3 = list(itertools.combinations_with_replacement(list_stock_full,3))
+#     for i in range(len(return_3)):
+#         return_3[i] = tuple(sorted(return_3[i]))
 #     return_2 = list(itertools.combinations_with_replacement(list_stock_full,2))
+#     for i in range(len(return_2)):
+#         return_2[i] = tuple(sorted(return_2[i]))
 #     return_1 = list_stock_full.copy()
 #     #card
 #     list_card = [i for i in range(1,91)]
@@ -69,7 +77,7 @@ if __name__ == '__main__':
 #         list_action.append(([], card, []))                      #lấy thẻ
 #         list_action.append((['auto_color'], card, []))          #úp thẻ ko trả gì
 #         for return_stock in return_1:
-#             list_action.append((['auto_color'], card, [return_stock])) #úp thẻ trả nguyên liệu
+#             list_action.append((['auto_color'], card, return_stock)) #úp thẻ trả nguyên liệu
 
 #     return list_action
 

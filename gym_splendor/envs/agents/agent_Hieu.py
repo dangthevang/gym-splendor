@@ -6,6 +6,7 @@ import json
 import pandas as pd
 import os
 import itertools
+import numpy as np
 '''
 format state:
 0 Scores
@@ -29,13 +30,14 @@ class Agent(Player):
 
     def action(self, state):
         board = state['Board']
-        print(board.stocks, self.stocks)
         stocks = []
         card = None
         stock_return = []
-        list_action_possible = self.action_possible(state)
-        id = random.randint(0, len(list_action_possible) -1)
-        action = list(list_action_possible[id])
+        list_action_possible, list_probabilioty = self.action_possible(state)
+        if len(list_action_possible) == 0:
+            return stocks, card, stock_return
+        id_action = [id for id in range(len(list_action_possible))]
+        action = list(list_action_possible[np.random.choice(np.array(id_action), p=list_probabilioty)])
         try:
             if action[0][0] == 'auto_color':
                 action[0] = []
@@ -44,7 +46,6 @@ class Agent(Player):
         list_card_show = board.dict_Card_Stocks_Show['I'] + board.dict_Card_Stocks_Show['II'] + \
             board.dict_Card_Stocks_Show['III'] + self.card_upside_down
         for card_ in list_card_show:
-            # print(card_.id, action[1])
             if convert_card_to_id(card_.id) == action[1]:
                 card = card_
         action[1] = card
@@ -52,13 +53,12 @@ class Agent(Player):
             action[0] = [action[0]]
         elif len(action[0]) > 1:
             action[0] = list(action[0])
-        # action[0] = list(action[0])
         if type(action[2]) == str:
             action[2] = [action[2]]
         elif len(action[2]) > 1:
             action[2] = list(action[2])
         
-        print("TOANG", action[0], action[1], action[2])
+        # print("TOANG", action[0], action[1], action[2])
         return action[0], action[1], action[2]
         return stocks, card, stock_return
 
@@ -84,24 +84,49 @@ class Agent(Player):
         list_action = self.create_list_action(stock_2_get, stock_3_get, card_can_get, card_can_action_other)
         
         list_str_action = [str(item) for item in list_action]
-        # print(list_str_action)
         for i in range(len(list_str_action)):
             if list_str_action[i] in list_all_action:
                 list_check[list_all_action.index(list_str_action[i])] = True
-            # else:
-                # print(list_str_action[i])
         file_train['CHECK'] = list_check
         df = file_train[file_train['CHECK'] == True].reset_index(drop=True)
-        # print( df['action'])
-        print(len(list_action), len(df))
+        list_column_refer = self.reference_file(state)
+        list_probabilioty = self.process_action(df, list_action, list_str_action, list_column_refer)
         
-        return list_action
+        return list_action, list_probabilioty
+
+    def process_action(self, df, list_action, list_str_action, list_column_refer):
+        score_arr = np.array([0]*len(list_action))
+        # for action in list_str_action:
+        #     if action not in list(df['action']):
+        #         print(action)
+        for col in list_column_refer:
+            score_arr += np.array(df[col])
+        dict_action = {}
+        df['Score'] = score_arr
+        for i in range(len(list_str_action)):
+            for j in range(len(df)):
+                if list_str_action[i] == df['action'][j]:
+                    dict_action[list_str_action[i]] = df['Score'][j]
+        list_probabilioty = [] 
+        for score in dict_action.values():
+            list_probabilioty.append(score/np.sum(score_arr))
+        return list_probabilioty
+
+
+
+
+
+
 
 
     def create_list_action(self, stock_2_get, stock_3_get, card_can_get, card_can_action_other):
         #get_stock
-        get_3 = list(itertools.combinations(stock_3_get,3))          
+        get_3 = list(itertools.combinations(stock_3_get,3))   
+        for i in range(len(get_3)):
+            get_3[i] = tuple(sorted(get_3[i]))       
         get_2 = [(i,i) for i in stock_2_get]  + list(itertools.combinations(stock_3_get,2))
+        for i in range(len(get_2)):
+            get_2[i] = tuple(sorted(get_2[i]))
         #stock return
         return_1, return_2, return_3 = self.stock_player_return()
         #card
@@ -141,19 +166,18 @@ class Agent(Player):
 
         return list_action
 
-
     def reference_file(self, state):
         list_stock = ['red', 'blue', 'green', 'white', 'black', 'auto_color']
         list_columns_reference = []
         list_str_state = [item.split('-') for item in self.str_state(state).split('/')]
         for id in range(len(list_str_state[1])):
-            list_columns_reference.append(f'{int(list_str_state[id])}_{list_stock[id]}_board')
+            list_columns_reference.append(f'{int(list_str_state[1][id])}_{list_stock[id]}_board')
         for id in range(len(list_str_state[2])):
-            list_columns_reference.append(f'{int(list_str_state[id])}_{list_stock[id]}_player')
+            list_columns_reference.append(f'{int(list_str_state[2][id])}_{list_stock[id]}_player')
         for id in range(len(list_str_state[3])):
-            list_columns_reference.append(f'{int(list_str_state[id])}_{list_stock[id]}_const')
+            list_columns_reference.append(f'{int(list_str_state[3][id])}_{list_stock[id]}_const')
         for id in range(len(list_str_state[4])):
-            if int(list_str_state[id]) != 0:
+            if int(list_str_state[4][id]) != 0:
                 list_columns_reference.append(f'card_{id+1}_Y')
         return list_columns_reference
 
@@ -213,7 +237,11 @@ class Agent(Player):
             for j in stock_1:
                 if i != j:
                     return_3.append((i,i,j))
+        for i in range(len(return_3)):
+            return_3[i] = tuple(sorted(return_3[i]))
         return_2 = list(itertools.combinations(stock_1,2)) + [(i,i) for i in stock_2]
+        for i in range(len(return_2)):
+            return_2[i] = tuple(sorted(return_2[i]))
         return_1 = stock_1
         # print(return_1, return_2, return_3)
         if sum_stock == 10:
@@ -250,8 +278,7 @@ class Agent(Player):
                 card_can_get.append(convert_card_to_id(card.id))
         return card_can_get
 
-
-        return choice
+       
 
 def convert_card_to_id(id):
     if 'Noble_' in id:
