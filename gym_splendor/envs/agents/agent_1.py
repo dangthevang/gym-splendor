@@ -1,103 +1,136 @@
 from ..base.player import Player
 import random
 import math
+import json
+from itertools import combinations,product
+import numpy as np
+import pathlib
 
+
+def find_possible_actions(board_materials,hand_materials):
+    actions_possible = []
+    for lay in range(1,4):
+        nl_lay = list(combinations(board_materials, lay))
+        for bo_nl in nl_lay:
+            set_tren_tay = set(hand_materials)
+            set_dinh_lay = set(list(bo_nl))
+            nl_con_lai = set_tren_tay.difference(set_dinh_lay)
+            nl_bo = list(product(nl_con_lai,repeat= (min(len(list(bo_nl)),5-len(list(bo_nl))))))
+            for poss in nl_bo:
+                actions_possible.append([list(bo_nl),list(poss)])
+    nl_lay = list(combinations(board_materials, 1))
+    for nl in nl_lay:
+        setA = set(board_materials)
+        setB = set(list(nl))
+        nl_con_lai = setA.difference(setB)
+        nl_bo = list(product(nl_con_lai,repeat=2))
+        for poss in nl_bo:
+            actions_possible.append([list(nl)+list(nl),list(poss)])
+    return actions_possible
 
 class Agent(Player):
     def __init__(self, name):
         super().__init__(name)
+        f = open("/content/gym-splendor/gym_splendor/envs/agents/data.json")
+        self.act_possible = json.load(f)
+        f = open("/content/gym-splendor/gym_splendor/envs/agents/mind.json")
+        self.mind = json.load(f)
+        self.s_a_pair = []
+
+
 
     def action(self, state):
         stocks = []
         card = None
         stock_return = []
-        # print(state)
-        # card = self.Checklatthe(state["Board"])
-        # nlnhamtoi = list(self.check_board_nl(state["Board"]).keys())
-        # if card != None:
-        #     return stocks,card,stock_return
-        # if len(nlnhamtoi) >= 3:
-        #     stocks = nlnhamtoi[:3]
-        # stock_return = list(self.TimNguyenLieuTra(stocks))
-        stocks = ['red']
-        # print(self.name,stocks)
-        # stock_return = ['red']
+        # tạo state
+        observed = []
+        for nl in state["Board"].stocks.values():
+            observed.append(nl)
+        for nl in self.stocks.values():
+            observed.append(nl)
+        for nl in self.stocks_const.values():
+            observed.append(nl)
+        observed.append(self.score)
+        cards = []
+        for _ in range(100):
+            cards.append(0)
+        # print(cards)
+        for type_card in state["Board"].dict_Card_Stocks_Show.keys():
+            for card in state["Board"].dict_Card_Stocks_Show[type_card]:
+                countI = card.id.count("I")
+                new_id = -1
+                if countI == 2:
+                    new_id = 39
+                if countI == 3:
+                    new_id = 69
+                if type_card == "Noble":
+                    new_id = 89
+                thutu = card.id[card.id.index("_")+1:]
+                new_id += int(thutu)
+                cards[new_id] = 1
+        observed += cards
+        # các action có thể làm
+        hand = []
+        board = []
+        for nl in state["Board"].stocks.keys():
+            if state["Board"].stocks[nl] >0 and nl != "auto_color":
+                board.append(nl)
+        for nl in self.stocks.keys():
+            if self.stocks[nl] > 0 and nl != "auto_color":
+                hand.append(nl)
+        act_can_do = find_possible_actions(board,hand)
+        if len(self.card_upside_down) == 3:
+            for the in state["Board"].dict_Card_Stocks_Show["I"]:
+                if self.check_get_card(the):
+                    act_can_do.append([the.id,[]])
+            for the in state["Board"].dict_Card_Stocks_Show["II"]:
+                if self.check_get_card(the):
+                    act_can_do.append([the.id,[]])
+            for the in state["Board"].dict_Card_Stocks_Show["III"]:
+                if self.check_get_card(the):
+                    act_can_do.append([the.id,[]])
+        else:
+            for nl in hand:
+                for the in state["Board"].dict_Card_Stocks_Show["I"]:
+                    act_can_do.append([the.id,[nl]])
+                for the in state["Board"].dict_Card_Stocks_Show["I"]:
+                    act_can_do.append([the.id,[nl]])
+                for the in state["Board"].dict_Card_Stocks_Show["I"]:
+                    act_can_do.append([the.id,[nl]])
+        if len(act_can_do) == 0:
+            return [],None,[]
+        # weight map
+        weighted_map = np.zeros(len(self.act_possible))
+        for id in range(len(observed)):
+            name = str(id) + "_" +str(observed[id])
+            if name not in self.mind:
+                weighted_new = np.ones(len(self.act_possible))*100
+                self.mind[name] = list(weighted_new)
+            else:
+                weighted_new = np.array(self.mind[name])
+            weighted_map += weighted_new
+        weight_can_do = []
+        for act in act_can_do:
+            weight_can_do.append(weighted_map[self.act_possible.index(act)])
+        # action
+        act = random.choices(act_can_do,weights= weight_can_do)[0]
+        act_id = self.act_possible.index(act)
+        main_act = act[0]
+        sub_act = act[1]
+        stock_return = sub_act
+        if main_act[0] == "I":
+            for the in state["Board"].dict_Card_Stocks_Show["I"]:
+                if the.id == main_act:
+                    card = the
+            for the in state["Board"].dict_Card_Stocks_Show["II"]:
+                if the.id == main_act:
+                    card = the
+            for the in state["Board"].dict_Card_Stocks_Show["III"]:
+                if the.id == main_act:
+                    card = the
+        else:
+            stocks = main_act
+        self.s_a_pair.append([observed,act_id])
         return stocks, card, stock_return
     
-    def board_nl(self,board):
-        x = board.stocks
-        y = self.stocks_const
-        x.pop("auto_color")
-        dic_nl = {}
-        for i in x.keys():
-            nl = x[i] - y[i]
-            dic_nl[i] = nl
-        dict_nl = {k: v for k, v in sorted(
-            dic_nl.items(), key=lambda item: item[1], reverse=True)}
-        return dict_nl
-    
-    def check_board_nl(self,board):
-        dict_check_nl = {}
-        for i in self.board_nl(board):
-            if self.board_nl(board)[i] > 0:
-                dict_check_nl[i] = self.board_nl(board)[i]
-        return dict_check_nl
-
-    def Checklatthe(self,board):
-        list_card = []
-        for type_card in board.dict_Card_Stocks_Show.keys():
-            if type_card != "Noble":
-                for card in board.dict_Card_Stocks_Show[type_card]:
-                    if self.check_get_card(card):
-                        list_card.append(card)
-        ti_so = []
-        for i in list_card:
-            x = i.score
-            y = sum(list(i.stocks.values()))
-            dinh_gia = x/y
-            ti_so.append(dinh_gia)
-        dinh_gia_max = 0
-        for i in ti_so:
-            if dinh_gia_max < i:
-                dinh_gia_max = i
-        for i in range(len(ti_so)):
-            if ti_so[i] == dinh_gia_max:
-                return list_card[i]
-    
-    def TimNguyenLieuTra(self,arr):
-        dict_hien_tai = self.stocks.copy()
-        for i in arr:
-            dict_hien_tai[i] += 1
-        snl = sum(list(dict_hien_tai.values()))
-        dict_tra = {
-            "red": 0,
-            "blue": 0,
-            "green": 0,
-            "white": 0,
-            "black": 0,
-            "auto_color": 0,
-        }
-        if snl <= 10:
-            return dict_tra
-        else:
-            for i in range(snl - 10):
-                x = self.NLTTvaNLC(self.stocks_const, dict_hien_tai)
-                dict_hien_tai[x] -= 1
-                dict_tra[x] += 1
-        for key,value in dict_tra.items():
-            for i in range(value):
-                yield key
-
-    def NLTTvaNLC(self,const_stock, stock):
-        x = const_stock
-        y = stock
-        dict_nl_can_bo = {}
-        for i in x.keys():
-            if y[i] > 0:
-                nl_can_bo = x[i] - y[i]
-            else:
-                nl_can_bo = -10
-            dict_nl_can_bo[i] = nl_can_bo
-        dict_nl_can_bo = {k: v for k, v in sorted(
-            dict_nl_can_bo.items(), key=lambda item: item[1], reverse=True)}
-        return list(dict_nl_can_bo.keys())[0]
