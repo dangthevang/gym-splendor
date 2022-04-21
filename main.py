@@ -33,9 +33,9 @@ def main():
         env.render()
         if done == True:
             break
-    check_winner(env.state)
+    # check_winner(env.state)
 
-    # return check_winner(env.state)
+    return check_winner(env.state)
 
 if __name__ == '__main__':
     main()
