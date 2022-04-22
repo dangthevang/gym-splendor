@@ -29,13 +29,14 @@ def check_winner(state):
 def main():
     env = gym.make('gym_splendor-v0')
     env.reset()
-    while env.turn <15000:
+    while env.turn <1500:
         o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state))
         # env.render()
         if done == True:
             break
     state = env.state
     win = check_winner(state)
+    print(win,env.turn)
     f = open("/content/gym-splendor/gym_splendor/envs/agents/mind.json")
     mind = json.load(f)
     f = open("/content/gym-splendor/gym_splendor/envs/agents/data.json")
@@ -55,6 +56,8 @@ def main():
                 if name not in mind:
                     mind[name] = list(np.ones(len(act_possible))*100)
                 mind[name][a] += step + id_pair*(step>0)
+                mind[name][a] *= (mind[name][a]>0)
+                
     with open('/content/gym-splendor/gym_splendor/envs/agents/mind.json', 'w') as f:
         json.dump(mind, f)
 
