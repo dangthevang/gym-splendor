@@ -19,13 +19,16 @@ format state:
     -mình đã lấy: 2
     -mình đang úp: 3
 '''
-file_train = pd.read_csv('./TRAIN_HIEU/file_train.csv')
+
 
 
 class Agent(Player):
+    
 
     def __init__(self, name):
-        self.file_train = file_train
+        with open('trainning.json') as file_train:
+            self.file_train = json.load(file_train)
+        self.history_action = []
         super().__init__(name)
 
     def action(self, state):
@@ -33,11 +36,12 @@ class Agent(Player):
         stocks = []
         card = None
         stock_return = []
-        list_action_possible, list_probabilioty = self.action_possible(state)
+        list_action_possible, list_probabilioty, list_column_refer = self.action_possible(state)
         if len(list_action_possible) == 0:
             return stocks, card, stock_return
         id_action = [id for id in range(len(list_action_possible))]
         action = list(list_action_possible[np.random.choice(np.array(id_action), p=list_probabilioty)])
+        self.history_action.append([str(tuple(action)), list_column_refer])
         try:
             if action[0][0] == 'auto_color':
                 action[0] = []
@@ -60,11 +64,10 @@ class Agent(Player):
         
         # print("TOANG", action[0], action[1], action[2])
         return action[0], action[1], action[2]
-        return stocks, card, stock_return
 
     def action_possible(self, state):
-        list_all_action = list(file_train['action'])
-        list_check = [False]*len(file_train)
+        list_all_action = list(self.file_train.keys())
+        # list_check = [False]*len(file_train)
         board = state['Board']
         card_can_get = self.list_card_can_buy(board)
         card_can_action = [convert_card_to_id(card.id) for card in
@@ -84,40 +87,25 @@ class Agent(Player):
         list_action = self.create_list_action(stock_2_get, stock_3_get, card_can_get, card_can_action_other)
         
         list_str_action = [str(item) for item in list_action]
-        for i in range(len(list_str_action)):
-            if list_str_action[i] in list_all_action:
-                list_check[list_all_action.index(list_str_action[i])] = True
-        file_train['CHECK'] = list_check
-        df = file_train[file_train['CHECK'] == True].reset_index(drop=True)
+        # for i in range(len(list_str_action)):
+        #     if list_str_action[i] in list_all_action:
+        #         list_check[list_all_action.index(list_str_action[i])] = True
+        # file_train['CHECK'] = list_check
+        # df = file_train[file_train['CHECK'] == True].reset_index(drop=True)
         list_column_refer = self.reference_file(state)
-        list_probabilioty = self.process_action(df, list_action, list_str_action, list_column_refer)
-        
-        return list_action, list_probabilioty
+        list_probabilioty = self.process_action(list_action, list_str_action, list_column_refer)
+        # print(len(list_action))
+        return list_action, list_probabilioty, list_column_refer
 
-    def process_action(self, df, list_action, list_str_action, list_column_refer):
+    def process_action(self, list_action, list_str_action, list_column_refer):
         score_arr = np.array([0]*len(list_action))
-        # for action in list_str_action:
-        #     if action not in list(df['action']):
-        #         print(action)
-        for col in list_column_refer:
-            score_arr += np.array(df[col])
-        dict_action = {}
-        df['Score'] = score_arr
-        for i in range(len(list_str_action)):
-            for j in range(len(df)):
-                if list_str_action[i] == df['action'][j]:
-                    dict_action[list_str_action[i]] = df['Score'][j]
+        for i in range(len(list_str_action)):   
+            for col in list_column_refer:
+                score_arr[i] += self.file_train[list_str_action[i]][col]        
         list_probabilioty = [] 
-        for score in dict_action.values():
+        for score in score_arr:
             list_probabilioty.append(score/np.sum(score_arr))
         return list_probabilioty
-
-
-
-
-
-
-
 
     def create_list_action(self, stock_2_get, stock_3_get, card_can_get, card_can_action_other):
         #get_stock
@@ -150,8 +138,6 @@ class Agent(Player):
             else:
                 for return_stock in return_1:
                     list_action.append((get, None, return_stock))
-
-
         for card in card_can_get:
             list_action.append(([], card, []))                      #lấy thẻ
             if len(return_1) == 0:

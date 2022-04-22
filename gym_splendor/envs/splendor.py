@@ -38,7 +38,7 @@ class SplendporEnv(gym.Env):
             except:
                 prioritizes = 0
             # print("**********************************************************************************************************")
-            error.errorColor(str(self.turn % self.amount_player))
+            # error.errorColor(str(self.turn % self.amount_player))
             self.state["Turn"] = self.turn+1
             self.player[self.turn % self.amount_player].action_space(self.state,stocks,card,stock_return,prioritize=prioritizes)
             self.turn = self.turn+1
