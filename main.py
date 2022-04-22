@@ -61,8 +61,7 @@ def main():
     return check_winner(env.state)
 
 if __name__ == '__main__':
-    for game in range(100):
-        main()
+    main()
 
 
 
