@@ -325,7 +325,7 @@ class Player:
                 self.__score += card_Noble.score
 
                 arr.append(card_Noble)
-                print("Da lay the noble ####################################################################")
+                # print("Da lay the noble ####################################################################")
         
         for i in arr:
             self.__card_noble.append(i)

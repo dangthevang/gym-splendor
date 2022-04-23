@@ -21,22 +21,38 @@ def check_winner(state):
                     if len(player.card_open) < len(player_win.card_open):
                         player_win = player
     if player_win != None:
-        return player_win.name, score_max, 'ở turn ' + str(int(state['Turn']/4))
+        pd.read_csv(f'State_tam_{player_win.name}.csv').assign(win = 1).to_csv(f'State_tam_{player_win.name}.csv', index = False)
+        return player_win.name, score_max, str(int(state['Turn']/4))
     else:
         return "NA0"
 
 def main():
     env = gym.make('gym_splendor-v0')
+    pd.DataFrame({'state':[], 'action':[],'win': []}).to_csv('State_tam_1.csv', index = False)
+    pd.DataFrame({'state':[], 'action':[],'win': []}).to_csv('State_tam_2.csv', index = False)
+    pd.DataFrame({'state':[], 'action':[],'win': []}).to_csv('State_tam_3.csv', index = False)
+    pd.DataFrame({'state':[], 'action':[],'win': []}).to_csv('State_tam_4.csv', index = False)
+    try:
+        state_save = pd.read_csv('state.csv')
+    except:
+        state_save = pd.DataFrame({'state':[], 'action':[],'win': []})
     env.reset()
-    while env.turn <150:
+    while env.turn <400:
         o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state))
-        env.render()
+        # env.render()
         if done == True:
             break
     state = env.state
     print(check_winner(state))
+    for player in list(state['Player']):
+        df_tam = pd.read_csv(f'State_tam_{player.name}.csv')
+        state_save = pd.concat([state_save, df_tam])
+    if check_winner(state) != "NA0":
+        state_save.to_csv('state.csv', index = False)
 
 if __name__ == '__main__':
-    main()
+    for i in range(100):
+        print(i)
+        main()
 
 

@@ -12,10 +12,10 @@ def convert_card_to_id(id):
     elif 'I_' in id:
         return int(id.replace('I_', ''))
 def dich_arr(arr):
-    cl = ['red', 'blue', 'green', 'white', 'black']
+    cl = ['red', 'blue', 'green', 'white', 'black','auto_color']
     str_stock = []
     for i in arr:
-        stock = [0,0,0,0,0]
+        stock = [0,0,0,0,0,0]
         for sl in i:
             stock[cl.index(sl)] += 1
         str_stock.append(stock)
