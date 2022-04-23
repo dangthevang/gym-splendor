@@ -59,8 +59,8 @@ def main():
     learning(env.state)
     return check_winner(env.state)
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
 
 
 
@@ -135,7 +135,7 @@ def create_train():
     with open("trainning.json", "w") as file_train:
         json.dump(dict_learning, file_train)
 
-# create_train()
+create_train()
 
 
 
