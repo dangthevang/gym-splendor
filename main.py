@@ -59,8 +59,8 @@ def main():
     learning(env.state)
     return check_winner(env.state)
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
 
 
 
