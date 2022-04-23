@@ -42,21 +42,24 @@ def main():
     f = open("/content/gym-splendor/gym_splendor/envs/agents/data.json")
     act_possible = json.load(f)
     new_mind = {}
-    for player in list(state['Player']):
-        if player.name != win:
-            step = -1
-        else:
-            step = 1
-        for id_pair in range(len(player.s_a_pair)):
-            pair = player.s_a_pair[id_pair]
-            s = pair[0]
-            a = pair[1]
-            for id_state in s:
-                name = str(id_state) + "_" +str(s[id_state])
-                if name not in mind:
-                    mind[name] = list(np.ones(len(act_possible))*100)
-                mind[name][a] += step + id_pair*(step>0)
-                mind[name][a] *= (mind[name][a]>0)
+    # for player in list(state['Player']):
+    #     if player.name != win:
+    #         last_act = player.s_a_pair[-1]
+    #         score = len(player.s_a_pair)
+
+        #     step = -1
+        # else:
+        #     step = 1
+        # for id_pair in range(len(player.s_a_pair)):
+        #     pair = player.s_a_pair[id_pair]
+        #     s = pair[0]
+        #     a = pair[1]
+        #     for id_state in s:
+        #         name = str(id_state) + "_" +str(s[id_state])
+        #         if name not in mind:
+        #             mind[name] = list(np.ones(len(act_possible))*100)
+        #         mind[name][a] += step + id_pair*(step>0)
+        #         mind[name][a] *= (mind[name][a]>0)
                 
     with open('/content/gym-splendor/gym_splendor/envs/agents/mind.json', 'w') as f:
         json.dump(mind, f)

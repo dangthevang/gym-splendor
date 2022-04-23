@@ -36,6 +36,8 @@ class Agent(Player):
         f = open("/content/gym-splendor/gym_splendor/envs/agents/mind.json")
         self.mind = json.load(f)
         self.s_a_pair = []
+        f = open("/content/gym-splendor/gym_splendor/envs/agents/point_act.json")
+        self.point_act = json.load(f)
 
 
 
@@ -111,10 +113,19 @@ class Agent(Player):
                 weighted_new = np.array(self.mind[name])
             weighted_map += weighted_new
         weight_can_do = []
+        priority = None
+        max_score = 0
         for act in act_can_do:
             weight_can_do.append(weighted_map[self.act_possible.index(act)])
+            score = self.point_act[self.act_possible.index(act)]
+            if score > max_score:
+                max_score = score
+                priority = act
         # action
-        act = random.choices(act_can_do,weights= weight_can_do)[0]
+        # tìm action ưu tiên
+        if priority == None:
+        # nếu không có action ưu tiên
+            act = random.choices(act_can_do,weights= weight_can_do)[0]
         act_id = self.act_possible.index(act)
         main_act = act[0]
         sub_act = act[1]
