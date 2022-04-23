@@ -123,6 +123,9 @@ class Agent(Player):
                 priority = act
         # action
         # tìm action ưu tiên
+        if priority != None:
+            act = priority
+            # print(act)
         if priority == None:
         # nếu không có action ưu tiên
             act = random.choices(act_can_do,weights= weight_can_do)[0]
@@ -145,3 +148,5 @@ class Agent(Player):
         self.s_a_pair.append([observed,act_id])
         return stocks, card, stock_return
     
+
+
