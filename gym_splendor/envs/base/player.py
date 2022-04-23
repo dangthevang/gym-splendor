@@ -180,7 +180,6 @@ class Player:
             stock_current = self.stocks
             for stock in stocks:
                 stock_current[stock] +=1
-                
             for stock in stock_return:
                 stock_current[stock] -= 1
                 if stock_current[stock] < 0:
@@ -317,7 +316,7 @@ class Player:
                 self.__score += card_Noble.score
 
                 arr.append(card_Noble)
-                print("Da lay the noble----------------------------------------------------------------------------------")
+                # print("Da lay the noble----------------------------------------------------------------------------------")
         
         for i in arr:
             self.__card_noble.append(i)

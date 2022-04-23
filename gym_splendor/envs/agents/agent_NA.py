@@ -24,7 +24,6 @@ class Agent(Player):
             for i in nl_trung_nhau:
                 stocks.remove(i)
                 stocks_return.remove(i)
-            print(stocks, stocks_return)
             return stocks, [], stocks_return
 
         if a[0] == '2':
@@ -40,7 +39,6 @@ class Agent(Player):
             for i in nl_trung_nhau:
                 stocks.remove(i)
                 stocks_return.remove(i)
-            print(stocks, stocks_return)
             return stocks, [], stocks_return
         
         if a[0] == 'U':
