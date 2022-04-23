@@ -41,7 +41,7 @@ class Agent(Player):
                     if act not in list_act_mo:
                         list_values.append(self.Value_function(state_player_tam))
                     else:
-                        list_values.append(self.Value_function(state_player_tam) - 3)
+                        list_values.append(self.Value_function(state_player_tam) - 20)
                 else:
                     stocks = np.array(dich_arr(act)[0])
                     stock_return = np.array(dich_arr(act)[1])
@@ -71,7 +71,7 @@ class Agent(Player):
         stock_return = []
 
         state_player = self.NL_board(state)
-        # print(state_player)
+        print(state_player)
         NL_board = np.array(state_player[2])
         NL = np.array(state_player[3])
         NL_count = np.array(state_player[4])
@@ -101,9 +101,9 @@ class Agent(Player):
             if nl != "auto_color" and state["Board"].stocks[nl] > 0:
                 board_materials.append(nl)
         list_act_can += get_st(board_materials, hand_materials, self.stocks)
-
+        print(list_act_can)
         stocks, card_get, stock_return, act_save = self.act_to_values(state_player, list_act_can, list_act_mo)
-
+        print(act_save)
         try:
             state_luu = pd.read_csv('State_tam_1.csv')
         except:

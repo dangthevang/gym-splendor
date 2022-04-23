@@ -41,7 +41,7 @@ class Agent(Player):
                     if act not in list_act_mo:
                         list_values.append(self.Value_function(state_player_tam))
                     else:
-                        list_values.append(self.Value_function(state_player_tam) - 3)
+                        list_values.append(self.Value_function(state_player_tam) - 20)
                 else:
                     stocks = np.array(dich_arr(act)[0])
                     stock_return = np.array(dich_arr(act)[1])
