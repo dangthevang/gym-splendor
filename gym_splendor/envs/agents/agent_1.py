@@ -26,7 +26,7 @@ class Agent(Player):
         Sca =state_player[4][5]
         ct = np.nan_to_num(eval(pd.read_csv('ct.csv')['ct'].iloc[0]))
         return ct
-    def act_to_values(self, state_player, list_act_can):
+    def act_to_values(self, state_player, list_act_can, list_act_mo):
         list_values = []
         if len(list_act_can) > 0:
             for act in list_act_can:
@@ -38,7 +38,10 @@ class Agent(Player):
                     state_player_tam[2] += np.array(list(act.stocks.values())+[0])
                     state_player_tam[3] -= np.array(list(act.stocks.values())+[0])
                     state_player_tam[4] += np.array((dich_arr([act.type_stock])[0]))
-                    list_values.append(self.Value_function(state_player_tam))
+                    if act not in list_act_mo:
+                        list_values.append(self.Value_function(state_player_tam))
+                    else:
+                        list_values.append(self.Value_function(state_player_tam) - 3)
                 else:
                     stocks = np.array(dich_arr(act)[0])
                     stock_return = np.array(dich_arr(act)[1])
@@ -75,15 +78,20 @@ class Agent(Player):
         state_card = state_player[5]
 
         list_act_can = []
-
+        list_act_mo = []
         for type_card in state['Board'].dict_Card_Stocks_Show.keys():
             if type_card != 'Noble':
                 for card in state['Board'].dict_Card_Stocks_Show[type_card]:
                     # print(card.type_stock)
                     card_st = np.array(list(card.stocks.values())+[0])
-                    if min(NL + NL_count - card_st) >= 0:
-                        list_act_can.append(card)
-        
+                    yellow_need = 0
+                    NL_can = NL + NL_count - card_st
+                    for yellow in NL_can:
+                        if yellow < 0:
+                            yellow_need += yellow
+                    if NL_count[5] > yellow_need:
+                        list_act_mo.append(card)
+                    list_act_can.append(card)
         board_materials = []
         hand_materials = []
         for nl in self.stocks.keys():
@@ -94,9 +102,8 @@ class Agent(Player):
                 board_materials.append(nl)
         list_act_can += get_st(board_materials, hand_materials, self.stocks)
 
-        stocks, card_get, stock_return, act_save = self.act_to_values(state_player, list_act_can)
-        # if card_get == 'None':
-        #     card_get = None
+        stocks, card_get, stock_return, act_save = self.act_to_values(state_player, list_act_can, list_act_mo)
+
         try:
             state_luu = pd.read_csv('State_tam_1.csv')
         except:
