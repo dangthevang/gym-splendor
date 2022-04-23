@@ -1,5 +1,10 @@
 from ..base.player import Player
+from copy import deepcopy
+import random
+import math
 import json
+import pandas as pd
+import os
 import itertools
 import numpy as np
 '''
@@ -31,12 +36,11 @@ class Agent(Player):
         stocks = []
         card = None
         stock_return = []
-        list_action_possible, list_probabilioty, list_column_refer = self.action_possible(state)
+        list_action_possible = self.action_possible(state)
         if len(list_action_possible) == 0:
             return stocks, card, stock_return
-        id_action = [id for id in range(len(list_action_possible))]
-        action = list(list_action_possible[np.random.choice(np.array(id_action), p=list_probabilioty)])
-        self.history_action.append([str(tuple(action)), list_column_refer])
+        id_action = random.randint(0, len(list_action_possible)-1)
+        action = list(list_action_possible[id_action])
         try:
             if action[0][0] == 'auto_color':
                 action[0] = []
@@ -47,6 +51,7 @@ class Agent(Player):
         for card_ in list_card_show:
             if convert_card_to_id(card_.id) == action[1]:
                 card = card_
+                break
         action[1] = card
         if type(action[0]) == str:
             action[0] = [action[0]]
@@ -57,12 +62,10 @@ class Agent(Player):
         elif len(action[2]) > 1:
             action[2] = list(action[2])
         
-        # print("TOANG", action[0], action[1], action[2])
         return action[0], action[1], action[2]
 
     def action_possible(self, state):
-        list_all_action = list(self.file_train.keys())
-        # list_check = [False]*len(file_train)
+        # list_all_action = list(self.file_train.keys())
         board = state['Board']
         card_can_get = self.list_card_can_buy(board)
         card_can_action = [convert_card_to_id(card.id) for card in
@@ -73,34 +76,12 @@ class Agent(Player):
         card_upside_down = [convert_card_to_id(card.id) for card in self.card_upside_down]
         stock_2_get, stock_3_get = self.stock_board(board)
         card_can_action_other = []
-        card_check = card_upside_down + card_can_get
-        
+        card_check = card_upside_down + card_can_get 
         for card in card_can_action:
             if card not in card_check:
                 card_can_action_other.append(card)
-
         list_action = self.create_list_action(stock_2_get, stock_3_get, card_can_get, card_can_action_other)
-        
-        list_str_action = [str(item) for item in list_action]
-        # for i in range(len(list_str_action)):
-        #     if list_str_action[i] in list_all_action:
-        #         list_check[list_all_action.index(list_str_action[i])] = True
-        # file_train['CHECK'] = list_check
-        # df = file_train[file_train['CHECK'] == True].reset_index(drop=True)
-        list_column_refer = self.reference_file(state)
-        list_probabilioty = self.process_action(list_action, list_str_action, list_column_refer)
-        # print(len(list_action))
-        return list_action, list_probabilioty, list_column_refer
-
-    def process_action(self, list_action, list_str_action, list_column_refer):
-        score_arr = np.array([0]*len(list_action))
-        for i in range(len(list_str_action)):   
-            for col in list_column_refer:
-                score_arr[i] += self.file_train[list_str_action[i]][col]        
-        list_probabilioty = [] 
-        for score in score_arr:
-            list_probabilioty.append(score/np.sum(score_arr))
-        return list_probabilioty
+        return list_action
 
     def create_list_action(self, stock_2_get, stock_3_get, card_can_get, card_can_action_other):
         #get_stock
@@ -144,7 +125,6 @@ class Agent(Player):
                 list_action.append((['auto_color'], card, []))          #úp thẻ
                 for return_stock in return_1:
                     list_action.append((['auto_color'], card, return_stock)) #úp thẻ trả nguyên liệu
-
         return list_action
 
     def reference_file(self, state):
@@ -224,7 +204,6 @@ class Agent(Player):
         for i in range(len(return_2)):
             return_2[i] = tuple(sorted(return_2[i]))
         return_1 = stock_1
-        # print(return_1, return_2, return_3)
         if sum_stock == 10:
             all_return_3 = return_3
             all_return_2 = return_2

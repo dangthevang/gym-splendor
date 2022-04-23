@@ -24,7 +24,6 @@ def check_winner(state):
                     if len(player.card_open) < len(player_win.card_open):
                         player_win = player
             if score_max > 14:
-                print('Tap trung vao day nao')
                 print(player_win.name, 'win với ', score_max, 'ở turn ',  state['Turn']/4) 
 
 def learning(state):
@@ -35,7 +34,7 @@ def learning(state):
             # update_data(player.history_action, file_train, 1)
             for turn in player.history_action:
                 for property in turn[1]:
-                    file_train[turn[0]][property] *= 0.999999
+                    file_train[turn[0]][property] *= 1.000001
         else:
             # update_data(player.history_action, file_train, 1)
             for turn in player.history_action:
