@@ -105,7 +105,7 @@ class Player:
                 elif self.check_upsite_down(card):
                     self.get_upside_down(state, card, stock_return)
                     
-
+# p
     def get_stocks(self, stocks, state, stock_return):
         l = self.check_input_stock(stocks, state)
         t = self.check_return(stock_return, stocks)
