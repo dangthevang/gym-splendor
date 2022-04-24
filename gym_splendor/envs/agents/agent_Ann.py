@@ -172,8 +172,8 @@ class Agent(Player):
 
         dict_nl_thua_temp = {}
         for mau in card.stocks.keys():
-            if nl_hien_tai[mau] + self.stocks_const[mau] > card.stocks[mau]:
-                dict_nl_thua_temp[mau] = nl_hien_tai[mau] + self.stocks_const[mau] - card.stocks[mau]
+            if nl_hien_tai[mau] + self.stocks_const[mau] > card.stocks[mau] and nl_hien_tai[mau] > 0:
+                dict_nl_thua_temp[mau] = min(nl_hien_tai[mau], nl_hien_tai[mau] + self.stocks_const[mau] - card.stocks[mau])
 
         dict_nl_thua = {k:v for k,v in sorted(dict_nl_thua_temp.items(), key = lambda item: item[1], reverse=True)}
         for i in range(nl_thua):

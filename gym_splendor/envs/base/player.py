@@ -179,7 +179,7 @@ class Player:
         for stock in stocks:
             stock_current[stock] += 1
         
-        if sum(stock_current.values()) > 10:
+        if 1:
             for stock in stock_return:
                 stock_current[stock] -= 1
                 if stock_current[stock] < 0:

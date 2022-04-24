@@ -55,7 +55,7 @@ def main():
         if done == True:
             break
 
-    return check_winner(env.state)
+    # return check_winner(env.state)
 
 if __name__ == '__main__':
     main()
