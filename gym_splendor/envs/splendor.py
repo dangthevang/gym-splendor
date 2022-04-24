@@ -65,7 +65,7 @@ class SplendporEnv(gym.Env):
         print("Board Stocks",self.board.stocks)
         t = 0
         for p in self.player:
-            print(p.name,p.score,list(p.stocks.values()),list(p.stocks_const.values()))
+            print(p.name,p.score,p.stocks,list(p.stocks_const.values()))
             # print(" Card got: ",end="")
             # for i in p.card_open:
             #     print(i.id, end=" ")

@@ -5,7 +5,7 @@ import pandas as pd
 import warnings
 import numpy as np
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
-warnings.filterwarnings("ignore", category=DeprecationWarning) 
+# warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
 def check_winner(state):
     name = ''
@@ -42,7 +42,7 @@ def main():
     env.reset()
     while env.turn <280:
         o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state))
-        env.render()
+        # env.render()
         if done == True:
             break
     state = env.state

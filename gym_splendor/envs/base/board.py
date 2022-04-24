@@ -9,8 +9,8 @@ class Board:
             "red": 0,
             "blue": 0,
             "green": 0,
-            "white": 0,
             "black": 0,
+            "white": 0,
             "auto_color": 5,
         }
         self.__dict_Card_Stocks_Show = {

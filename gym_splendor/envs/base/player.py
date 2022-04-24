@@ -11,16 +11,16 @@ class Player:
             "red": 0,
             "blue": 0,
             "green": 0,
-            "white": 0,
             "black": 0,
+            "white": 0,
             "auto_color": 0,
         }
         self.__stocks_const = {
             "red": 0,
             "blue": 0,
             "green": 0,
-            "white": 0,
             "black": 0,
+            "white": 0,
         }
         self.__card_open = []
         self.__card_upside_down = []
@@ -171,6 +171,7 @@ class Player:
                 if self.__stocks[i] + self.__stocks_const[i] + auto_color >= Card.stocks[i]:
                     auto_color = self.__stocks[i] + self.__stocks_const[i] + auto_color - Card.stocks[i]
                 else:
+                    # print('xxxxx', self.stocks, self.stocks_const)
                     return False
         return True
 
