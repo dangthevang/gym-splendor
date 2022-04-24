@@ -53,7 +53,7 @@ def main():
     env.reset()
     while env.turn <300:
         o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state))
-        # env.render()
+        env.render()
         if done == True:
             break
     # check_winner(env.state)
