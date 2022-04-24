@@ -12,16 +12,16 @@ class Player:
             "red": 0,
             "blue": 0,
             "green": 0,
-            "white": 0,
             "black": 0,
+            "white": 0,
             "auto_color": 0,
         }
         self.__stocks_const = {
             "red": 0,
             "blue": 0,
             "green": 0,
-            "white": 0,
             "black": 0,
+            "white": 0,
         }
         self.__card_open = []
         self.__card_upside_down = []
