@@ -16,8 +16,7 @@ class Agent(Player):
                 for mau in sub_list:
                     if dict_the_lay_ngay[mau].__len__() != 0:
                         card = self.chon_the_gia_tri_cao(dict_the_lay_ngay[mau])
-
-                        # print('1111')
+                    
                         return [], card, []
             
             list_the_lay_ngay = []
@@ -26,9 +25,7 @@ class Agent(Player):
                     list_the_lay_ngay += dict_the_lay_ngay[mau]
 
             card = self.chon_the_gia_tri_cao(list_the_lay_ngay)
-            if card.score > 0:
-
-                # print('2222')
+            if card._Card__score > 1:
                 return [], card, []
         
         list_co_the_lay = self.the_co_the_lay_func(state['Board'], mau_the_quan_trong)

@@ -51,9 +51,7 @@ class Agent(Player):
             for i in nl_trung_nhau:
                 stocks.remove(i)
                 stocks_return.remove(i)
-            
-            if stocks.__len__() != 0:
-                return stocks, None, stocks_return
+            return stocks, [], stocks_return
 
         if a != None and a[0] != None and a[0] == '2':
             stocks = [str(a[1:]), str(a[1:])]
@@ -69,9 +67,7 @@ class Agent(Player):
             for i in nl_trung_nhau:
                 stocks.remove(i)
                 stocks_return.remove(i)
-                
-            if stocks != stocks_return:
-                return stocks, None, stocks_return
+            return stocks, [], stocks_return
         
         if a != None and a[0] != None and a[0] == 'U':
             for the in self.list_the_co_the_up(state['Board']):

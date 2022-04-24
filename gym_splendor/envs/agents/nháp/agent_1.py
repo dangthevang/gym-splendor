@@ -11,17 +11,7 @@ class Agent(Player):
         stocks = []
         card = None
         stock_return = []
-        # print(state)
-        # card = self.Checklatthe(state["Board"])
-        # nlnhamtoi = list(self.check_board_nl(state["Board"]).keys())
-        # if card != None:
-        #     return stocks,card,stock_return
-        # if len(nlnhamtoi) >= 3:
-        #     stocks = nlnhamtoi[:3]
-        # stock_return = list(self.TimNguyenLieuTra(stocks))
         stocks = ['red']
-        # print(self.name,stocks)
-        # stock_return = ['red']
         return stocks, card, stock_return
     
     def board_nl(self,board):

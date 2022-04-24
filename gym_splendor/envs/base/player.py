@@ -104,7 +104,7 @@ class Player:
                 elif self.check_upsite_down(card):
                     self.get_upside_down(state, card, stock_return)
                     
-
+# p
     def get_stocks(self, stocks, state, stock_return):
         l = self.check_input_stock(stocks, state)
         t = self.check_return(stock_return, stocks)
@@ -175,11 +175,10 @@ class Player:
         return True
 
     def check_return(self, stock_return, stocks):
-        stock_current = self.stocks.copy()
-        for stock in stocks:
-            stock_current[stock] += 1
-        
-        if sum(stock_current.values()) > 10:
+        if sum(self.__stocks.values()) + len(stocks) > 10:
+            stock_current = self.stocks
+            for stock in stocks:
+                stock_current[stock] +=1
             for stock in stock_return:
                 stock_current[stock] -= 1
                 if stock_current[stock] < 0:
@@ -326,7 +325,7 @@ class Player:
                 self.__score += card_Noble.score
 
                 arr.append(card_Noble)
-                # print("Da lay the noble ####################################################################")
+                # print("Da lay the noble----------------------------------------------------------------------------------")
         
         for i in arr:
             self.__card_noble.append(i)
