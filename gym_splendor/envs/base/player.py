@@ -11,16 +11,16 @@ class Player:
             "red": 0,
             "blue": 0,
             "green": 0,
-            "white": 0,
             "black": 0,
+            "white": 0,
             "auto_color": 0,
         }
         self.__stocks_const = {
             "red": 0,
             "blue": 0,
             "green": 0,
-            "white": 0,
             "black": 0,
+            "white": 0,
         }
         self.__card_open = []
         self.__card_upside_down = []
@@ -89,11 +89,11 @@ class Player:
         self.__card_noble = value
 
     def action_space(self, state, stocks=[], card=None, stock_return=[], prioritize=0):
-        if prioritize == 1:
+        if prioritize == 1 and len(stocks) != 0:
             self.get_stocks(stocks, state, stock_return)
-        elif prioritize == 2:
+        elif prioritize == 2 and self.check_get_card(card) == True:
             self.get_card(state, card)
-        elif prioritize == 3:
+        elif prioritize == 3 and self.check_upsite_down(card) == True:
             self.get_upside_down(state, card, stock_return)
         else:
             if len(stocks) != 0:
@@ -104,7 +104,7 @@ class Player:
                 elif self.check_upsite_down(card):
                     self.get_upside_down(state, card, stock_return)
                     
-
+# p
     def get_stocks(self, stocks, state, stock_return):
         l = self.check_input_stock(stocks, state)
         t = self.check_return(stock_return, stocks)
@@ -115,10 +115,10 @@ class Player:
             for stock in stocks:
                 self.__stocks[stock] += 1
             state["Board"].getStock(stocks)
-            self.return_stock(state, stock_return)
         elif l == 2:
             self.__stocks[stocks[0]] += 2
             state["Board"].getStock(stocks)
+        if sum(self.__stocks.values())>10 :
             self.return_stock(state, stock_return)
         error.successColor(str(self.name) + " lấy nguyên liệu")            
 
@@ -175,19 +175,16 @@ class Player:
         return True
 
     def check_return(self, stock_return, stocks):
-        stock_current = self.stocks.copy()
-        for stock in stocks:
-            stock_current[stock] += 1
-        
-        if 1:
+        if sum(self.__stocks.values()) + len(stocks) > 10:
+            stock_current = self.stocks
+            for stock in stocks:
+                stock_current[stock] +=1
             for stock in stock_return:
                 stock_current[stock] -= 1
                 if stock_current[stock] < 0:
                     return False
-        
-        if sum(stock_current.values()) > 10:
-            return False
-        
+            if sum(stock_current.values())> 10:
+                return False
         return True
         # if sum(self.__stocks.values()) + len(stocks) > 10:
         #     for stock in stock_return:
@@ -207,7 +204,8 @@ class Player:
                 if self.check_return(stock_return, ["auto_color"]):
                     self.__stocks["auto_color"] += 1
                     state["Board"].getStock(["auto_color"])
-                    self.return_stock(state, stock_return)
+                    if sum(self.__stocks.values())>10 :
+                        self.return_stock(state, stock_return)
             # -------
             show = a["show"]
             key = a["key"]
@@ -325,7 +323,7 @@ class Player:
                 self.__score += card_Noble.score
 
                 arr.append(card_Noble)
-                print("Da lay the noble ####################################################################")
+                # print("Da lay the noble----------------------------------------------------------------------------------")
         
         for i in arr:
             self.__card_noble.append(i)

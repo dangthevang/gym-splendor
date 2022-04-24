@@ -99,25 +99,3 @@ class Agent(Player):
         dict_nl_can_bo = {k: v for k, v in sorted(
             dict_nl_can_bo.items(), key=lambda item: item[1], reverse=True)}
         return list(dict_nl_can_bo.keys())[0]
-
-
-# def action(board, arr_player):
-#     # print(board_nl(board))
-#     Check_laythe = Checklatthe(board)
-#     nlnhamtoi = list(check_board_nl(board).keys())
-
-#     if Check_laythe != None:
-#         return player_02.getCard(Check_laythe, board)
-#     if len(nlnhamtoi) >= 3:
-#         if player_02.checkThreeStocks(board, nlnhamtoi[0], nlnhamtoi[1], nlnhamtoi[2]):
-#             return player_02.getThreeStocks(nlnhamtoi[0], nlnhamtoi[1], nlnhamtoi[2], board, TimNguyenLieuTra(nlnhamtoi[0], nlnhamtoi[1], nlnhamtoi[2]))
-
-#     elif len(nlnhamtoi) == 2:
-#         if player_02.checkOneTwoStock(board, nlnhamtoi[0], nlnhamtoi[1]):
-#             return player_02.getOneTwoStock(nlnhamtoi[0], nlnhamtoi[1], board, TimNguyenLieuTra(nlnhamtoi[0], nlnhamtoi[1]))
-
-#     elif len(nlnhamtoi) == 1:
-#         if player_02.checkOneTwoStock(board, nlnhamtoi[0], "Null"):
-#             return player_02.getOneTwoStock(nlnhamtoi[0], "Null", board, TimNguyenLieuTra(nlnhamtoi[0]))
-#     else:
-#         return board

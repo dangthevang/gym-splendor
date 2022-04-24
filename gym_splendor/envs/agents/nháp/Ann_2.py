@@ -7,7 +7,7 @@ class Agent(Player):
         super().__init__(name)
 
     def action(self, state):
-        print('Boardadsadasdasda', state['Board']._Board__dict_Card_Stocks_Show['I'][0].__dict__.keys())
+        #print('Boardadsadasdasda', state['Board']._Board__dict_Card_Stocks_Show['I'][0].__dict__.keys())
         dict_the_lay_ngay = self.dict_the_lay_ngay_func(state['Board'])
 
         mau_the_quan_trong = self.mau_the_quan_trong_func(state['Board'])
@@ -47,12 +47,12 @@ class Agent(Player):
                 if target['nl_thieu'][mau_target_thieu[0]] >= 2 and state['Board']._Board__stocks[mau_target_thieu[0]] >= 4:
                     stocks = [mau_target_thieu[0], mau_target_thieu[0]]
                     stocks_return = self.Tim_nl_tra(target['the'], stocks)
-                    print(stocks, stocks_return)
+                    #print(stocks, stocks_return)
                     nl_trung_nhau = list(set(stocks) & set(stocks_return))
                     for i in nl_trung_nhau:
                         stocks.remove(i)
                         stocks_return.remove(i)
-                    print(stocks, stocks_return)
+                    #print(stocks, stocks_return)
                     return stocks, None, stocks_return
             
             for ele in list_co_the_lay:
@@ -66,12 +66,12 @@ class Agent(Player):
 
             if stocks.__len__() == 3:
                 stocks_return = self.Tim_nl_tra(target['the'], stocks)
-                print(stocks, stocks_return)
+                #print(stocks, stocks_return)
                 nl_trung_nhau = list(set(stocks) & set(stocks_return))
                 for i in nl_trung_nhau:
                     stocks.remove(i)
                     stocks_return.remove(i)
-                print(stocks, stocks_return)
+                #print(stocks, stocks_return)
                 return stocks, None, stocks_return, 1
             
             nn = 3 - stocks.__len__()
@@ -82,12 +82,12 @@ class Agent(Player):
                     stocks.append(mau_choice)
             
             stocks_return = self.Tim_nl_tra(target['the'], stocks)
-            print(stocks, stocks_return)
+            #print(stocks, stocks_return)
             nl_trung_nhau = list(set(stocks) & set(stocks_return))
             for i in nl_trung_nhau:
                 stocks.remove(i)
                 stocks_return.remove(i)
-            print(stocks, stocks_return)
+            #print(stocks, stocks_return)
             return stocks, None, stocks_return, 1
         
         stocks = []
@@ -95,7 +95,7 @@ class Agent(Player):
             temp_list = [mau for mau in state['Board']._Board__stocks.keys() if mau != 'auto_color' and mau not in stocks]
             if temp_list.__len__() != 0:
                 stocks.append(random.choice(temp_list))
-        print(stocks, 'asdasdasdasda')
+        #print(stocks, 'asdasdasdasda')
         return stocks, None, []
 
     def Tim_nl_tra(self, card, stocks):
