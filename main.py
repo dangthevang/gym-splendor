@@ -14,6 +14,7 @@ def check_winner(state):
         for player in list(state['Player']):
             if player.score > score_max:
                 score_max = player.score
+        print(score_max)
         if score_max > 14:
 
             for player in list(state['Player']):
@@ -25,6 +26,7 @@ def check_winner(state):
                         player_win = player
             if score_max > 14:
                 print(player_win.name, 'win với ', score_max, 'ở turn ',  state['Turn']/4) 
+    return player_win.name
 
 def learning(state):
     with open('trainning.json') as file_train:
@@ -49,13 +51,14 @@ def learning(state):
 def main():
     env = gym.make('gym_splendor-v0')
     env.reset()
-    while env.turn <150:
+    while env.turn <300:
         o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state))
         # env.render()
         if done == True:
             break
     # check_winner(env.state)
-    learning(env.state)
+    # learning(env.state)
+    print(env.state['Turn'],env.state['Player'][0].score,env.state['Player'][1].score, env.state['Player'][2].score, env.state['Player'][3].score )
     return check_winner(env.state)
 
 if __name__ == '__main__':

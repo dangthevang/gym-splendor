@@ -184,7 +184,7 @@ class Player:
                 if stock_current[stock] < 0:
                     return False
         
-        if sum(stock_current.values()) > 10:
+        if sum(self.stocks.values()) > 10:
             return False
         
         return True
