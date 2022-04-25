@@ -39,6 +39,12 @@ def main():
         state_save = pd.read_csv('state.csv')
     except:
         state_save = pd.DataFrame({'state':[], 'action':[],'win': []})
+
+    try:
+        state_save_chi_MA = pd.read_csv('state_MA.csv')
+    except:
+        state_save_chi_MA = pd.DataFrame({'state':[], 'action':[],'win': []})
+
     env.reset()
     while env.turn <280:
         o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state))
@@ -51,6 +57,9 @@ def main():
         df_tam = pd.read_csv(f'State_tam_{player.name}.csv')
         state_save = pd.concat([state_save, df_tam])
     if check_winner(state) != "NA0":
+        df_tam = pd.read_csv(f'State_tam_{player.name}.csv')
+        state_save_chi_MA = pd.concat([state_save_chi_MA, df_tam])
+        state_save_chi_MA.to_csv('state_MA.csv', index = False)
         state_save.to_csv('state.csv', index = False)
 
 if __name__ == '__main__':
