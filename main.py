@@ -65,9 +65,9 @@ def main():
         if done == True:
             break
     # check_winner(env.state)
-    if env.turn < 350:
+    # if env.turn < 350:
 
-        learning(env.state)
+    #     learning(env.state)
     print(env.state['Turn'],env.state['Player'][0].score,env.state['Player'][1].score, env.state['Player'][2].score, env.state['Player'][3].score )
     return check_winner(env.state)
 
