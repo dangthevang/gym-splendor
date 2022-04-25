@@ -31,7 +31,7 @@ class Agent(Player):
         # print(np.array(state_player))
         if len(list_act_can) > 0:
             for act in list_act_can:
-                state_player_tam = [state_player[0], state_player[1], np.array(state_player[2]), np.array(state_player[3]), np.array(state_player[4]), state_player[5]]
+                state_player_tam = [state_player[0], state_player[1], np.array(state_player[2]), np.array(state_player[3]), np.array(state_player[4]), state_player[5], state_player[5]]
                 if type(act) != type([]):
                     NL_can = np.array(list(act.stocks.values())+[0]) - state_player_tam[4]
                     yellow_need = 0
@@ -50,7 +50,7 @@ class Agent(Player):
                     state_player_tam[2] += np.array(list_tra)
                     state_player_tam[3] -= np.array(list_tra)
                     state_player_tam[4] += np.array((dich_arr([act.type_stock])[0]))
-                    state_player_tam[5][convert_card_to_id(act.id)-1] = 2
+                    state_player_tam[5][convert_card_to_id(act.id)-1] = 0
                     # print(self.Value_function(state_player_tam), state_player_tam)
                     list_values.append(self.Value_function(state_player_tam)+yellow_need)
                 elif len(act) == 3:
@@ -63,7 +63,7 @@ class Agent(Player):
                     # print(give)
                     state_player_tam[2] += np.array(give) + np.array([0,0,0,0,0,-1])
                     state_player_tam[3] -= np.array(give) + np.array([0,0,0,0,0,-1])
-                    state_player_tam[5][convert_card_to_id(act[1].id)-1] = 3
+                    state_player_tam[6][convert_card_to_id(act[1].id)-1] = 1
                     list_values.append(self.Value_function(state_player_tam))
                 else:
                     stocks = np.array(dich_arr(act)[0])
@@ -99,7 +99,7 @@ class Agent(Player):
         stock_return = []
 
         state_player = self.NL_board(state)
-        # print(list_state_save)
+        # print(state_player)
         NL_board = np.array(state_player[2])
         NL = np.array(state_player[3])
         NL_count = np.array(state_player[4])
@@ -179,23 +179,25 @@ class Agent(Player):
             for card in player.card_open:
                 if convert_card_to_id(card.id) <= 40:
                     list_card_check.append(card.id)
-
+        list_all_card_2 = []
         for i in range(1, 101):
             if i in list_card_open:
                 list_all_card.append(1)
-            elif i in list_player_card or i in list_player_noble:
-                list_all_card.append(2)
-            elif i in list_player_upside_down:
-                list_all_card.append(3)
             else:
                 list_all_card.append(0)
+        for i in range(1, 101):
+            if i in list_player_upside_down:
+                list_all_card_2.append(1)
+            else:
+                list_all_card_2.append(0)
 
-        list_ = [(int(state['Turn']/4)),
+        list_ = [(int(state['Turn']/4)+1),
                 int(self.score),
                 list(board.stocks.values()),
                 list(self.stocks.values()),
                 list(self.stocks_const.values())+[0],
-                list_all_card]
+                list_all_card, 
+                list_all_card_2]
 
         return list_
 
