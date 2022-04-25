@@ -33,13 +33,25 @@ class Agent(Player):
             for act in list_act_can:
                 state_player_tam = [state_player[0], state_player[1], np.array(state_player[2]), np.array(state_player[3]), np.array(state_player[4]), state_player[5]]
                 if type(act) != type([]):
-                    # print('hihi')
+                    NL_can = np.array(list(act.stocks.values())+[0]) - state_player_tam[4]
+                    yellow_need = 0
+                    list_tra = [0,0,0,0,0,0]
+                    for i in range(len(NL_can)):
+                        if NL_can[i] > 0:
+                            if NL_can[i] <= state_player_tam[3][i]:
+                                list_tra[i] = NL_can[i]
+                            else:
+                                list_tra[i] = NL_can[i]
+                                yellow_need += (NL_can[i] - state_player_tam[3][i])
+                        else:
+                            list_tra[i] = 0
+                    list_tra[5] = yellow_need
                     state_player_tam[0] += act.score
-                    state_player_tam[2] += np.array(list(act.stocks.values())+[0])
-                    state_player_tam[3] -= np.array(list(act.stocks.values())+[0])
+                    state_player_tam[2] += np.array(list_tra)
+                    state_player_tam[3] -= np.array(list_tra)
                     state_player_tam[4] += np.array((dich_arr([act.type_stock])[0]))
                     # print(self.Value_function(state_player_tam), state_player_tam)
-                    list_values.append(self.Value_function(state_player_tam)+10)
+                    list_values.append(self.Value_function(state_player_tam)+yellow_need)
                 elif len(act) == 3:
                     # print('hehehe')
                     # print(act, len(act))
@@ -71,7 +83,7 @@ class Agent(Player):
         act = list_act_can[list_values.index(max(list_values))]
         if type(act) != type([]):
             # print('hahahaaa')
-            act_save = [[], [act.score, list(act.stocks.values()), act.type_stock], [], state_player[5][convert_card_to_id(act.id)-1]]
+            act_save = [[], [act.score, list(act.stocks.values()), act.type_stock], []]
             return [], act, [], act_save
         elif len(act) == 3:
             act_save = [act[0], [act[1].score, list(act[1].stocks.values()), act[1].type_stock], act[2]]
@@ -84,12 +96,12 @@ class Agent(Player):
         card_get = None
         stock_return = []
 
-        state_player = self.NL_board(state)
-        # print(state_player)
+        state_player, list_state_save = self.NL_board(state)
+        # print(list_state_save)
         NL_board = np.array(state_player[2])
         NL = np.array(state_player[3])
         NL_count = np.array(state_player[4])
-        state_card = state_player[5]
+        # state_card = state_player[5]
 
         list_act_can = []
         list_act_up = []
@@ -137,8 +149,8 @@ class Agent(Player):
         try:
             state_luu = pd.read_csv('State_tam_1.csv')
         except:
-            state_luu = [state_player, act_save, np.nan]
-        state_luu.loc[len(state_luu.index)] = [state_player, act_save, np.nan]
+            state_luu = [list_state_save, act_save, np.nan]
+        state_luu.loc[len(state_luu.index)] = [list_state_save, act_save, np.nan]
         state_luu.to_csv('State_tam_1.csv', index = False)
 
         if card_get != None:
@@ -169,10 +181,11 @@ class Agent(Player):
         for i in range(1, 101):
             if i in list_card_open:
                 list_all_card.append(1)
-            elif i in list_player_card or i in list_player_noble:
-                list_all_card.append(2)
-            elif i in list_player_upside_down:
-                list_all_card.append(3)
+            else:
+                list_all_card.append(0)
+        for i in range(1, 101):
+            if i in list_player_upside_down:
+                list_all_card.append(1)
             else:
                 list_all_card.append(0)
 
@@ -182,7 +195,13 @@ class Agent(Player):
                 list(self.stocks.values()),
                 list(self.stocks_const.values())+[0],
                 list_all_card]
-        return list_
+        list_state_save = []
+        for i in list_:
+            if type(i) == int:
+                list_state_save += [i]
+            else:
+                list_state_save += i
+        return list_, list_state_save
 
 def convert_card_to_id(id):
     if 'Noble_' in id:
@@ -247,19 +266,3 @@ def get_usd(list_act_up, NL, hand_materials):
         else:
             list_act.append([[], act, []])
     return list_act
-
-# def dich_arr_usd(act):
-#     cl = ['red', 'blue', 'green', 'white', 'black', 'auto_color']
-#     str_stock = []
-#     if len(arr) > 1:
-#         for i in arr:
-#             stock = [0,0,0,0,0,0]
-#             for sl in i:
-#                 stock[cl.index(sl)] += 1
-#             str_stock.append(stock)
-#     else:
-#         stock = [0,0,0,0,0,0]
-#         for sl in arr:
-#             stock[cl.index(sl)] += 1
-#             str_stock.append(stock)
-#     return str_stock

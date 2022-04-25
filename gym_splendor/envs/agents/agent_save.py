@@ -96,8 +96,8 @@ class Agent(Player):
         card_get = None
         stock_return = []
 
-        state_player, list_state_save = self.NL_board(state)
-        # print(list_state_save)
+        state_player = self.NL_board(state)
+        # print(state_player)
         NL_board = np.array(state_player[2])
         NL = np.array(state_player[3])
         NL_count = np.array(state_player[4])
@@ -147,11 +147,11 @@ class Agent(Player):
         stocks, card_get, stock_return, act_save = self.act_to_values(state_player, list_act_can, list_act_up)
         # print(act_save)
         try:
-            state_luu = pd.read_csv('State_tam_3.csv')
+            state_luu = pd.read_csv('State_tam_1.csv')
         except:
-            state_luu = [list_state_save, act_save, np.nan]
-        state_luu.loc[len(state_luu.index)] = [list_state_save, act_save, np.nan]
-        state_luu.to_csv('State_tam_3.csv', index = False)
+            state_luu = [state_player, act_save, np.nan]
+        state_luu.loc[len(state_luu.index)] = [state_player, act_save, np.nan]
+        state_luu.to_csv('State_tam_1.csv', index = False)
 
         if card_get != None:
             # print(stocks, card_get.stocks, stock_return)
@@ -181,11 +181,10 @@ class Agent(Player):
         for i in range(1, 101):
             if i in list_card_open:
                 list_all_card.append(1)
-            else:
-                list_all_card.append(0)
-        for i in range(1, 101):
-            if i in list_player_upside_down:
-                list_all_card.append(1)
+            elif i in list_player_card or i in list_player_noble:
+                list_all_card.append(2)
+            elif i in list_player_upside_down:
+                list_all_card.append(3)
             else:
                 list_all_card.append(0)
 
@@ -195,13 +194,7 @@ class Agent(Player):
                 list(self.stocks.values()),
                 list(self.stocks_const.values())+[0],
                 list_all_card]
-        list_state_save = []
-        for i in list_:
-            if type(i) == int:
-                list_state_save += [i]
-            else:
-                list_state_save += i
-        return list_, list_state_save
+        return list_
 
 def convert_card_to_id(id):
     if 'Noble_' in id:
