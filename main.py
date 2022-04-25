@@ -36,13 +36,17 @@ def learning(state):
         # print(player.history_action)
         if player.score > 14:
             # update_data(player.history_action, file_train, 1)
-            temp = 0
+            # temp = 0
             for turn in player.history_action:
-                delta = 0
-                if turn[2] > temp:
-                    delta = turn[2] - temp
+                # delta = 0
+                # if turn[2] > temp:
+                #     delta = turn[2] - temp
                 for property in turn[1]:
-                    file_train[turn[0]][property] *= 1.0001 + delta
+                    file_train[turn[0]][property] *= 1.0001 
+            last_action = player.history_action[-1]
+            delta = player.history_action[-1][2] - player.history_action[-2][2]
+            for property in last_action[1]:
+                file_train[last_action[0]][property] += delta
         else:
             # update_data(player.history_action, file_train, 1)
             for turn in player.history_action:
@@ -69,8 +73,8 @@ def main():
     print(env.state['Turn'],env.state['Player'][0].score,env.state['Player'][1].score, env.state['Player'][2].score, env.state['Player'][3].score )
     return check_winner(env.state)
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
 
 
 
@@ -153,7 +157,7 @@ def create_train():
     with open("trainning.json", "w") as file_train:
         json.dump(dict_learning, file_train)
 
-# create_train()
+create_train()
 
 
 
