@@ -36,17 +36,13 @@ def learning(state):
         # print(player.history_action)
         if player.score > 14:
             # update_data(player.history_action, file_train, 1)
-            # temp = 0
+            temp = 0
             for turn in player.history_action:
-                # delta = 0
-                # if turn[2] > temp:
-                #     delta = turn[2] - temp
+                delta = 0
+                if turn[2] > temp:
+                    delta = turn[2] - temp
                 for property in turn[1]:
-                    file_train[turn[0]][property] *= 1.0001 
-            last_action = player.history_action[-1]
-            delta = player.history_action[-1][2] - player.history_action[-2][2]
-            for property in last_action[1]:
-                file_train[last_action[0]][property] += delta
+                    file_train[turn[0]][property] = (file_train[turn[0]][property] + delta)*1.0001
         else:
             # update_data(player.history_action, file_train, 1)
             for turn in player.history_action:
@@ -63,17 +59,19 @@ def learning(state):
 def main():
     env = gym.make('gym_splendor-v0')
     env.reset()
-    while env.turn <300:
+    while env.turn <350:
         o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state))
         # env.render()
         if done == True:
             break
     # check_winner(env.state)
-    learning(env.state)
+    # learning(env.state)
     print(env.state['Turn'],env.state['Player'][0].score,env.state['Player'][1].score, env.state['Player'][2].score, env.state['Player'][3].score )
     return check_winner(env.state)
 
 if __name__ == '__main__':
+    # for game in range(100):
+    #     print('VÁN: ', game)
     main()
 
 
@@ -152,7 +150,7 @@ def create_train():
     for action in list_action:
         dict_action_score = {}
         for item in list_space:
-            dict_action_score[item] = 10000
+            dict_action_score[item] = 100
         dict_learning[str(action)] = dict_action_score
     with open("trainning.json", "w") as file_train:
         json.dump(dict_learning, file_train)
@@ -178,78 +176,3 @@ def create_train():
 #         for turn in history_action:
 #             for property in turn[1]:
 #                 file_train[turn[0]][property] *= 0.9999
-
-# def create_list_action():
-#     list_stock = ['red', 'blue', 'green', 'white', 'black']
-#     list_stock_full = ['red', 'blue', 'green', 'white', 'black', 'auto_color']
-#     #get_stock
-#     get_3 = list(itertools.combinations(list_stock,3))          #length = 10
-#     for i in range(len(get_3)):
-#         get_3[i] = tuple(sorted(get_3[i]))
-#     get_2 = [(i,i) for i in list_stock]  +  list(itertools.combinations(list_stock,2))                     
-#     for i in range(len(get_2)):
-#         get_2[i] = tuple(sorted(get_2[i]))
-#     #stock return
-#     return_3 = list(itertools.combinations_with_replacement(list_stock_full,3))
-#     for i in range(len(return_3)):
-#         return_3[i] = tuple(sorted(return_3[i]))
-#     return_2 = list(itertools.combinations_with_replacement(list_stock_full,2))
-#     for i in range(len(return_2)):
-#         return_2[i] = tuple(sorted(return_2[i]))
-#     return_1 = list_stock_full.copy()
-#     #card
-#     list_card = [i for i in range(1,91)]
-#     list_action = []
-#     for get in get_3:
-#         list_action.append((get, None, []))
-#         for return_stock in return_3 + return_2 + return_1:
-#             list_action.append((get, None, return_stock))
-#     for get in get_2:
-#         list_action.append((get, None, []))
-#         for return_stock in return_2 + return_1:
-#             list_action.append((get, None, return_stock))
-#     for get in list_stock:
-#         list_action.append((get, None, []))
-#         for return_stock in return_1:
-#             list_action.append((get, None, return_stock))
-#     for card in list_card:
-#         list_action.append(([], card, []))                      #lấy thẻ
-#         list_action.append((['auto_color'], card, []))          #úp thẻ ko trả gì
-#         for return_stock in return_1:
-#             list_action.append((['auto_color'], card, return_stock)) #úp thẻ trả nguyên liệu
-
-#     return list_action
-
-# def create_train(link_folder):
-#     list_stock = ['red', 'blue', 'green', 'white', 'black', 'auto_color']
-#     list_action = create_list_action()
-#     file_train = pd.DataFrame({'action': list_action})
-#     for type_stock in list_stock[:-1]:
-#         for i in range(8):
-#             list_score = [100]*len(list_action)
-#             file_train[f'{i}_{type_stock}_board'] = list_score
-#         for i in range(8):
-#             list_score = [100]*len(list_action)
-#             file_train[f'{i}_{type_stock}_player'] = list_score
-#         for i in range(18):
-#             list_score = [100]*len(list_action)
-#             file_train[f'{i}_{type_stock}_const'] = list_score
-#     for i in range(6):
-#         list_score = [100]*len(list_action)
-#         file_train[f'{i}_auto_color_board'] = list_score
-#         file_train[f'{i}_auto_color_player'] = list_score
-#     for card_id in range(1,101):
-#         list_score = [100]*len(list_action)
-#         file_train[f'card_{card_id}_Y'] = list_score
-#         # file_train[f'card_{card_id}_N'] = list_score
-#     file_train.to_csv(f'{link_folder}/file_train.csv', index=False)
-
-#     print(file_train.shape)
-
-# link_folder = './TRAIN_HIEU'
-# try:
-#     os.mkdir(link_folder)
-# except:
-#     pass
-# create_train(link_folder)
-
