@@ -38,6 +38,7 @@ def learning(state):
             # update_data(player.history_action, file_train, 1)
             temp = 0
             for turn in player.history_action:
+                delta = 0
                 if turn[2] > temp:
                     delta = turn[2] - temp
                 for property in turn[1]:
