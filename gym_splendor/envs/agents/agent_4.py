@@ -50,6 +50,7 @@ class Agent(Player):
                     state_player_tam[2] += np.array(list_tra)
                     state_player_tam[3] -= np.array(list_tra)
                     state_player_tam[4] += np.array((dich_arr([act.type_stock])[0]))
+                    state_player_tam[5][convert_card_to_id(act.id)-1] = 2
                     # print(self.Value_function(state_player_tam), state_player_tam)
                     list_values.append(self.Value_function(state_player_tam)+yellow_need)
                 elif len(act) == 3:
@@ -62,6 +63,7 @@ class Agent(Player):
                     # print(give)
                     state_player_tam[2] += np.array(give) + np.array([0,0,0,0,0,-1])
                     state_player_tam[3] -= np.array(give) + np.array([0,0,0,0,0,-1])
+                    state_player_tam[5][convert_card_to_id(act[1].id)-1] = 3
                     list_values.append(self.Value_function(state_player_tam))
                 else:
                     stocks = np.array(dich_arr(act)[0])
@@ -96,7 +98,7 @@ class Agent(Player):
         card_get = None
         stock_return = []
 
-        state_player, list_state_save = self.NL_board(state)
+        state_player = self.NL_board(state)
         # print(list_state_save)
         NL_board = np.array(state_player[2])
         NL = np.array(state_player[3])
@@ -149,8 +151,8 @@ class Agent(Player):
         try:
             state_luu = pd.read_csv('State_tam_4.csv')
         except:
-            state_luu = [list_state_save, act_save, np.nan]
-        state_luu.loc[len(state_luu.index)] = [list_state_save, act_save, np.nan]
+            state_luu = [state_player, act_save, np.nan]
+        state_luu.loc[len(state_luu.index)] = [state_player, act_save, np.nan]
         state_luu.to_csv('State_tam_4.csv', index = False)
 
         if card_get != None:
@@ -181,11 +183,10 @@ class Agent(Player):
         for i in range(1, 101):
             if i in list_card_open:
                 list_all_card.append(1)
-            else:
-                list_all_card.append(0)
-        for i in range(1, 101):
-            if i in list_player_upside_down:
-                list_all_card.append(1)
+            elif i in list_player_card or i in list_player_noble:
+                list_all_card.append(2)
+            elif i in list_player_upside_down:
+                list_all_card.append(3)
             else:
                 list_all_card.append(0)
 
@@ -195,13 +196,8 @@ class Agent(Player):
                 list(self.stocks.values()),
                 list(self.stocks_const.values())+[0],
                 list_all_card]
-        list_state_save = []
-        for i in list_:
-            if type(i) == int:
-                list_state_save += [i]
-            else:
-                list_state_save += i
-        return list_, list_state_save
+
+        return list_
 
 def convert_card_to_id(id):
     if 'Noble_' in id:
