@@ -27,6 +27,8 @@ class Agent(Player):
         super().__init__(name)
 
     def action(self, state):
+        # print(state['Turn'])
+        # print([player.score for player in state['Player']])
         board = state['Board']
         stocks = []
         card = None
@@ -36,7 +38,7 @@ class Agent(Player):
             return stocks, card, stock_return
         id_action = [id for id in range(len(list_action_possible))]
         action = list(list_action_possible[np.random.choice(np.array(id_action), p=list_probabilioty)])
-        self.history_action.append([str(tuple(action)), list_column_refer])
+        self.history_action.append([str(tuple(action)), list_column_refer, self.score])
         try:
             if action[0][0] == 'auto_color':
                 action[0] = []
@@ -57,12 +59,9 @@ class Agent(Player):
         elif len(action[2]) > 1:
             action[2] = list(action[2])
         
-        # print("TOANG", action[0], action[1], action[2])
         return action[0], action[1], action[2]
 
     def action_possible(self, state):
-        list_all_action = list(self.file_train.keys())
-        # list_check = [False]*len(file_train)
         board = state['Board']
         card_can_get = self.list_card_can_buy(board)
         card_can_action = [convert_card_to_id(card.id) for card in
@@ -82,14 +81,8 @@ class Agent(Player):
         list_action = self.create_list_action(stock_2_get, stock_3_get, card_can_get, card_can_action_other)
         
         list_str_action = [str(item) for item in list_action]
-        # for i in range(len(list_str_action)):
-        #     if list_str_action[i] in list_all_action:
-        #         list_check[list_all_action.index(list_str_action[i])] = True
-        # file_train['CHECK'] = list_check
-        # df = file_train[file_train['CHECK'] == True].reset_index(drop=True)
         list_column_refer = self.reference_file(state)
         list_probabilioty = self.process_action(list_action, list_str_action, list_column_refer)
-        # print(len(list_action))
         return list_action, list_probabilioty, list_column_refer
 
     def process_action(self, list_action, list_str_action, list_column_refer):
@@ -149,7 +142,7 @@ class Agent(Player):
 
     def reference_file(self, state):
         list_stock = ['red', 'blue', 'green', 'white', 'black', 'auto_color']
-        list_columns_reference = []
+        list_columns_reference = [f'{self.score}_score']
         list_str_state = [item.split('-') for item in self.str_state(state).split('/')]
         for id in range(len(list_str_state[1])):
             list_columns_reference.append(f'{int(list_str_state[1][id])}_{list_stock[id]}_board')
@@ -158,14 +151,21 @@ class Agent(Player):
         for id in range(len(list_str_state[3])):
             list_columns_reference.append(f'{int(list_str_state[3][id])}_{list_stock[id]}_const')
         for id in range(len(list_str_state[4])):
-            if int(list_str_state[4][id]) != 0:
-                list_columns_reference.append(f'card_{id+1}_Y')
+            if int(list_str_state[4][id]) == 0:
+                continue
+            elif int(list_str_state[4][id]) == 1:
+                list_columns_reference.append(f'card_{id+1}_B')
+            elif int(list_str_state[4][id]) == 2:
+                list_columns_reference.append(f'card_{id+1}_O')
+            else:
+                list_columns_reference.append(f'card_{id+1}_U')
+        # print(list_columns_reference)
         return list_columns_reference
 
     def str_state(self, state):
         board = state['Board']
         list_card_open = []
-        list_score = [player.score for player in state['Player']]
+        list_score = [self.score]
 
         for i in board.dict_Card_Stocks_Show.keys():
             for j in board.dict_Card_Stocks_Show[i]:
@@ -185,11 +185,11 @@ class Agent(Player):
                     list_card_check.append(card.id)
         for i in range(1, 101):
             if i in list_card_open:
-                list_all_card.append(1)
+                list_all_card.append(1)     #card B
             elif i in list_player_card or i in list_player_noble:
-                list_all_card.append(2)
+                list_all_card.append(2)      #card O
             elif i in list_player_upside_down:
-                list_all_card.append(3)
+                list_all_card.append(3)     #card U
             else:
                 list_all_card.append(0)
         list_ = ['-'.join(str(i) for i in list_score) + '/' +

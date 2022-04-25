@@ -31,16 +31,23 @@ def check_winner(state):
 def learning(state):
     with open('trainning.json') as file_train:
         file_train = json.load(file_train)
+    
     for player in state['Player']:
+        # print(player.history_action)
         if player.score > 14:
             # update_data(player.history_action, file_train, 1)
+            temp = 0
             for turn in player.history_action:
+                if turn[2] > temp:
+                    delta = turn[2] - temp
                 for property in turn[1]:
-                    file_train[turn[0]][property] *= 1.000001
+                    file_train[turn[0]][property] *= 1.0001 + delta
         else:
             # update_data(player.history_action, file_train, 1)
             for turn in player.history_action:
                 for property in turn[1]:
+                    if file_train[turn[0]][property] < 1:
+                        break
                     file_train[turn[0]][property] *= 0.9999
     
     with open("trainning.json", "w") as outfile:
@@ -53,11 +60,11 @@ def main():
     env.reset()
     while env.turn <300:
         o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state))
-        env.render()
+        # env.render()
         if done == True:
             break
     # check_winner(env.state)
-    # learning(env.state)
+    learning(env.state)
     print(env.state['Turn'],env.state['Player'][0].score,env.state['Player'][1].score, env.state['Player'][2].score, env.state['Player'][3].score )
     return check_winner(env.state)
 
@@ -109,9 +116,15 @@ def create_list_action():
 def create_space():
     list_stock = ['red', 'blue', 'green', 'white', 'black', 'auto_color']
     list_space = []
+    #trạng thái điểm
+    for score in range(0,15):
+        list_space.append(f'{score}_score')
+
     for type_stock in list_stock[:-1]:
+        #trạng thái bàn chơi
         for i in range(8):
             list_space.append(f'{i}_{type_stock}_board')
+        #nguyên liệu người chơi
         for i in range(8):
             list_space.append(f'{i}_{type_stock}_player')
         for i in range(18):
@@ -120,7 +133,9 @@ def create_space():
         list_space.append(f'{i}_auto_color_board')
         list_space.append(f'{i}_auto_color_player')
     for card_id in range(1,101):
-        list_space.append(f'card_{card_id}_Y')
+        list_space.append(f'card_{card_id}_B')
+        list_space.append(f'card_{card_id}_U')
+        list_space.append(f'card_{card_id}_O')
     return list_space
 
 def create_train():
@@ -132,7 +147,7 @@ def create_train():
     for action in list_action:
         dict_action_score = {}
         for item in list_space:
-            dict_action_score[item] = 100
+            dict_action_score[item] = 10000
         dict_learning[str(action)] = dict_action_score
     with open("trainning.json", "w") as file_train:
         json.dump(dict_learning, file_train)
