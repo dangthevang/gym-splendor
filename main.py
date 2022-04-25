@@ -73,8 +73,8 @@ def main():
     print(env.state['Turn'],env.state['Player'][0].score,env.state['Player'][1].score, env.state['Player'][2].score, env.state['Player'][3].score )
     return check_winner(env.state)
 
-# if __name__ == '__main__':
-#     main()
+if __name__ == '__main__':
+    main()
 
 
 
@@ -122,7 +122,7 @@ def create_space():
     list_stock = ['red', 'blue', 'green', 'white', 'black', 'auto_color']
     list_space = []
     #trạng thái điểm
-    for score in range(0,15):
+    for score in range(0,25):
         list_space.append(f'{score}_score')
 
     for type_stock in list_stock[:-1]:
@@ -157,7 +157,7 @@ def create_train():
     with open("trainning.json", "w") as file_train:
         json.dump(dict_learning, file_train)
 
-create_train()
+# create_train()
 
 
 
