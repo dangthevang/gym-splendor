@@ -69,7 +69,7 @@ def main():
     if env.turn < 350:
 
         learning(env.state)
-    print(env.state['Turn'],env.state['Player'][0].score,env.state['Player'][1].score, env.state['Player'][2].score, env.state['Player'][3].score )
+    # print(env.state['Turn'],env.state['Player'][0].score,env.state['Player'][1].score, env.state['Player'][2].score, env.state['Player'][3].score )
     return check_winner(env.state)
 
 if __name__ == '__main__':
