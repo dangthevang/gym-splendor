@@ -23,7 +23,6 @@ class Agent(Player):
     def __init__(self, name):
         with open('trainning.json') as file_train:
             self.file_train = json.load(file_train)
-            print(self.file_train)
         self.history_action = []
         super().__init__(name)
 
