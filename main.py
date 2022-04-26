@@ -73,17 +73,17 @@ def main():
     return check_winner(env.state)
 
 if __name__ == '__main__':
-    # count = 0
-    # huy = 0
-    # for game in range(100):
-    #     print('VÁN: ', game)
-    #     try:
-    #         if main() == 'Hieumoi':
-    #             count += 1
-    #     except:
-    #         huy += 1
-    # print(count, huy)
-    main()
+    count = 0
+    huy = 0
+    for game in range(100):
+        print('VÁN: ', game)
+        try:
+            if main() == 'Hieumoi':
+                count += 1
+        except:
+            huy += 1
+    print(count, huy)
+    # main()
 
 
 def create_list_action():

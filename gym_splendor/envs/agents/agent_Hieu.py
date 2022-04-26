@@ -89,7 +89,11 @@ class Agent(Player):
         score_arr = np.array([0]*len(list_action))
         for i in range(len(list_str_action)):   
             for col in list_column_refer:
-                score_arr[i] += self.file_train[list_str_action[i]][col]        
+                try:
+                    score_arr[i] += self.file_train[list_str_action[i]][col]        
+                except:
+                    print(self.file_train[list_str_action[i]][col])
+                    raise Exception
         list_probabilioty = [] 
         for score in score_arr:
             list_probabilioty.append(score/np.sum(score_arr))
