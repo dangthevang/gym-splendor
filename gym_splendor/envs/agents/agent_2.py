@@ -5,6 +5,7 @@ import json
 import numpy as np
 import itertools
 import pandas as pd
+import ast
 class Agent(Player):
     def __init__(self, name):
         super().__init__(name)
@@ -85,10 +86,10 @@ class Agent(Player):
         act = list_act_can[list_values.index(max(list_values))]
         if type(act) != type([]):
             # print('hahahaaa')
-            act_save = [[], [act.score, list(act.stocks.values()), act.type_stock], []]
+            act_save = [[], act.id, []]
             return [], act, [], act_save
         elif len(act) == 3:
-            act_save = [act[0], [act[1].score, list(act[1].stocks.values()), act[1].type_stock], act[2]]
+            act_save = [act[0], act[1].id, act[2]]
             return act[0], act[1], act[2], act_save
         else:
             act_save = [act[0], [], act[1]]
@@ -148,11 +149,12 @@ class Agent(Player):
         # print(list_act_can)
         stocks, card_get, stock_return, act_save = self.act_to_values(state_player, list_act_can, list_act_up)
         # print(act_save)
+        act_save_index = ast.literal_eval(pd.read_csv('data_act.csv')['action'].iloc[0]).index(act_save)
         try:
             state_luu = pd.read_csv('State_tam_2.csv')
         except:
-            state_luu = [state_player, act_save, np.nan]
-        state_luu.loc[len(state_luu.index)] = [state_player, act_save, np.nan]
+            state_luu = [state_player, act_save_index, np.nan]
+        state_luu.loc[len(state_luu.index)] = [state_player, act_save_index, np.nan]
         state_luu.to_csv('State_tam_2.csv', index = False)
 
         if card_get != None:
@@ -245,9 +247,16 @@ def get_st(NL_board, board_materials, hand_materials, NL):
             if st_return == []:
                 hi = [i, []]
                 list_.append(hi)
-            for j in st_return:
-                hi = [i, j]
-                list_.append(hi)
+            else:
+                for j in st_return:
+                    # print(i, j)
+                    check = True
+                    for cl_rt in j:
+                        if cl_rt in i:
+                            check = False
+                    if check == True:
+                        hi = [i, j]
+                        list_.append(hi)
     list2 = []
     if len(list_)> 0:
         for i in range(len(list_)):

@@ -28,9 +28,25 @@ def get_onl_hot_card(number):
         else:
             str_.append(0)
     return str_
-for act in action:
-    print(act, action.index(act))
-    if type(act) == type(''):
-        print(get_onl_hot_card(convert_card_to_id(act)))
-    else:
-        print(dich_arr(act))
+# for act in action:
+#     print(act, action.index(act))
+#     if type(act) == type(''):
+#         print(get_onl_hot_card(convert_card_to_id(act)))
+#     else:
+#         print(dich_arr(act))
+# n = int(input())
+# ls = [int(input())for i in range(n)]
+# print(ls)
+a = [0, 1, 2, 5]
+a = sorted(a)
+print(a)
+done = 0
+min_ = a[0]
+for i in a:
+    if min_+1 < i:
+        done = min_+1
+        break
+    min_ = i
+    if done == 0:
+        done = a[-1] + 1
+print(done)
