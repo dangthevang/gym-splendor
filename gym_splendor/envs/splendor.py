@@ -61,19 +61,20 @@ class SplendporEnv(gym.Env):
     def render(self, mode='human', close=False):
         print("Turn", self.turn, "Board Stocks",self.board.stocks)
         self.board.hien_the()
-        print("Board Stocks",self.board.stocks)
+        # print("Board Stocks",self.board.stocks)
         t = 0
         for p in self.player:
-            print(p.name,p.score,list(p.stocks.values()),list(p.stocks_const.values()),end="")
-            print(" Card got: ",end="")
-            for i in p.card_open:
-                print(i.id, end=" ")
-            print()
+            print(p.name,p.score,list(p.stocks.values()),list(p.stocks_const.values()),end="  ")
+            # print(" Card got: ",end="")
+            # for i in p.card_open:
+            #     print(i.id, end=" ")
+            # print()
             # t +=1
             # if t % 2 == 0:
             #     print()
             # else:
             #     print(end="    ")
+        print()
         # print("----------------------------------------------------------------------------------------------------------")
 
     def setup_board(self):

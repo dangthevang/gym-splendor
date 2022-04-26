@@ -1,4 +1,4 @@
-from ...base.player import Player
+from ..base.player import Player
 import random
 from copy import deepcopy
 from colorama import Fore, Style
@@ -9,14 +9,10 @@ class Agent(Player):
 
     def action(self, state, training_data):
         action_space = self.get_action_space(state)
-        state_element_id = self.get_state_element_index(state)
-        sub_data = training_data[action_space].loc[state_element_id]
-
-        action_pick_rate = sub_data.sum(axis=0)
-        selected_action = self.weighted_random(list(action_pick_rate.items()))
+        selected_action = random.choice(action_space)
         card_id = selected_action.split('_')[1]
         card_code = self.get_card_code(int(card_id))
-        
+
         list_card_can_be_got_immediately = self.list_card_can_be_got_immediately(state)
         list_card_can_be_got_in_future = self.list_card_can_be_got_in_future(state)
 
@@ -24,29 +20,29 @@ class Agent(Player):
         for car in (list_card_can_be_got_immediately + list_card_can_be_got_in_future):
             if car.id == card_code:
                 card = car
-
-        # print(Fore.LIGHTCYAN_EX, selected_action, card.id, card.stocks, end='')
-        # print(Style.RESET_ALL)
-
-        self.history_action.append({
-            'action': selected_action,
-            'state_element_id': state_element_id
-        })
-
+                break
+        
+        print(Fore.LIGHTYELLOW_EX, selected_action, card.id, card.stocks, end='')
+        print(Style.RESET_ALL)
+        
         if selected_action.startswith('Get'):
             return [], card, [], 2
-
+        
         if selected_action.startswith('Upside'):
             stocks_return = []
             if state['Board'].stocks['auto_color'] > 0:
-                stocks_return = self.Tim_nl_tra(card, ['auto_color'])
+                stocks_return = self.Tim_nl_tra(card, ['auto_color'], state)
             
+            print(Fore.LIGHTYELLOW_EX, stocks_return, end='')
+            print(Style.RESET_ALL)
             return [], card, stocks_return, 3
-
+        
         if selected_action.startswith('Target'):
             stocks_get = self.Tim_nl_lay(card, state)
-            stocks_return = self.Tim_nl_tra(card, stocks_get)
+            stocks_return = self.Tim_nl_tra(card, stocks_get, state)
 
+            print(Fore.LIGHTYELLOW_EX, stocks_get, stocks_return, end='')
+            print(Style.RESET_ALL)
             return stocks_get, None, stocks_return, 1
 
         return [], None, []
@@ -57,38 +53,49 @@ class Agent(Player):
         for mau in card.stocks.keys():
             if nl_hien_tai[mau] + self.stocks_const[mau] < card.stocks[mau]:
                 dict_nl_thieu_temp[mau] = card.stocks[mau] - nl_hien_tai[mau] - self.stocks_const[mau]
-            
-        temp = [key for key in dict_nl_thieu_temp.keys() if state['Board'].stocks[key] > 0]
+        
+        dict_nl_thieu_temp = dict(sorted(dict_nl_thieu_temp.items(), key=lambda x: x[1], reverse=True))
+
+        temp = [mau for mau in dict_nl_thieu_temp.keys() if state['Board'].stocks[mau] > 0]
+        list_nl_lay = []
         if temp.__len__() >= 3:
-            return temp[0:3]
+            if temp.__len__() > 3:
+                for i in range(3):
+                    temp_ = [state['Board'].stocks[mau] for mau in temp if mau not in list_nl_lay]
+                    if temp_.__len__() > 0:
+                        list_nl_lay.append(temp[temp_.index(min(temp_))])
+                        temp.remove(temp[temp_.index(min(temp_))])
+            
+                return list_nl_lay
+            
+            return temp
 
         if temp.__len__() == 2:
-            temp_list = [mau for mau in card.stocks.keys() if state['Board'].stocks[mau] > 0 and mau not in temp]
-            temp_list_ = [state['Board'].stocks[mau] for mau in temp_list]
-            if temp_list.__len__() > 0:
-                temp.append(temp_list[temp_list_.index(min(temp_list_))])
-            
+            temp_ = [mau for mau in card.stocks.keys() if state['Board'].stocks[mau] > 0 and mau not in temp]
+            temp__ = [state['Board'].stocks[mau] for mau in temp_]
+            if temp__.__len__() > 0:
+                temp.append(temp_[temp__.index(min(temp__))])
+
             return temp
         
         if temp.__len__() == 1:
             if dict_nl_thieu_temp[temp[0]] >=2 and state['Board'].stocks[temp[0]] > 3:
                 return [temp[0], temp[0]]
-
+        
             for i in range(2):
                 board_stocks = deepcopy(state['Board'].stocks)
-                temp_list = [mau for mau in card.stocks.keys() if board_stocks[mau] > 0 and mau not in temp]
-                temp_list_ = [board_stocks[mau] for mau in temp_list]
-                if temp_list.__len__() > 0:
-                    temp.append(temp_list[temp_list_.index(min(temp_list_))])
-                    board_stocks[temp_list[temp_list_.index(min(temp_list_))]] -= 1
+                temp_ = [mau for mau in card.stocks.keys() if state['Board'].stocks[mau] > 0 and mau not in temp]
+                temp__ = [board_stocks[mau] for mau in temp_]
+                if temp__.__len__() > 0:
+                    temp.append(temp_[temp__.index(min(temp__))])
             
             return temp
         
         return []
 
-    def Tim_nl_tra(self, card, stocks):
+    def Tim_nl_tra(self, card, stocks_get, state):
         nl_hien_tai = deepcopy(self.stocks)
-        for i in stocks:
+        for i in stocks_get:
             nl_hien_tai[i] += 1
 
         snl = sum(list(nl_hien_tai.values()))
@@ -97,43 +104,43 @@ class Agent(Player):
 
         list_stock_return = []
         nl_thua = snl - 10
-
         dict_nl_thua_temp = {}
-        for mau in card.stocks.keys():
-            if nl_hien_tai[mau] + self.stocks_const[mau] > card.stocks[mau] and nl_hien_tai[mau] > 0:
-                dict_nl_thua_temp[mau] = min(nl_hien_tai[mau], nl_hien_tai[mau] + self.stocks_const[mau] - card.stocks[mau])
+        if card != None:
+            for mau in card.stocks.keys():
+                if nl_hien_tai[mau] + self.stocks_const[mau] > card.stocks[mau] and nl_hien_tai[mau] > 0:
+                    dict_nl_thua_temp[mau] = min(nl_hien_tai[mau], nl_hien_tai[mau] + self.stocks_const[mau] - card.stocks[mau])
 
-        dict_nl_thua = {k:v for k,v in sorted(dict_nl_thua_temp.items(), key = lambda item: item[1], reverse=True)}
-        for i in range(nl_thua):
-            for mau in dict_nl_thua.keys():
-                if dict_nl_thua[mau] != 0:
-                    dict_nl_thua[mau] -= 1
-                    nl_hien_tai[mau] -= 1
-                    dict_nl_thua_temp = deepcopy(dict_nl_thua)
-                    dict_nl_thua = {k:v for k,v in sorted(dict_nl_thua_temp.items(), key = lambda item: item[1], reverse=True)}
-                    list_stock_return.append(mau)
+            for i in range(nl_thua):
+                temp = [mau for mau in dict_nl_thua_temp.keys() if dict_nl_thua_temp[mau] > 0]
+                temp_ = [state['Board'].stocks[mau] for mau in temp]
+                if temp_.__len__() > 0:
+                    mau_ = temp[temp_.index(max(temp_))]
+                    dict_nl_thua_temp[mau_] -= 1
+                    nl_hien_tai[mau_] -= 1
+                    list_stock_return.append(mau_)
+            
+            if list_stock_return.__len__() != nl_thua:
+                nl_tra = nl_thua - list_stock_return.__len__()
+                nl_hien_tai.pop('auto_color')
+                for i in range(nl_tra):
+                    temp = [mau for mau in nl_hien_tai.keys() if nl_hien_tai[mau] > 0]
+                    temp_ = [state['Board'].stocks[mau] for mau in temp]
+                    mau_ = temp[temp_.index(max(temp_))]
+                    nl_hien_tai[mau_] -= 1
+                    list_stock_return.append(mau_)
                     break
-        
-        if list_stock_return.__len__() != nl_thua:
+
+        else:
             nl_hien_tai.pop('auto_color')
-            nl_tra_them = nl_thua - list_stock_return.__len__()
-            for i in range(nl_tra_them):
-                a = max(nl_hien_tai.values())
-                for mau in nl_hien_tai.keys():
-                    if nl_hien_tai[mau] == a:
-                        nl_hien_tai[mau] -= 1
-                        list_stock_return.append(mau)
-                        break
+            for i in range(nl_thua):
+                temp = [mau for mau in nl_hien_tai.keys() if nl_hien_tai[mau] > 0]
+                temp_ = [state['Board'].stocks[mau] for mau in temp]
+                mau_ = temp[temp_.index(max(temp_))]
+                nl_hien_tai[mau_] -= 1
+                list_stock_return.append(mau_)
+                break
 
         return list_stock_return
-
-    def weighted_random(self, pairs):
-        total = sum(pair[1] for pair in pairs)
-        r = random.uniform(0, total)
-        for (value, weight) in pairs:
-            r -= weight
-            if r <= 0:
-                return value
 
     def get_action_space(self, state):
         list_card_can_be_got_immediately = self.list_card_can_be_got_immediately(state)
@@ -192,24 +199,6 @@ class Agent(Player):
 
         return list_return
 
-    def get_state_element_index(self, state):
-        board_stocks = '.'.join(str(x) for x in state['Board'].stocks.values())
-        self_stocks = '.'.join(str(x) for x in self.stocks.values())
-        self_stocks_const = '.'.join(str(x) for x in self.stocks_const.values())
-
-        str_state = '.'.join([board_stocks, self_stocks, self_stocks_const])
-        temp = ['BR', 'BBlu', 'BG', 'BBl', 'BW', 'BA', 'PR', 'PBlu', 'PG', 'PBl', 'PW', 'PA', 'PcR', 'PcBlu', 'PcG', 'PcBl', 'PcW']
-        temp_ = str_state.split('.')
-        list_return = [temp_[i] + temp[i] for i in range(17)]
-
-        list_card_code = [card.id for key in ['I', 'II', 'III', 'Noble'] for card in state['Board'].dict_Card_Stocks_Show[key]]
-        list_card_code += [card.id for card in self.card_upside_down]
-        list_card_id = [self.get_card_id(code) for code in list_card_code]
-        list_card_id.sort()
-        list_return += ['_' + str(_id) for _id in list_card_id]
-
-        return list_return
-
     def get_card_code(self, _int):
         if _int <= 39:
             return 'I_' + str(_int+1)
@@ -220,8 +209,8 @@ class Agent(Player):
         else:
             return 'Noble_' + str(_int-89)
 
-    def get_card_id(self, code):
-        temp = code.split('_')
+    def get_card_id(self, _str):
+        temp = _str.split('_')
         temp_ = [-1,39,69,89]
         temp__ = ['I', 'II', 'III', 'Noble']
         return int(temp[1]) + temp_[temp__.index(temp[0])]

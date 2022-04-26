@@ -65,6 +65,7 @@ class Agent(Player):
                 if self.check_upsite_down(card_aim_key):
                     # print('2. minh up the ', card_aim_key.score, card_aim_key.stocks)
                     nl_bo = self.nlbo(card_aim_key, ['auto_color'])
+                    # print(nl_bo, '1111')
                     return [], card_aim_key, nl_bo, 3
                 else:
                     lst_theaim.append(card_aim_key)
@@ -107,6 +108,7 @@ class Agent(Player):
             if len(nl_lay) == 3:
                 # print('1111')
                 # print(nl_lay, nl_bo)
+                # print(nl_lay, nl_bo, '2222aa')
                 return [lst_nl_canlay_keys[0], lst_nl_canlay_keys[1], lst_nl_canlay_keys[2]], None, nl_bo
             else:
                 lst_temp = []
@@ -117,9 +119,9 @@ class Agent(Player):
                 for nl in lst_temp:
                     if nl not in lst_nl_canlay_keys:
                         lst_nl_canlay_keys.append(nl)
-                for nl in lst_nl_canlay_keys:
-                    if state['Board'].stocks[nl] == 0:
-                        lst_nl_canlay_keys.remove(nl)
+
+                lst_nl_can_lay_temp = lst_nl_canlay_keys.copy()
+                lst_nl_canlay_keys = [nl for nl in lst_nl_can_lay_temp if state['Board'].stocks[nl] > 0]
                 
                 if len(lst_nl_canlay_keys) >= 3:
                     nl_lay = [lst_nl_canlay_keys[0], lst_nl_canlay_keys[1], lst_nl_canlay_keys[2]]

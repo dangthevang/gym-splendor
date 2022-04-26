@@ -14,49 +14,36 @@ def Thongbao(message):
     print(Style.RESET_ALL)
     pass
 
-def check_winner(state):
-    name = ''
-    score_max = 14
-    player_win = None
-    if state['Turn']%4 == 0:
-        for player in list(state['Player']):
-            if player.score > score_max:
-                score_max = player.score 
-        if score_max > 14:
-
-            list_ten = []
-            list_diem = []
-
-            for player in list(state['Player']):
-                list_ten.append(player.name)
-                list_diem.append(player.score)
-                if player.score >= score_max:
-                    score_max = player.score 
-                    player_win = player
-                elif player.score == score_max:
-                    if len(player.card_open) < len(player_win.card_open):
-                        player_win = player
-            if score_max > 14:
-                winner(str(player_win.name) + ' win với ' + str(score_max) + ' ở turn ' + str(state['Turn']/4))
-            
-                for i in range(list_ten.__len__()):
-                    Thongbao('Người chơi ' + str(list_ten[i]) + ' có ' + str(list_diem[i]) + ' điểm ')
-
-    return list_ten, list_diem, state['Turn']/4
-
-
-def main():
+def main(data):
+    
+    
     env = gym.make('gym_splendor-v0')
     env.reset()
     while env.turn <200:
-        #print(env.turn)
-        o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state))
         env.render()
+        # o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state, data))
+        o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state))
         if done == True:
             break
 
-    # return check_winner(env.state)
+    print(Fore.LIGHTGREEN_EX, 'Win, name:', Fore.LIGHTMAGENTA_EX, env.pVictory.name, Fore.LIGHTCYAN_EX, env.pVictory.score, end='   ')
+    for p in env.player:
+        if p.name != env.pVictory.name:
+            print(Fore.RED, 'Lose, name:', Fore.MAGENTA, p.name, Fore.CYAN, p.score, end='   ')
+    
+    print(Fore.YELLOW, '   ROUND:', Fore.LIGHTYELLOW_EX, (env.turn+1)//4, end='')
+    
+    print(Style.RESET_ALL)
+
+    # learning(env, data)
+
+def learning(env, training_data):
+    for p in env.player:
+        pass
 
 if __name__ == '__main__':
-    main()
+    data = pd.read_csv('gym_splendor/envs/agents/agent_Ann_policy/Ann_policy_training_data.csv', index_col='state_element')
+    for i in range(1):
+        print('Game', i, end='      ')
+        main(data)
 

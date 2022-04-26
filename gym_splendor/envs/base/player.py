@@ -5,6 +5,7 @@ class Player:
         self.reset()
 
     def reset(self):
+        self.history_action = []
         self.message = ""
         self.__score = 0
         self.__stocks = {
@@ -133,9 +134,11 @@ class Player:
         scale = amount_stock/types_stock
         if "auto_color" in arr_stock:
             error.errorColor(str(self.name) + " lỗi đầu vào lấy stock auto_color")
+            # input()
             return 0
         if amount_stock > 3 or scale == 3 or scale == 1.5:
             error.errorColor(str(self.name) + " lỗi đầu vào lấy không đúng số lượng loại, hoặc số lượng stock")
+            # input()
             return 0
         if scale == 1:
             return 1
@@ -147,11 +150,13 @@ class Player:
             for stock in arr_stock:
                 if state["Board"].stocks[stock] == 0:
                     error.errorColor(str(self.name) + " không đủ điều kiện nguyen lieu trên bàn")
+                    # input()
                     return 0
             return 1
         if self.validate_stock(arr_stock) == 2:
             if state["Board"].stocks[arr_stock[0]] < 4:
                 error.errorColor("Không đủ điều kiện trên bàn")
+                # input()
                 return 0
             return 2
 
@@ -164,6 +169,7 @@ class Player:
     def check_get_card(self, Card):
         if Card == None:
             error.errorColor(str(self.name) + " khẻ truyền vào bị rỗng")
+            # input()
             return False
         auto_color = self.__stocks["auto_color"]
         for i in Card.stocks.keys():
@@ -224,8 +230,8 @@ class Player:
         stock_return = {"red": 0,
                         "blue": 0,
                         "green": 0,
-                        "white": 0,
                         "black": 0,
+                        "white": 0,
                         "auto_color": 0}
         self.__card_open.append(Card)
         self.__score += Card.score
