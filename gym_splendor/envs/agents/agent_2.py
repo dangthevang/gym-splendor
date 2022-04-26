@@ -31,12 +31,12 @@ def find_possible_actions(board_materials,hand_materials):
 class Agent(Player):
     def __init__(self, name):
         super().__init__(name)
-        f = open("/content/gym-splendor/gym_splendor/envs/agents/data.json")
+        f = open("./gym_splendor/envs/agents/data.json")
         self.act_possible = json.load(f)
-        f = open("/content/gym-splendor/gym_splendor/envs/agents/mind.json")
+        f = open("./gym_splendor/envs/agents/mind.json")
         self.mind = json.load(f)
         self.s_a_pair = []
-        f = open("/content/gym-splendor/gym_splendor/envs/agents/point_act.json")
+        f = open("./gym_splendor/envs/agents/point_act.json")
         self.point_act = json.load(f)
 
 
@@ -77,7 +77,7 @@ class Agent(Player):
             return [],None,[]
         # action
         act = random.choices(act_can_do)[0]
-        act_id = self.act_possible.index(act)
+        # act_id = self.act_possible.index(act)
         main_act = act[0]
         sub_act = act[1]
         stock_return = sub_act

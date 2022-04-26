@@ -41,6 +41,7 @@ def learning(state):
                 delta = 0
                 if turn[2] > temp:
                     delta = turn[2] - temp
+                    temp = turn[2]
                 for property in turn[1]:
                     file_train[turn[0]][property] = (file_train[turn[0]][property] + delta)*1.0001
         else:
@@ -72,10 +73,17 @@ def main():
     return check_winner(env.state)
 
 if __name__ == '__main__':
-    # for game in range(100):
-    #     print('VÁN: ', game)
-    main()
-
+    count = 0
+    huy = 0
+    for game in range(100):
+        print('VÁN: ', game)
+        try:
+            if main() == 'Hieumoi':
+                count += 1
+        except:
+            huy += 1
+    print(count, huy)
+    # main()
 
 
 def create_list_action():
