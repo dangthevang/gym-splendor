@@ -41,6 +41,7 @@ def learning(state):
                 delta = 0
                 if turn[2] > temp:
                     delta = turn[2] - temp
+                    temp = turn[2]
                 for property in turn[1]:
                     file_train[turn[0]][property] = (file_train[turn[0]][property] + delta)*1.0001
         else:
