@@ -19,10 +19,10 @@ def main(data):
     
     env = gym.make('gym_splendor-v0')
     env.reset()
-    while env.turn <200:
-        env.render()
-        # o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state, data))
-        o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state))
+    while env.turn <500:
+        # env.render()
+        o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state, training_data = None))
+        # o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state))
         if done == True:
             break
 
@@ -35,7 +35,7 @@ def main(data):
     
     print(Style.RESET_ALL)
 
-    # learning(env, data)
+    learning(env, data)
 
 def learning(env, training_data):
     for p in env.player:
@@ -43,7 +43,7 @@ def learning(env, training_data):
 
 if __name__ == '__main__':
     data = pd.read_csv('gym_splendor/envs/agents/agent_Ann_policy/Ann_policy_training_data.csv', index_col='state_element')
-    for i in range(1):
+    for i in range(500):
         print('Game', i, end='      ')
         main(data)
 

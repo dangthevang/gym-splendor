@@ -6,7 +6,7 @@ class Agent(Player):
     def __init__(self, name):
         super().__init__(name)
 
-    def action(self, state):
+    def action(self, state, training_data):
         the_co_the_lay = self.list_card_can_buy(state['Board'])
         # print('1111', the_co_the_lay)
         pick_token = self.value_function2(state['Board'])
@@ -54,6 +54,7 @@ class Agent(Player):
                             stocks_return.append(mau)
                 
                 # print(stocks, stocks_return)
+                # print(stocks, stocks_return, '1111')
                 return stocks, None, stocks_return
                 
             elif pick_token.__len__() > 0:
@@ -66,6 +67,7 @@ class Agent(Player):
                             stocks_return.append(mau)
 
                 # print(stocks, stocks_return)
+                # print(stocks, stocks_return, '2222')
                 return stocks, None, stocks_return
 
         stocks = []
@@ -92,8 +94,6 @@ class Agent(Player):
             pl_st[mau_choice] -= 1
         
         return stocks, None, stocks_return
-
-        return [], None, []
 
     def create_dict_return(self, board, number_bo):
         dict_value_stock1 = {'red':0, 'blue':0, 'green':0, 'white':0, 'black':0}

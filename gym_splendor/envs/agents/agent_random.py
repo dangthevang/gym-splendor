@@ -22,8 +22,8 @@ class Agent(Player):
                 card = car
                 break
         
-        print(Fore.LIGHTYELLOW_EX, selected_action, card.id, card.stocks, end='')
-        print(Style.RESET_ALL)
+        # print(Fore.LIGHTYELLOW_EX, selected_action, card.id, card.stocks, end='')
+        # print(Style.RESET_ALL)
         
         if selected_action.startswith('Get'):
             return [], card, [], 2
@@ -33,16 +33,16 @@ class Agent(Player):
             if state['Board'].stocks['auto_color'] > 0:
                 stocks_return = self.Tim_nl_tra(card, ['auto_color'], state)
             
-            print(Fore.LIGHTYELLOW_EX, stocks_return, end='')
-            print(Style.RESET_ALL)
+            # print(Fore.LIGHTYELLOW_EX, stocks_return, end='')
+            # print(Style.RESET_ALL)
             return [], card, stocks_return, 3
         
         if selected_action.startswith('Target'):
             stocks_get = self.Tim_nl_lay(card, state)
             stocks_return = self.Tim_nl_tra(card, stocks_get, state)
 
-            print(Fore.LIGHTYELLOW_EX, stocks_get, stocks_return, end='')
-            print(Style.RESET_ALL)
+            # print(Fore.LIGHTYELLOW_EX, stocks_get, stocks_return, end='')
+            # print(Style.RESET_ALL)
             return stocks_get, None, stocks_return, 1
 
         return [], None, []

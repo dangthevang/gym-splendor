@@ -6,7 +6,7 @@ class Agent(Player):
     def __init__(self, name):
         super().__init__(name)
 
-    def action(self, state):
+    def action(self, state, training_data):
         dict_the_lay_ngay = self.dict_the_lay_ngay_func(state['Board'])
         mau_the_quan_trong = self.mau_the_quan_trong_func(state['Board'])
 

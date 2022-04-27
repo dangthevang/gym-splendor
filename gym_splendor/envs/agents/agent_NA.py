@@ -6,7 +6,7 @@ class Agent(Player):
     def __init__(self, name):
         super().__init__(name)
 
-    def action(self, state):
+    def action(self, state, training_data):
         if self.hanh_dong(state['Board'], state) == None:
             
             stocks = []

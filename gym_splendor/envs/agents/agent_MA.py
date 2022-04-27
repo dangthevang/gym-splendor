@@ -6,7 +6,7 @@ class Agent(Player):
     def __init__(self, name):
         super().__init__(name)
 
-    def action(self, state):
+    def action(self, state, training_data):
         dict_type_card_show = self.statistic_type_card(state['Board'])
         blue_green_white = dict_type_card_show['blue'] + dict_type_card_show['green'] + dict_type_card_show['white']
         black_red_white = dict_type_card_show['black'] + dict_type_card_show['red'] + dict_type_card_show['white']
