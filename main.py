@@ -34,23 +34,28 @@ def learning(state):
     
     for player in state['Player']:
         # print(player.history_action)
+        player.history_score.pop(0)
+        player.history_score.append(player.score)
+
         if player.score > 14:
             # update_data(player.history_action, file_train, 1)
             temp = 0
-            for turn in player.history_action:
+            for turn in range(len(player.history_action)):
+                action = player.history_action[turn]
                 delta = 0
-                if turn[2] > temp:
-                    delta = turn[2] - temp
-                    temp = turn[2]
-                for property in turn[1]:
-                    file_train[turn[0]][property] = (file_train[turn[0]][property] + delta)*1.0001
+                if player.history_score[turn] > temp:
+                    delta = player.history_score[turn] - temp
+                    temp = player.history_score[turn]
+                for property in action[1]:
+                    file_train[action[0]][property] = (file_train[action[0]][property] + delta)*1.0001
         else:
             # update_data(player.history_action, file_train, 1)
-            for turn in player.history_action:
-                for property in turn[1]:
-                    if file_train[turn[0]][property] < 1:
+            for turn in range(len(player.history_action)):
+                action = player.history_action[turn]
+                for property in action[1]:
+                    if file_train[action[0]][property] < 1:
                         break
-                    file_train[turn[0]][property] *= 0.9999
+                    file_train[action[0]][property] *= 0.9999
     
     with open("trainning.json", "w") as outfile:
         json.dump(file_train, outfile)
@@ -66,24 +71,24 @@ def main():
         if done == True:
             break
     # check_winner(env.state)
-    # if env.turn < 350:
+    if env.turn < 350:
 
-        # learning(env.state)
+        learning(env.state)
     # print(env.state['Turn'],env.state['Player'][0].score,env.state['Player'][1].score, env.state['Player'][2].score, env.state['Player'][3].score )
     return check_winner(env.state)
 
 if __name__ == '__main__':
-    count = 0
-    huy = 0
-    for game in range(100):
-        print('VÁN: ', game)
-        try:
-            if main() == 'Hieumoi':
-                count += 1
-        except:
-            huy += 1
-    print(count, huy)
-    # main()
+    # count = 0
+    # huy = 0
+    # for game in range(100):
+    #     print('VÁN: ', game)
+    #     try:
+    #         if main() == 'Hieumoi':
+    #             count += 1
+    #     except:
+    #         huy += 1
+    # print(count, huy)
+    main()
 
 
 def create_list_action():
@@ -165,7 +170,7 @@ def create_train():
     with open("trainning.json", "w") as file_train:
         json.dump(dict_learning, file_train)
 
-# create_train()
+create_train()
 
 
 

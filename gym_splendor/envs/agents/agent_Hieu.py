@@ -24,6 +24,7 @@ class Agent(Player):
         with open('trainning.json') as file_train:
             self.file_train = json.load(file_train)
         self.history_action = []
+        self.history_score = []
         super().__init__(name)
 
     def action(self, state):
@@ -38,7 +39,8 @@ class Agent(Player):
             return stocks, card, stock_return
         id_action = [id for id in range(len(list_action_possible))]
         action = list(list_action_possible[np.random.choice(np.array(id_action), p=list_probabilioty)])
-        self.history_action.append([str(tuple(action)), list_column_refer, self.score])
+        self.history_action.append([str(tuple(action)), list_column_refer])
+        self.history_score.append(self.score)
         try:
             if action[0][0] == 'auto_color':
                 action[0] = []
