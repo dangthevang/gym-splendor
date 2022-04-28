@@ -170,7 +170,7 @@ def create_train():
     with open("trainning.json", "w") as file_train:
         json.dump(dict_learning, file_train)
 
-create_train()
+# create_train()
 
 
 
