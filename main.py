@@ -47,7 +47,7 @@ def learning(state):
                     delta = player.history_score[turn] - temp
                     temp = player.history_score[turn]
                 for property in action[1]:
-                    file_train[action[0]][property] = (file_train[action[0]][property] + delta)*1.0001
+                    file_train[action[0]][property] = (file_train[action[0]][property] + delta)*1.001
         else:
             # update_data(player.history_action, file_train, 1)
             for turn in range(len(player.history_action)):
@@ -55,7 +55,7 @@ def learning(state):
                 for property in action[1]:
                     if file_train[action[0]][property] < 1:
                         break
-                    file_train[action[0]][property] *= 0.9999
+                    file_train[action[0]][property] *= 0.999
     
     with open("trainning.json", "w") as outfile:
         json.dump(file_train, outfile)
@@ -170,7 +170,7 @@ def create_train():
     with open("trainning.json", "w") as file_train:
         json.dump(dict_learning, file_train)
 
-# create_train()
+create_train()
 
 
 
