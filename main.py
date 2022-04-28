@@ -4,7 +4,11 @@ import os
 import pandas as pd
 import warnings
 import numpy as np
+from pandas.core.common import SettingWithCopyWarning
+
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
+warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning)
+warnings.simplefilter(action="ignore", category=SettingWithCopyWarning)
 # warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
 def check_winner(state):
