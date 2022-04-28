@@ -88,10 +88,10 @@ class Agent(Player):
             if len(action[1]) > 0:
                 for type_card in state["Board"].dict_Card_Stocks_Show.keys():
                     for card in state["Board"].dict_Card_Stocks_Show[type_card]:
-                        if card.id == action[1][1]:
+                        if card.id == action[1][0]:
                             card_get = card
                 for card in self.card_upside_down:
-                    if card.id == action[1][1]:
+                    if card.id == action[1][0]:
                         card_get = card
             else:
                 card_get = None
@@ -174,7 +174,7 @@ def get_st(NL_board, board_materials, hand_materials, NL):
         if sonl <= 0:
             st_return = []
         else:
-            st_return = [' '.join(i).split(' ') for i in itertools.combinations(hand_materials, sonl)]
+            st_return = [' '.join(i).split(' ') for i in itertools.product(hand_materials, repeat =sonl)]
         st_give = [' '.join(i).split(' ') for i in itertools.combinations(board_materials, lay)]
         if lay == 2:
             for cl in board_materials:
@@ -223,27 +223,34 @@ def split_column(df, ids, num):
 
 
 def prepar_data(df):
-    # print('hehehe', df)
-    for ids in range(220):
-        df['col_{}'.format(ids)] = 0
+    # # print('hehehe', df)
+    # for ids in range(220):
+    #     df['col_{}'.format(ids)] = 0
     
-    for index_df in range(len(df['state'])):
-        for ids_column in range(220):
-            df['col_{}'.format(ids_column)].iloc[index_df] = split_column(df, index_df, ids_column)
-    return df
+    # for index_df in range(len(df['state'])):
+    #     for ids_column in range(220):
+    #         df['col_{}'.format(ids_column)].iloc[index_df] = split_column(df, index_df, ids_column)
+    df_state1 = df.copy()
+    df_state1 = df_state1.astype(str)
+    df_state1["state"] = df_state1["state"].apply(lambda x: x.replace("], [", ","))
+    df_state1["state"] = df_state1["state"].apply(lambda x: x.replace(", [" , ","))
+    df_state1["state"] = df_state1["state"].apply(lambda x: x.replace("["   ,""))
+    df_state1["state"] = df_state1["state"].apply(lambda x: x.replace("]]"  , ""))
+    df_state1 = df_state1["state"].str.split(pat=',',expand=True).astype(int)
+
+    return df_state1
 
 def pred(state_player, act_save):
     act_save_index = ast.literal_eval(pd.read_csv('data_act.csv')['action'].iloc[0]).index(act_save)
     # ''.join(str(i) for i in state_player)act_save_index
-    df_act = pd.DataFrame({'state':[],
-                            'action': []})
-    df_act.loc[len(df_act.index)] = [state_player, act_save_index]
+    df_act = pd.DataFrame({'state':[]})
+    df_act.loc[len(df_act.index)] = [state_player]
     # print('hhiiii', df_act)
     new_df = prepar_data(df_act)
-    new_df = new_df.drop(columns = ['state'])
-    num_classes = 551
+    # new_df = new_df.drop(columns = ['state'])
+    num_classes = 951
     labels = [int(i) for i in range(num_classes)]
-    x_test = new_df.drop(columns = ['action'])
+    x_test = new_df
     model= load_model('model_1.h5')
     y_predict = model.predict(x_test)
     action = labels[np.argmax(y_predict)]
