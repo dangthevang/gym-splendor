@@ -211,25 +211,8 @@ def get_usd(list_act_up, NL, hand_materials):
             list_act.append([[], act, []])
     return list_act
 
-def split_column(df, ids, num):
-    # print(df)
-    a = str(df['state'].iloc[ids])
-    # print('a ', type(a), a)
-    a = a.replace('[', '')
-    a = a.replace(']', '')
-    arr = a.split(',')
-    num = int(arr[num])
-    return num 
-
 
 def prepar_data(df):
-    # # print('hehehe', df)
-    # for ids in range(220):
-    #     df['col_{}'.format(ids)] = 0
-    
-    # for index_df in range(len(df['state'])):
-    #     for ids_column in range(220):
-    #         df['col_{}'.format(ids_column)].iloc[index_df] = split_column(df, index_df, ids_column)
     df_state1 = df.copy()
     df_state1 = df_state1.astype(str)
 

@@ -9,13 +9,14 @@ from pandas.core.common import SettingWithCopyWarning
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning)
 warnings.simplefilter(action="ignore", category=SettingWithCopyWarning)
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 # warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
 def check_winner(state):
     name = ''
     score_max = 14
     player_win = None
-    if state['Turn']%4 == 0:
+    if (state['Turn']+1)%4 == 0:
         for player in list(state['Player']):
             if player.score > score_max:
                 score_max = player.score 
@@ -29,7 +30,7 @@ def check_winner(state):
                         player_win = player
     if player_win != None:
         pd.read_csv(f'State_tam_{player_win.name}.csv').assign(win = 1).to_csv(f'State_tam_{player_win.name}.csv', index = False)
-        return player_win.name, score_max, str(int(state['Turn']/4))
+        return player_win.name, score_max, int((state['Turn']+1)/4)
     else:
         return "NA0"
 
