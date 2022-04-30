@@ -51,6 +51,7 @@ def main():
 
     env.reset()
     while env.turn <280:
+        # print(env.turn)
         o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state))
         # env.render()
         if done == True:
