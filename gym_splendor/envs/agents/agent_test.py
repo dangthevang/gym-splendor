@@ -8,22 +8,27 @@ import pandas as pd
 import ast
 import random
 import os
-
+# from keras.models import load_model
 class Agent(Player):
     def __init__(self, name):
         super().__init__(name)
-    def save(self, state_player, act_save_index):
-        try:
-            state_luu = pd.read_csv('State_tam_1.csv')
-        except:
-            state_luu = [state_player, act_save_index, np.nan]
-        state_luu.loc[len(state_luu.index)] = [state_player, act_save_index, np.nan]
-        state_luu.to_csv('State_tam_1.csv', index = False)
+
     def act_to_values(self, list_act_can):
         if len(list_act_can) == 0:
             act_save = [[], [], []]
             return [], None, [], act_save
         act = random.choice(list_act_can)
+        # act = random.choice(ast.literal_eval(pd.read_csv('data_act.csv')['action'].iloc[0]))
+        # if len(act[1]) > 0:
+        #     for type_card in state["Board"].dict_Card_Stocks_Show.keys():
+        #         for card in state["Board"].dict_Card_Stocks_Show[type_card]:
+        #             if card.id == act[1][0]:
+        #                 act_save = [[], [card.id], act[2]]
+        #                 return [], card, act[2], act_save
+        #     for card in self.card_upside_down:
+        #         if card.id == act[1][0]:
+        #             act_save = [[], [card.id], act[2]]
+        #             return [], card, act[2], act_save
         if len(act[1]) != 0 :
             act_save = [[], [act[1][0].id], act[2]]
             return [], act[1][0], act[2], act_save
@@ -71,26 +76,29 @@ class Agent(Player):
             list_act_can += get_usd(list_act_up, self.stocks, hand_materials)
         stocks, card_get, stock_return, act_save = self.act_to_values(list_act_can)
         act_save_index = ast.literal_eval(pd.read_csv('data_act.csv')['action'].iloc[0]).index(act_save)
-        self.save(state_player, act_save_index)
-        if (os.path.exists('model_1.h5') == True):
-            from keras.models import load_model
-            action_id = pred(state_player)
-            action = ast.literal_eval(pd.read_csv('data_act.csv')['action'].iloc[0])[action_id]
+        try:
+            state_luu = pd.read_csv('State_tam_1.csv')
+        except:
+            state_luu = [state_player, act_save_index, np.nan]
+        state_luu.loc[len(state_luu.index)] = [state_player, act_save_index, np.nan]
+        state_luu.to_csv('State_tam_1.csv', index = False)
 
-            if len(action[1]) > 0:
-                for type_card in state["Board"].dict_Card_Stocks_Show.keys():
-                    for card in state["Board"].dict_Card_Stocks_Show[type_card]:
-                        if card.id == action[1][0]:
-                            card_get = card
-                for card in self.card_upside_down:
-                    if card.id == action[1][0]:
-                        card_get = card
-            else:
-                card_get = None
-            self.save(state_player, act_save_index)
-            return action[0], card_get, action[2]
-        else:
-            return stocks, card_get, stock_return
+        # if (os.path.exists('model_1.h5') == True):
+        #     action_id = pred(state_player, act_save)
+        #     action = ast.literal_eval(pd.read_csv('data_act.csv')['action'].iloc[0])[action_id]
+        #     if len(action[1]) > 0:
+        #         for type_card in state["Board"].dict_Card_Stocks_Show.keys():
+        #             for card in state["Board"].dict_Card_Stocks_Show[type_card]:
+        #                 if card.id == action[1][0]:
+        #                     card_get = card
+        #         for card in self.card_upside_down:
+        #             if card.id == action[1][0]:
+        #                 card_get = card
+        #     else:
+        #         card_get = None
+        #     return action[0], card_get, action[2]
+        # else:
+        return stocks, card_get, stock_return
 
     def NL_board(self, state):
         board = state['Board']
@@ -209,8 +217,8 @@ def prepar_data(df):
 
     return df_state1
 
-def pred(state_player):
-    # act_save_index = ast.literal_eval(pd.read_csv('data_act.csv')['action'].iloc[0]).index(act_save)
+def pred(state_player, act_save):
+    act_save_index = ast.literal_eval(pd.read_csv('data_act.csv')['action'].iloc[0]).index(act_save)
     df_act = pd.DataFrame({'state':[]})
     df_act.loc[len(df_act.index)] = [state_player]
     new_df = prepar_data(df_act)
