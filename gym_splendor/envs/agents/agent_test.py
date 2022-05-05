@@ -217,15 +217,15 @@ def prepar_data(df):
 
     return df_state1
 
-def pred(state_player, act_save):
-    act_save_index = ast.literal_eval(pd.read_csv('data_act.csv')['action'].iloc[0]).index(act_save)
-    df_act = pd.DataFrame({'state':[]})
-    df_act.loc[len(df_act.index)] = [state_player]
-    new_df = prepar_data(df_act)
-    num_classes = 951
-    labels = [int(i) for i in range(num_classes)]
-    x_test = new_df
-    model= load_model('model_1.h5')
-    y_predict = model.predict(x_test)
-    action = labels[np.argmax(y_predict)]
-    return action
+# def pred(state_player, act_save):
+#     act_save_index = ast.literal_eval(pd.read_csv('data_act.csv')['action'].iloc[0]).index(act_save)
+#     df_act = pd.DataFrame({'state':[]})
+#     df_act.loc[len(df_act.index)] = [state_player]
+#     new_df = prepar_data(df_act)
+#     num_classes = 951
+#     labels = [int(i) for i in range(num_classes)]
+#     x_test = new_df
+#     model= load_model('model_1.h5')
+#     y_predict = model.predict(x_test)
+#     action = labels[np.argmax(y_predict)]
+#     return action

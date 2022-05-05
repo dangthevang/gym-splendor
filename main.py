@@ -69,6 +69,7 @@ def main():
         state_save.to_csv('state.csv', index = False)
 
 if __name__ == '__main__':
-    main()
+    for i in range(2):
+        main()
 
 
