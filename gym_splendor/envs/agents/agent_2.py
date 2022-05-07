@@ -8,6 +8,7 @@ import pandas as pd
 import ast
 import random
 import os
+from keras.models import load_model
 
 class Agent(Player):
     def __init__(self, name):
@@ -75,6 +76,7 @@ class Agent(Player):
             from keras.models import load_model
             action_id = pred(state_player, act_save)
             action = ast.literal_eval(pd.read_csv('data_act.csv')['action'].iloc[0])[action_id]
+            # print('ACTION 2 ', action)
             if len(action[1]) > 0:
                 for type_card in state["Board"].dict_Card_Stocks_Show.keys():
                     for card in state["Board"].dict_Card_Stocks_Show[type_card]:
