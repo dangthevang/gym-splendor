@@ -5,7 +5,7 @@ import operator
 player_03 = player.Player("TheGod", 0)
 
 
-def action(board, arr_player):
+def action(board,  state=None,action_space = None):
     return moiturn(board)
 
 

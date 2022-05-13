@@ -5,7 +5,7 @@ class Agent(Player):
     def __init__(self, name):
         super().__init__(name)
 
-    def action(self, state):
+    def action(self, state=None,action_space = None):
 
         card = self.check_lat_the(state['Board'])
 
@@ -130,7 +130,7 @@ class Agent(Player):
 
         if list_card.__len__() == 0:
             return None
-
+            
         value_cards = [car._Card__score / sum(list(car._Card__stocks.values())) for car in list_card]
         max_value = max(value_cards)
 

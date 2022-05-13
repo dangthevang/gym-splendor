@@ -6,7 +6,7 @@ class Agent(Player):
     def __init__(self, name):
         super().__init__(name)
 
-    def action(self, state):
+    def action(self,  state=None,action_space = None):
         if state['Turn'] < 4:
             return [], state['Board']._Board__dict_Card_Stocks_Show['III'][0], []
 

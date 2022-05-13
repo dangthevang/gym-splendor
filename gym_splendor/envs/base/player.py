@@ -1,31 +1,37 @@
 from socket import ntohl
 from gym_splendor.envs.base import error
+from gym_splendor.envs.convertAction import action_space as AS
+
 class Player:
+    tt = 0
     def __init__(self, name):
         self.__name = name
+        self.stt = Player.tt+1
+        Player.tt = self.stt
         self.reset()
 
     def reset(self):
         self.message = ""
         self.__score = 0
         self.__stocks = {
-            "red": 0,
+            "auto_color": 0,
+            "black": 0,
             "blue": 0,
             "green": 0,
-            "black": 0,
+            "red": 0,
             "white": 0,
-            "auto_color": 0,
         }
         self.__stocks_const = {
-            "red": 0,
+            "black": 0,
             "blue": 0,
             "green": 0,
-            "black": 0,
+            "red": 0,
             "white": 0,
         }
         self.__card_open = []
         self.__card_upside_down = []
         self.__card_noble = []
+        self.actioner = AS.Action_Space_State()
 # Name
 
     @property
@@ -89,7 +95,14 @@ class Player:
     def setCard_noble(self, value):
         self.__card_noble = value
 
-    def action_space(self, state, stocks=[], card=None, stock_return=[], prioritize=0):
+    def action_space(self,state):
+        dict_ = {
+            "ListState":self.actioner.covertState(state,self),
+            "ListAction":self.actioner.recomend_action(state,self)
+        }
+        return dict_
+
+    def action_real(self, state, stocks=[], card=None, stock_return=[], prioritize=0):
         if prioritize == 1 and len(stocks) != 0:
             self.get_stocks(stocks, state, stock_return)
         elif prioritize == 2 and self.check_get_card(card) == True:
@@ -284,6 +297,35 @@ class Player:
                         "show": False,
                     }
 
+    def transform(self,state,index):
+        action = self.actioner.all_action.loc[index]
+        stock = []
+        card = None
+        stock_return = []
+        
+        for i in range(1,4):
+            if action["Stock"+str(i)] !="0":
+                stock.append(action["Stock"+str(i)])
+            if action["StockReturn"+str(i)] !="0":
+                stock_return.append(action["StockReturn"+str(i)])
+        if card !="00":
+            card = self.search_card(state, int(action["Card"]))
+        print(stock,"-----------------------------------------")
+        return stock,card,stock_return
+
+    def search_card(self, state, card_stt):
+        for i in self.__card_upside_down:
+            if i.stt == card_stt:
+                return i
+        for i in state["Board"].dict_Card_Stocks_Show.keys():
+            for j in state["Board"].dict_Card_Stocks_Show[i]:
+                if j.stt == card_stt:
+                    return j
+        for i in state["Board"].dict_Card_Stocks_UpsiteDown.keys():
+            for j in state["Board"].dict_Card_Stocks_UpsiteDown[i]:
+                if j.stt == card_stt:
+                    return j
+    
     def get_position_card_on_board(self, state, card):
         for i in state["Board"].dict_Card_Stocks_Show.keys():
             for j in state["Board"].dict_Card_Stocks_Show[i]:
