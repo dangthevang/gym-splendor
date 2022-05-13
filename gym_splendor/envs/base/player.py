@@ -98,10 +98,19 @@ class Player:
     def action_space(self,state):
         dict_ = {
             "ListState":self.actioner.covertState(state,self),
-            "ListAction":self.actioner.recomend_action(state,self)
+            "ListAction":self.actioner.recomend_action(state,self),
+            "Win":self.checkVitory(state)
         }
         return dict_
-
+    
+    def checkVitory(self,state):
+        if state["Vitory"] != None:
+            print(state["Vitory"].stt,self.stt)
+            if state["Vitory"].stt == self.stt:
+                return True
+            else:
+                return False
+        
     def action_real(self, state, stocks=[], card=None, stock_return=[], prioritize=0):
         if prioritize == 1 and len(stocks) != 0:
             self.get_stocks(stocks, state, stock_return)

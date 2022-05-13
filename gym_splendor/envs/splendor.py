@@ -26,8 +26,9 @@ class SplendporEnv(gym.Env):
         self.actioner = AS.Action_Space_State()
 
     def step(self, action):
+        self.turn = self.turn+1
         if self.close() and self.turn % self.amount_player == self.amount_player-1:
-            
+            self.state["Vitory"] = self.pVictory
             return self,None,True,None
         else:
             if isinstance(action, numpy.int64)==True:
@@ -41,7 +42,6 @@ class SplendporEnv(gym.Env):
                 prioritizes = 0
             self.state["Turn"] = self.turn+1
             self.player[self.turn % self.amount_player].action_real(self.state,stocks,card,stock_return,prioritize=prioritizes)
-            self.turn = self.turn+1
             return self.state,None,None,None
         # return 
 

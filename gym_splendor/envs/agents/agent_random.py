@@ -9,5 +9,6 @@ class Agent(Player):
 
     def action(self,  state=None, SAS= None):
         # print(SAS["ListState"])
+        print(SAS["Win"])
         t = SAS["ListAction"][random.randint(1,len(SAS["ListAction"])-1)]
         return t
