@@ -8,18 +8,19 @@ def GetListStock(dict_):
 
 def checkListHopLeReturn(stock,list_stock):
   dict_stock = stock.copy()
-  for stock in list_stock:
-    dict_stock[stock] -=1
-    if dict_stock[stock] <0:
+  for s in list_stock:
+    dict_stock[s] -=1
+    if dict_stock[s] <0:
       return False
   return True
+
 def checkListHopLeGet(stock,list_stock,scale):
   dict_stock = stock.copy()
-  for stock in list_stock:
-    if scale == 2 and dict_stock[stock] <4:
+  for s in list_stock:
+    if scale == 2 and dict_stock[s] <4:
       return False
-    dict_stock[stock] -=1
-    if dict_stock[stock] <0:
+    dict_stock[s] -=1
+    if dict_stock[s] <0:
       return False
   return True
 
@@ -39,10 +40,10 @@ def FilterColor(stocks,Return_=False):
         types_stock = len(list(set(input)))
         scale = amount_stock/types_stock
         if scale==1 or scale==2:
-          if checkListHopLeGet(stocks,input,scale):
+          if checkListHopLeGet(stocks,input,scale)==True:
             yield input
     else:
-      if checkListHopLeReturn(stocks,input):
+      if checkListHopLeReturn(stocks,input)==True:
             yield input
 
 def compare(arr1,arr2):

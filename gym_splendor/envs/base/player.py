@@ -105,7 +105,6 @@ class Player:
     
     def checkVitory(self,state):
         if state["Vitory"] != None:
-            print(state["Vitory"].stt,self.stt)
             if state["Vitory"].stt == self.stt:
                 return True
             else:
@@ -319,7 +318,7 @@ class Player:
                 stock_return.append(action["StockReturn"+str(i)])
         if card !="00":
             card = self.search_card(state, int(action["Card"]))
-        print(stock,"-----------------------------------------")
+        # print(stock,stock_return,self.stocks,"-----------------------------------------")
         return stock,card,stock_return
 
     def search_card(self, state, card_stt):

@@ -26,9 +26,10 @@ class Action_Space_State():
         stock_player = player.stocks
         list_get_stock = list(cv.FilterColor(stock_board,Return_=False))
         list_push_stock = list(cv.FilterColor(stock_player,Return_=True))
+
         for s in list_get_stock:
           for r_s in list_push_stock:
-            if len(s) >= len(r_s) and cv.compare(s,r_s) == 0 and sum(player.stocks.values())+len(s)<=10:
+            if len(s) >= len(r_s) and cv.compare(s,r_s) == 0  and sum(player.stocks.values())+len(s)-len(r_s)<=10:
               data = data.append(cv.formatGetStock(s,r_s),ignore_index=True)
         
         for card in state["Board"].getCardUp():
