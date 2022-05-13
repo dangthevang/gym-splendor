@@ -27,6 +27,7 @@ class SplendporEnv(gym.Env):
 
     def step(self, action):
         if self.close() and self.turn % self.amount_player == self.amount_player-1:
+            
             return self,None,True,None
         else:
             if isinstance(action, numpy.int64)==True:
