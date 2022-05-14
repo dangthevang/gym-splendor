@@ -6,7 +6,7 @@ class Agent(Player):
     def __init__(self, name):
         super().__init__(name)
 
-    def action(self, state):
+    def action(self,  state=None,action_space = None):
         #print('Boardadsadasdasda', state['Board']._Board__dict_Card_Stocks_Show['I'][0].__dict__.keys())
         dict_the_lay_ngay = self.dict_the_lay_ngay_func(state['Board'])
 

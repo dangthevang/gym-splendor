@@ -1,221 +1,101 @@
 from ..base.player import Player
 import random
 import math
-import json
-import numpy as np
-import itertools
-import pandas as pd
-import ast
-import random
-import os
-from keras.models import load_model
+
 
 class Agent(Player):
     def __init__(self, name):
         super().__init__(name)
-    def act_to_values(self, list_act_can):
-        if len(list_act_can) == 0:
-            act_save = [[], [], []]
-            return [], None, [], act_save
-        act = random.choice(list_act_can)
-        if len(act[1]) != 0 :
-            act_save = [[], [act[1][0].id], act[2]]
-            return [], act[1][0], act[2], act_save
-        else:
-            act_save = [act[0], [], act[1]]
-            return act[0], None, act[1], act_save
-    def action(self, state):
-        state_player = self.NL_board(state)
-        NL = np.array(state_player[3])
-        NL_count = np.array(state_player[4])
 
-        list_act_can = []
-        list_act_up = []
-        for card in self.card_upside_down:
-            card_st = np.array(list(card.stocks.values())+[0])
-            yellow_need = 0
-            NL_can = NL + NL_count - card_st
-            for yellow in NL_can:
-                if yellow < 0:
-                    yellow_need -= yellow
-            if NL[5] >= yellow_need:
-                list_act_can.append([[], [card], []])
-        for type_card in state['Board'].dict_Card_Stocks_Show.keys():
-            if type_card != 'Noble':
-                for card in state['Board'].dict_Card_Stocks_Show[type_card]:
-                    card_st = np.array(list(card.stocks.values())+[0])
-                    yellow_need = 0
-                    NL_can = NL + NL_count - card_st
-                    for yellow in NL_can:
-                        if yellow < 0:
-                            yellow_need -= yellow
-                    if NL[5] >= yellow_need:
-                        list_act_can.append([[], [card], []])
-                    else:
-                        list_act_up.append(card)
-        board_materials = []
-        hand_materials = []
-        for nl in self.stocks.keys():
-            if nl != "auto_color" and self.stocks[nl] > 0:
-                hand_materials.append(nl)
-            if nl != "auto_color" and state["Board"].stocks[nl] > 0:
-                board_materials.append(nl)
-        list_act_can += get_st(state['Board'].stocks, board_materials, hand_materials, self.stocks)
-        if len(self.card_upside_down) <3:
-            list_act_can += get_usd(list_act_up, self.stocks, hand_materials)
-        stocks, card_get, stock_return, act_save = self.act_to_values(list_act_can)
-        act_save_index = ast.literal_eval(pd.read_csv('data_act.csv')['action'].iloc[0]).index(act_save)
-        try:
-            state_luu = pd.read_csv('State_tam_3.csv')
-        except:
-            state_luu = [state_player, act_save_index, np.nan]
-        state_luu.loc[len(state_luu.index)] = [state_player, act_save_index, np.nan]
-        state_luu.to_csv('State_tam_3.csv', index = False)
+    def action(self,  state=None,action_space = None):
+        stocks = []
+        card = None
+        stock_return = []
 
-        if (os.path.exists('model_1.h5') == True):
-            from keras.models import load_model
-            action_id = pred(state_player, act_save)
-            action = ast.literal_eval(pd.read_csv('data_act.csv')['action'].iloc[0])[action_id]
-            if len(action[1]) > 0:
-                for type_card in state["Board"].dict_Card_Stocks_Show.keys():
-                    for card in state["Board"].dict_Card_Stocks_Show[type_card]:
-                        if card.id == action[1][0]:
-                            card_get = card
-                for card in self.card_upside_down:
-                    if card.id == action[1][0]:
-                        card_get = card
-            else:
-                card_get = None
-            return action[0], card_get, action[2]
-        else:
-            return stocks, card_get, stock_return
+        card = self.Checklatthe(state["Board"])
+        nlnhamtoi = list(self.check_board_nl(state["Board"]).keys())
+        if card != None:
+            return stocks,card,stock_return
+        if len(nlnhamtoi) >= 3:
+            stocks = nlnhamtoi[:3]
+        stock_return = list(self.TimNguyenLieuTra(stocks))
 
-    def NL_board(self, state):
-        board = state['Board']
-        list_card_open = []
-        list_all_card = []
-        list_all_card_2 = []
-        
-        for i in board.dict_Card_Stocks_Show.keys():
-            for j in board.dict_Card_Stocks_Show[i]:
-                list_card_open.append((convert_card_to_id(j.id)))
-        list_player_upside_down = [convert_card_to_id(card.id) for card in self.card_upside_down]
+        return stocks, card, stock_return
+    
+    def board_nl(self,board):
+        x = board.stocks
+        y = self.stocks_const
+        x.pop("auto_color")
+        dic_nl = {}
+        for i in x.keys():
+            nl = x[i] - y[i]
+            dic_nl[i] = nl
+        dict_nl = {k: v for k, v in sorted(
+            dic_nl.items(), key=lambda item: item[1], reverse=True)}
+        return dict_nl
+    
+    def check_board_nl(self,board):
+        dict_check_nl = {}
+        for i in self.board_nl(board):
+            if self.board_nl(board)[i] > 0:
+                dict_check_nl[i] = self.board_nl(board)[i]
+        return dict_check_nl
 
-        for i in range(1, 101):
-            if i in list_card_open:
-                list_all_card.append(1)
-            else:
-                list_all_card.append(0)
-            if i in list_player_upside_down:
-                list_all_card_2.append(1)
-            else:
-                list_all_card_2.append(0)
-
-        list_ = [(int(state['Turn']/4)+1),
-                int(self.score),
-                list(board.stocks.values()),
-                list(self.stocks.values()),
-                list(self.stocks_const.values())+[0],
-                list_all_card, 
-                list_all_card_2]
-        return list_
-
-def convert_card_to_id(id):
-    if 'Noble_' in id:
-        return int(id.replace('Noble_', '')) + 90
-    elif 'III_' in id:
-        return int(id.replace('III_', '')) + 70
-    elif 'II_' in id:
-        return int(id.replace('II_', '')) + 40
-    elif 'I_' in id:
-        return int(id.replace('I_', ''))
-
-def dich_arr(arr):
-    cl = ['red', 'blue', 'green', 'white', 'black', 'auto_color']
-    str_stock = []
-    if len(arr) >1:
+    def Checklatthe(self,board):
+        list_card = []
+        for type_card in board.dict_Card_Stocks_Show.keys():
+            if type_card != "Noble":
+                for card in board.dict_Card_Stocks_Show[type_card]:
+                    if self.check_get_card(card):
+                        list_card.append(card)
+        ti_so = []
+        for i in list_card:
+            x = i.score
+            y = sum(list(i.stocks.values()))
+            dinh_gia = x/y
+            ti_so.append(dinh_gia)
+        dinh_gia_max = 0
+        for i in ti_so:
+            if dinh_gia_max < i:
+                dinh_gia_max = i
+        for i in range(len(ti_so)):
+            if ti_so[i] == dinh_gia_max:
+                return list_card[i]
+    
+    def TimNguyenLieuTra(self,arr):
+        dict_hien_tai = self.stocks.copy()
         for i in arr:
-            stock = [0,0,0,0,0,0]
-            for sl in i:
-                stock[cl.index(sl)] += 1
-            str_stock.append(stock)
-    else:
-        stock = [0,0,0,0,0,0]
-        for sl in arr:
-            stock[cl.index(sl)] += 1
-            str_stock.append(stock)
-    return str_stock
-
-def get_st(NL_board, board_materials, hand_materials, NL):
-    list_ = []
-    stock_return = []
-    for lay in range(1, 4):
-        sonl = sum(NL.values()) + lay - 10
-        if sonl <= 0:
-            st_return = []
+            dict_hien_tai[i] += 1
+        snl = sum(list(dict_hien_tai.values()))
+        dict_tra = {
+            "red": 0,
+            "blue": 0,
+            "green": 0,
+            "white": 0,
+            "black": 0,
+            "auto_color": 0,
+        }
+        if snl <= 10:
+            return dict_tra
         else:
-            st_return = [' '.join(i).split(' ') for i in itertools.product(hand_materials, repeat =sonl)]
-        st_give = [' '.join(i).split(' ') for i in itertools.combinations(board_materials, lay)]
-        if lay == 2:
-            for cl in board_materials:
-                if NL_board[cl] >=4:
-                    st_give.append([cl, cl])
-        for i in st_give:
-            if st_return == []:
-                hi = [i, []]
-                list_.append(hi)
+            for i in range(snl - 10):
+                x = self.NLTTvaNLC(self.stocks_const, dict_hien_tai)
+                dict_hien_tai[x] -= 1
+                dict_tra[x] += 1
+        for key,value in dict_tra.items():
+            for i in range(value):
+                yield key
+
+    def NLTTvaNLC(self,const_stock, stock):
+        x = const_stock
+        y = stock
+        dict_nl_can_bo = {}
+        for i in x.keys():
+            if y[i] > 0:
+                nl_can_bo = x[i] - y[i]
             else:
-                for j in st_return:
-                    # print(i, j)
-                    check = True
-                    for cl_rt in j:
-                        if cl_rt in i:
-                            check = False
-                    if check == True:
-                        hi = [i, j]
-                        list_.append(hi)
-    list2 = []
-    if len(list_)> 0:
-        for i in range(len(list_)):
-            if list_[i][0] != list_[i][1]:
-                list2.append(list_[i])
-    list_save = []
-    for i2 in list2:
-        list_save += [[i2[0], [], i2[1]]]
-    return list_save
-
-def get_usd(list_act_up, NL, hand_materials):
-    list_act = []
-    for act in list_act_up:
-        if sum(NL.values()) == 10:
-            for cl in hand_materials:
-                list_act.append([[], [act], [cl]])
-        else:
-            list_act.append([[], [act], []])
-    return list_act
-
-
-def prepar_data(df):
-    df_state1 = df.copy()
-    df_state1 = df_state1.astype(str)
-
-    df_state1["state"] = df_state1["state"].apply(lambda x: x.replace("], [", ","))
-    df_state1["state"] = df_state1["state"].apply(lambda x: x.replace(", [" , ","))
-    df_state1["state"] = df_state1["state"].apply(lambda x: x.replace("["   ,""))
-    df_state1["state"] = df_state1["state"].apply(lambda x: x.replace("]]"  , ""))
-    df_state1 = df_state1["state"].str.split(pat=',',expand=True).astype(int)
-
-    return df_state1
-
-def pred(state_player, act_save):
-    act_save_index = ast.literal_eval(pd.read_csv('data_act.csv')['action'].iloc[0]).index(act_save)
-    df_act = pd.DataFrame({'state':[]})
-    df_act.loc[len(df_act.index)] = [state_player]
-    new_df = prepar_data(df_act)
-    num_classes = 951
-    labels = [int(i) for i in range(num_classes)]
-    x_test = new_df
-    model= load_model('model_1.h5')
-    y_predict = model.predict(x_test)
-    action = labels[np.argmax(y_predict)]
-    return action
+                nl_can_bo = -10
+            dict_nl_can_bo[i] = nl_can_bo
+        dict_nl_can_bo = {k: v for k, v in sorted(
+            dict_nl_can_bo.items(), key=lambda item: item[1], reverse=True)}
+        return list(dict_nl_can_bo.keys())[0]

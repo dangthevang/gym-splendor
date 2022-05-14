@@ -8,7 +8,7 @@ import math
 
 player_04 = player.Player("TheNoob", 0)
 
-def action(board, arr_player):
+def action(board, state=None,action_space = None):
     return turn(board, player_04)
 
 def turn(board, player_04):

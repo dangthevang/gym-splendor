@@ -26,22 +26,22 @@ class Agent(Player):
 
 
 
-    def action(self, state):
+    def action(self, state=None,action_space = None):
         stocks = []
         card = None
         stock_return = []
         # print(self.NL_board(state))
         # self.check_winner(state)
         
-        card = self.Checklatthe(state["Board"])
-        nlnhamtoi = list(self.check_board_nl(state["Board"]).keys())
-        if card != None:
-            return stocks,card,stock_return
-        if len(nlnhamtoi) >= 3:
-            stocks = nlnhamtoi[:3]
-        stock_return = list(self.TimNguyenLieuTra(stocks))
-
-        return stocks, card, stock_return
+        # card = self.Checklatthe(state["Board"])
+        # nlnhamtoi = list(self.check_board_nl(state["Board"]).keys())
+        # if card != None:
+        #     return stocks,card,stock_return
+        # if len(nlnhamtoi) >= 3:
+        #     stocks = nlnhamtoi[:3]
+        # stock_return = list(self.TimNguyenLieuTra(stocks))
+        t = action_space["ListAction"][random.randint(1,10)]
+        return t
     
     def board_nl(self,board):
         x = board.stocks

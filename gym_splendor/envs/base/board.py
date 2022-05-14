@@ -6,12 +6,12 @@ class Board:
         self.name = "Board"
         self.max_init_stock = 7
         self.__stocks = {
-            "red": 0,
+            "auto_color": 5,
+            "black": 0,
             "blue": 0,
             "green": 0,
-            "black": 0,
+            "red": 0,
             "white": 0,
-            "auto_color": 5,
         }
         self.__dict_Card_Stocks_Show = {
             'I': [],
@@ -77,7 +77,7 @@ class Board:
             self.__dict_Card_Stocks_Show[key].append(card_stock)
             self.deleteCardInUpsiteDown(key, card_stock)
         except:
-            error.RecommendColor(self.name, "Hết thẻ rồi, Không thêm nguyên liệu được nữa đâu")
+            error.RecommendColor("Hết thẻ rồi, Không thêm nguyên liệu được nữa đâu")
         return self
 
 # Xóa thẻ trên bàn chơi
@@ -118,8 +118,18 @@ class Board:
         for i in self.__dict_Card_Stocks_Show.keys():
             print(i,end=": ")
             for j in self.__dict_Card_Stocks_Show[i]:
-                print(j.id, end=" ")
-            if i != 'Noble':
-                print(' | ', end='')
-
-        print()
+                print(j.stt, end=" ")
+            print()
+    def getCardUp(self,type = ""):
+        arr = []
+        for i in self.__dict_Card_Stocks_Show.keys():
+            if i != "Noble" or type =="Noble":
+                for j in self.__dict_Card_Stocks_Show[i]:
+                    arr.append(j)
+           
+        return arr
+    def getCard(self,stt):
+        for i in self.__dict_Card_Stocks_Show.keys():
+            for j in self.__dict_Card_Stocks_Show[i]:
+                if j.stt == stt:
+                    return j
