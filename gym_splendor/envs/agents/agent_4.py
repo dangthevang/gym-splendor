@@ -12,13 +12,13 @@ class Agent(Player):
         card = None
         stock_return = []
 
-        card = self.Checklatthe(state["Board"])
-        nlnhamtoi = list(self.check_board_nl(state["Board"]).keys())
-        if card != None:
-            return stocks,card,stock_return
-        if len(nlnhamtoi) >= 3:
-            stocks = nlnhamtoi[:3]
-        stock_return = list(self.TimNguyenLieuTra(stocks))
+        # card = self.Checklatthe(state["Board"])
+        # nlnhamtoi = list(self.check_board_nl(state["Board"]).keys())
+        # if card != None:
+        #     return stocks,card,stock_return
+        # if len(nlnhamtoi) >= 3:
+        #     stocks = nlnhamtoi[:3]
+        # stock_return = list(self.TimNguyenLieuTra(stocks))
 
         return stocks, card, stock_return
     
