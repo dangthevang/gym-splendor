@@ -95,21 +95,18 @@ class Player:
     def setCard_noble(self, value):
         self.__card_noble = value
 
-    def action_space(self,state):
-        dict_ = {
-            "ListState":self.actioner.covertState(state,self),
-            "ListAction":self.actioner.recomend_action(state,self),
-            "Win":self.checkVitory(state)
-        }
-        return dict_
-    
-    def checkVitory(self,state):
-        if state["Vitory"] != None:
-            if state["Vitory"].stt == self.stt:
-                return True
-            else:
-                return False
-        
+    def get_list_state(self,state):
+        return self.actioner.covertState(state,self)
+
+    def get_list_index_action(self,state_list):
+        return self.actioner.convertListToState(state_list)
+
+    def check_victory(self,state_list):
+        return state_list[-1]
+
+    def getAction(self,state):
+        return self.actioner.recomend_action(state,self)
+
     def action_real(self, state, stocks=[], card=None, stock_return=[], prioritize=0):
         if prioritize == 1 and len(stocks) != 0:
             self.get_stocks(stocks, state, stock_return)
@@ -318,7 +315,6 @@ class Player:
                 stock_return.append(action["StockReturn"+str(i)])
         if card !="00":
             card = self.search_card(state, int(action["Card"]))
-        # print(stock,stock_return,self.stocks,"-----------------------------------------")
         return stock,card,stock_return
 
     def search_card(self, state, card_stt):
@@ -329,10 +325,7 @@ class Player:
             for j in state["Board"].dict_Card_Stocks_Show[i]:
                 if j.stt == card_stt:
                     return j
-        for i in state["Board"].dict_Card_Stocks_UpsiteDown.keys():
-            for j in state["Board"].dict_Card_Stocks_UpsiteDown[i]:
-                if j.stt == card_stt:
-                    return j
+
     
     def get_position_card_on_board(self, state, card):
         for i in state["Board"].dict_Card_Stocks_Show.keys():

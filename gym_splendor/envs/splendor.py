@@ -26,9 +26,8 @@ class SplendporEnv(gym.Env):
         self.actioner = AS.Action_Space_State()
 
     def step(self, action):
-        
         if self.close() and self.turn % self.amount_player == self.amount_player-1:
-            self.state["Vitory"] = self.pVictory
+            self.state["Victory"] = self.pVictory
             self.turn = self.turn+1
             return self,None,True,None
         else:
@@ -45,7 +44,6 @@ class SplendporEnv(gym.Env):
             self.player[self.turn % self.amount_player].action_real(self.state,stocks,card,stock_return,prioritize=prioritizes)
             self.turn = self.turn+1
             return self.state,None,None,None
-        # return 
 
 
     def reset(self):
@@ -60,7 +58,7 @@ class SplendporEnv(gym.Env):
             "Turn" : 0,
             "Board": self.board,
             "Player": self.player,
-            "Vitory": self.pVictory
+            "Victory": self.pVictory,
         }
         self.setup_board()
 
