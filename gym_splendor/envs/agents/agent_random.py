@@ -8,7 +8,8 @@ class Agent(Player):
         super().__init__(name)
 
     def action(self,  state=None, SAS= None):
+        print(len(SAS['ListState']), len(SAS["ListAction"]))
         if SAS["Win"]==True:
-            print(self.name)
+            print(self.name, state['Turn'], self.score)
         t = SAS["ListAction"][random.randint(1,len(SAS["ListAction"])-1)]
         return t
