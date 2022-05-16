@@ -108,6 +108,7 @@ def CreateAll():
   list_get_stock = list(FilterColor(stocks,False))
   list_push_stock = list(FilterColor(stocks,True))
   for s in list_get_stock:
+    data = data.append(formatGetStock(s,()), ignore_index=True)
     for r_s in list_push_stock:
       if len(s) >= len(r_s) and compare(s,r_s) == 0:
         data = data.append(formatGetStock(s,r_s),ignore_index=True)
@@ -118,8 +119,9 @@ def CreateAll():
     data = data.append(getUpDownNoneAuto(id),ignore_index=True)
     for stock in stocks:
       data = data.append(getUpDown_return_stock(id,stock),ignore_index=True)
-  data = CreateCode(data)
-  # data.to_json("../data_action/action_space.json",orient="index")
+  ma = CreateCode(data)
+  data = data.set_index([pd.Index(ma)],[""])
+  data.to_json("../data_action/action_space.json",orient="index")
   return data
 def CreateCode(data):
   df = data.replace("auto_color",'1').replace("black",'2').replace("blue",'3').replace("green","4").replace("red","5").replace("white",'6')
@@ -129,5 +131,5 @@ def CreateCode(data):
     for column in df:
       s += df[column][row]
     arr.append(s)
-  data["CodeAction"] = arr
-  return data
+  data["Index"] = [ i for i in range(len(df["Stock1"]))]
+  return arr

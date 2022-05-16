@@ -30,13 +30,14 @@ def check_get_card(stocks, stocks_const, stock_card):
 
 class Action_Space_State():
     def __init__(self):
-        self.all_action = pd.read_json(
-            "gym_splendor/envs/data_action/action_space.json", orient="index")
+        with open("gym_splendor/envs/data_action/action_space.json") as datafile:
+            self.all_action = json.load(datafile)
         with open('gym_splendor/envs/Cards_Splendor.json') as datafile:
             self.all_data = json.load(datafile)
         # self.all_data = pd.read_json("gym_splendor/envs/Cards_Splendor.json")
         self.list_state = []
         self.index_list_state = []
+        self.list_all_action = list(self.all_action.keys())
 
     def clone_all_action(self):
         return self.all_action.copy()
@@ -72,12 +73,12 @@ class Action_Space_State():
                 data = data.append(cv.getUpDown(id), ignore_index=True)
             else:
                 data = data.append(cv.getUpDownNoneAuto(id), ignore_index=True)
-        data = cv.CreateCode(data)
-        data["check"] = [True for i in data["CodeAction"]]
-        df = self.clone_all_action()
-        df = df.merge(data[["CodeAction", "check"]],
-                      how='left', on='CodeAction')
-        return df[df["check"] == True].index
+        List_Code = cv.CreateCode(data)
+        list_code = []
+        
+        for i in List_Code:
+            list_code.append(self.all_action[i]["Index"])
+        return list_code
 
     def covertState(self, state, player):
         self.list_state = []
@@ -180,12 +181,11 @@ class Action_Space_State():
             else:
                 data = data.append(cv.getUpDownNoneAuto(id), ignore_index=True)
         
-        data = cv.CreateCode(data)
-        data["check"] = [True for i in data["CodeAction"]]
-        df = self.clone_all_action()
-        df = df.merge(data[["CodeAction", "check"]],
-                      how='left', on='CodeAction')
-        return df[df["check"] == True].index
+        List_Code = cv.CreateCode(data)
+        list_code = []
+        for i in List_Code:
+            list_code.append(self.all_action[i]["Index"])
+        return list_code
 
     def formatListCard(self, arr):
         list_card = [0 for i in range(0, 100)]

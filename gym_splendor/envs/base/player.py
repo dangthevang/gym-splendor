@@ -8,6 +8,8 @@ class Player:
         self.__name = name
         self.stt = Player.tt+1
         Player.tt = self.stt
+        self.actioner = AS.Action_Space_State()
+        self.amount_action_space = len(self.actioner.list_all_action)
         self.reset()
 
     def reset(self):
@@ -31,7 +33,7 @@ class Player:
         self.__card_open = []
         self.__card_upside_down = []
         self.__card_noble = []
-        self.actioner = AS.Action_Space_State()
+        
 # Name
 
     @property
@@ -303,7 +305,8 @@ class Player:
                     }
 
     def transform(self,state,index):
-        action = self.actioner.all_action.loc[index]
+        code = self.actioner.list_all_action[index]
+        action = self.actioner.all_action[code]
         stock = []
         card = None
         stock_return = []
