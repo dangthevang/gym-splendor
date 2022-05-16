@@ -212,25 +212,25 @@ class Player:
         a = self.get_position_card_on_board(state, Card)
         if a == None:
             return
-        else: 
+        else:
             if state["Board"].stocks["auto_color"] >= 1:
                 if self.check_return(stock_return, ["auto_color"]):
                     self.__stocks["auto_color"] += 1
                     state["Board"].getStock(["auto_color"])
                     if sum(self.__stocks.values())>10 :
                         self.return_stock(state, stock_return)
-                    # ------------
-                    show = a["show"]
-                    key = a["key"]
-                    if show == True:
-                        self.__card_upside_down.append(Card)
-                        state["Board"].deleteUpCard(key, Card)
-                    else:
-                        self.__card_upside_down.append(
-                            state["Board"].dict_Card_Stocks_UpsiteDown[key][1])
-                        state["Board"].deleteCardInUpsiteDown(
-                            key, state["Board"].dict_Card_Stocks_UpsiteDown[key][1])
-                    error.successColor(str(self.name) + " up The")
+            # -------
+            show = a["show"]
+            key = a["key"]
+            if show == True:
+                self.__card_upside_down.append(Card)
+                state["Board"].deleteUpCard(key, Card)
+            else:
+                self.__card_upside_down.append(
+                    state["Board"].dict_Card_Stocks_UpsiteDown[key][1])
+                state["Board"].deleteCardInUpsiteDown(
+                    key, state["Board"].dict_Card_Stocks_UpsiteDown[key][1])
+            error.successColor(str(self.name) + " up The")
         
 
     def get_card(self, state, Card):
