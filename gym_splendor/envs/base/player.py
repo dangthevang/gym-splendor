@@ -369,7 +369,7 @@ class Player:
             
 
     def check_upsite_down(self, card):
-        if len(self.__card_upside_down) < 3 and card !=None:
+        if len(self.__card_upside_down) < 3 and card !=None and card.id.find("Noble")==-1:
             return True
         else:
             return False
