@@ -32,6 +32,7 @@ class SplendporEnv(gym.Env):
             return self,None,True,None
         else:
             if isinstance(action, int)==True:
+                # self.board.hien_the()
                 action = self.player[self.turn % self.amount_player].transform(self.state,action)
             stocks = action[0]
             card = action[1]

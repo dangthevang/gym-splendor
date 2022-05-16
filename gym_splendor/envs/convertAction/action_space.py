@@ -139,6 +139,7 @@ class Action_Space_State():
         for i in range(vitri, vitri+90):
             if List_State[i] == 1:
                 list_card.append(i-vitri+1)
+        # Score player
         score_player = List_State[vitri+100]
         # Stock Player
         vitri += 101
@@ -154,7 +155,7 @@ class Action_Space_State():
         vitri = 219
         for i in range(vitri, vitri+100):
             if List_State[i] == 1:
-                list_card.append(i-vitri)
+                list_card.append(i-vitri+1)
         # print("dichtustate: ",list_card)
         
         data = pd.DataFrame(columns=["TypeAction", "Stock1", "Stock2", "Stock3",
