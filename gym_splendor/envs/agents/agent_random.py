@@ -32,9 +32,9 @@ class Agent(Player):
         #     json.dump(s_a, outfile)
         
         if self.check_victory(t) == 1:
-            print(self.name, state['Turn'], self.score, 'thắng', t, number)
+            print(self.name, state['Turn'], self.score, 'thắng')
         elif self.check_victory(t) == 0:
-            print(self.name, state['Turn'], self.score, 'Thua', t, number)
+            print(self.name, state['Turn'], self.score, 'Thua')
         # if state["Turn"] >40:
             # print(self.check_victory(t))
         return a[number]
