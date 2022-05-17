@@ -15,7 +15,7 @@ def main():
             break
     for i in range(4):
         o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(state = env.state))
-    print(time.time()-start_time)
+    # print(time.time()-start_time)
 if __name__ == '__main__':
     main()
 
