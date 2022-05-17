@@ -13,8 +13,8 @@ class Agent(Player):
     def action(self,  state=None):
         t = self.get_list_state(state)
         a = self.get_list_index_action(t)
-        if len(a) == 0:
-            return [], None, []
+        # if len(a) == 0:
+        #     return [], None, []
         number = random.randint(0,len(a)-1)
         # try:
         #     #read_json_file
@@ -37,4 +37,5 @@ class Agent(Player):
             print(self.name, state['Turn'], self.score, 'Thua')
         # if state["Turn"] >40:
             # print(self.check_victory(t))
+        print(number)
         return a[number]
