@@ -24,7 +24,7 @@ class Agent(Player):
         Scw =state_player[4][3]
         Scbl =state_player[4][4]
         Sca =state_player[4][5]
-        ct = np.nan_to_num(eval(pd.read_csv('ct.csv')['ct'].iloc[0]))
+        ct = D*7 + T +Sd+Sb+Sg+Sw+Sbl+Sa +Scd*3+Scb*3+Scg*3+Scw*3+Scbl*3+Sca*3
         return ct
     def act_to_values(self, state_player, list_act_can, list_act_up):
         list_values = []
@@ -146,16 +146,16 @@ class Agent(Player):
         # print(list_act_can)
         stocks, card_get, stock_return, act_save = self.act_to_values(state_player, list_act_can, list_act_up)
         # print(act_save)
-        try:
-            state_luu = pd.read_csv('State_tam_1.csv')
-        except:
-            state_luu = [state_player, act_save, np.nan]
-        state_luu.loc[len(state_luu.index)] = [state_player, act_save, np.nan]
-        state_luu.to_csv('State_tam_1.csv', index = False)
+        # try:
+        #     state_luu = pd.read_csv('State_tam_1.csv')
+        # except:
+        #     state_luu = [state_player, act_save, np.nan]
+        # state_luu.loc[len(state_luu.index)] = [state_player, act_save, np.nan]
+        # state_luu.to_csv('State_tam_1.csv', index = False)
 
-        if card_get != None:
-            # print(stocks, card_get.stocks, stock_return)
-            list___ = [card.id for card in self.card_open]
+        # if card_get != None:
+        #     # print(stocks, card_get.stocks, stock_return)
+        #     list___ = [card.id for card in self.card_open]
             # print(list___)
         return stocks, card_get, stock_return
 
