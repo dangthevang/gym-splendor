@@ -30,13 +30,14 @@ def check_get_card(stocks, stocks_const, stock_card):
 
 class Action_Space_State():
     def __init__(self):
-        self.all_action = pd.read_json(
-            "gym_splendor/envs/data_action/action_space.json", orient="index")
+        with open("gym_splendor/envs/data_action/action_space.json") as datafile:
+            self.all_action = json.load(datafile)
         with open('gym_splendor/envs/Cards_Splendor.json') as datafile:
             self.all_data = json.load(datafile)
         # self.all_data = pd.read_json("gym_splendor/envs/Cards_Splendor.json")
         self.list_state = []
         self.index_list_state = []
+        self.list_all_action = list(self.all_action.keys())
 
     def clone_all_action(self):
         return self.all_action.copy()
@@ -72,12 +73,12 @@ class Action_Space_State():
                 data = data.append(cv.getUpDown(id), ignore_index=True)
             else:
                 data = data.append(cv.getUpDownNoneAuto(id), ignore_index=True)
-        data = cv.CreateCode(data)
-        data["check"] = [True for i in data["CodeAction"]]
-        df = self.clone_all_action()
-        df = df.merge(data[["CodeAction", "check"]],
-                      how='left', on='CodeAction')
-        return df[df["check"] == True].index
+        List_Code = cv.CreateCode(data)
+        list_code = []
+        
+        for i in List_Code:
+            list_code.append(self.all_action[i]["Index"])
+        return list_code
 
     def covertState(self, state, player):
         self.list_state = []
@@ -138,6 +139,7 @@ class Action_Space_State():
         for i in range(vitri, vitri+90):
             if List_State[i] == 1:
                 list_card.append(i-vitri+1)
+        # Score player
         score_player = List_State[vitri+100]
         # Stock Player
         vitri += 101
@@ -150,10 +152,12 @@ class Action_Space_State():
         for i in range(vitri, vitri+5):
             stocks_const_player[iterable[i-vitri]] = List_State[i]
         # Card UpSiteDown
+        card_up_down = []
         vitri = 219
         for i in range(vitri, vitri+100):
             if List_State[i] == 1:
-                list_card.append(i-vitri)
+                list_card.append(i-vitri+1)
+                card_up_down.append(i-vitri+1)
         # print("dichtustate: ",list_card)
         
         data = pd.DataFrame(columns=["TypeAction", "Stock1", "Stock2", "Stock3",
@@ -175,17 +179,17 @@ class Action_Space_State():
             card_stock = self.all_data[card]["stock"].copy()
             if check_get_card(stocks_player, stocks_const_player, card_stock):
                 data = data.append(cv.getCard(id), ignore_index=True)
-            if stocks_board["auto_color"] > 0:
-                data = data.append(cv.getUpDown(id), ignore_index=True)
-            else:
-                data = data.append(cv.getUpDownNoneAuto(id), ignore_index=True)
+            if len(card_up_down)<3 and not (card in card_up_down):
+                if stocks_board["auto_color"] > 0:
+                    data = data.append(cv.getUpDown(id), ignore_index=True)
+                else:
+                    data = data.append(cv.getUpDownNoneAuto(id), ignore_index=True)
         
-        data = cv.CreateCode(data)
-        data["check"] = [True for i in data["CodeAction"]]
-        df = self.clone_all_action()
-        df = df.merge(data[["CodeAction", "check"]],
-                      how='left', on='CodeAction')
-        return df[df["check"] == True].index
+        List_Code = cv.CreateCode(data)
+        list_code = []
+        for i in List_Code:
+            list_code.append(self.all_action[i]["Index"])
+        return list_code
 
     def formatListCard(self, arr):
         list_card = [0 for i in range(0, 100)]

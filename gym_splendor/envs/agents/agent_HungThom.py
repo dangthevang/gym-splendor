@@ -6,7 +6,7 @@ class Agent(Player):
     def __init__(self, name):
         super().__init__(name)
 
-    def action(self,  state=None,action_space = None):
+    def action(self,  state=None):
         card = self.check_lat_the(state['Board'])
 
         if card != None:

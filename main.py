@@ -1,10 +1,8 @@
-from django.shortcuts import render
+
 import gym
 import gym_splendor
-import os
 import pandas as pd
-import warnings
-warnings.simplefilter(action='ignore', category=FutureWarning)
+import time
 
 def main():
     env = gym.make('gym_splendor-v0')
@@ -20,3 +18,4 @@ def main():
     print(time.time()-start_time)
 if __name__ == '__main__':
     main()
+
