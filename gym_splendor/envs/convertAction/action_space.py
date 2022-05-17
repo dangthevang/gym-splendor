@@ -189,6 +189,7 @@ class Action_Space_State():
         list_code = []
         for i in List_Code:
             list_code.append(self.all_action[i]["Index"])
+        list_code.append(1295)
         return list_code
 
     def formatListCard(self, arr):
