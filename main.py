@@ -12,7 +12,7 @@ def check_winner(state):
     name = ''
     score_max = 14
     player_win = None
-    if state['Turn']%4 == 0:
+    if (state['Turn']+1)%4 == 0:
         for player in list(state['Player']):
             if player.score > score_max:
                 score_max = player.score 
@@ -26,9 +26,9 @@ def check_winner(state):
                         player_win = player
     if player_win != None:
         pd.read_csv(f'State_tam_{player_win.name}.csv').assign(win = 1).to_csv(f'State_tam_{player_win.name}.csv', index = False)
-        return player_win.name, score_max, str(int(state['Turn']/4))
+        return player_win.name, score_max, state['Turn']+1
     else:
-        return "NA0"
+        return "None"
 
 def main():
     env = gym.make('gym_splendor-v0')
@@ -50,7 +50,9 @@ def main():
             break
     for i in range(4):
         o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(state = env.state))
+
     state = env.state
+
     print(check_winner(state))
     for player in list(state['Player']):
         df_tam = pd.read_csv(f'State_tam_{player.name}.csv')

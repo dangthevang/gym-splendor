@@ -77,7 +77,7 @@ class Board:
             self.__dict_Card_Stocks_Show[key].append(card_stock)
             self.deleteCardInUpsiteDown(key, card_stock)
         except:
-            error.RecommendColor(self.name, "Hết thẻ rồi, Không thêm nguyên liệu được nữa đâu")
+            error.RecommendColor("Hết thẻ rồi, Không thêm nguyên liệu được nữa đâu")
         return self
 
 # Xóa thẻ trên bàn chơi

@@ -74,15 +74,15 @@ class SplendporEnv(gym.Env):
         self.board.hien_the()
         t = 0
         for p in self.player:
-            print(p.name,p.score,list(p.stocks.values()),list(p.stocks_const.values()))
-            # print(" Card got: ",end="")
-            # for i in p.card_open:
-            #     print(i.id, end=" ")
-            # t +=1
-            # if t % 2 == 0:
-            #     print()
-            # else:
-            #     print(end="    ")
+            print(p.name,p.score,list(p.stocks.values()),list(p.stocks_const.values()),end="")
+            print(" Card got: ",end="")
+            for i in p.card_open:
+                print(i.id, end=" ")
+            t +=1
+            if t % 2 == 0:
+                print()
+            else:
+                print(end="    ")
         print("----------------------------------------------------------------------------------------------------------")
 
     def setup_board(self):
