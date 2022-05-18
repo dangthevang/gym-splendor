@@ -36,19 +36,15 @@ def check_winner(state):
 
 def main():
     env = gym.make('gym_splendor-v0')
-    pd.DataFrame({'state':[], 'action':[],'win': []}).to_csv('State_tam_1.csv', index = False)
-    pd.DataFrame({'state':[], 'action':[],'win': []}).to_csv('State_tam_2.csv', index = False)
-    pd.DataFrame({'state':[], 'action':[],'win': []}).to_csv('State_tam_3.csv', index = False)
-    pd.DataFrame({'state':[], 'action':[],'win': []}).to_csv('State_tam_4.csv', index = False)
+    pd.DataFrame({'state':[], 'action':[], 'list_action': [],'win': []}).to_csv('State_tam_1.csv', index = False)
+    pd.DataFrame({'state':[], 'action':[], 'list_action': [],'win': []}).to_csv('State_tam_2.csv', index = False)
+    pd.DataFrame({'state':[], 'action':[], 'list_action': [],'win': []}).to_csv('State_tam_3.csv', index = False)
+    pd.DataFrame({'state':[], 'action':[], 'list_action': [],'win': []}).to_csv('State_tam_4.csv', index = False)
     try:
         state_save = pd.read_csv('state.csv')
     except:
-        state_save = pd.DataFrame({'state':[], 'action':[],'win': []})
+        pd.DataFrame({'state':[], 'action':[], 'list_action': [],'win': []})
 
-    # try:
-    #     state_save_chi_MA = pd.read_csv('state_MA.csv')
-    # except:
-    #     state_save_chi_MA = pd.DataFrame({'state':[], 'action':[],'win': []})
 
     env.reset()
     while env.turn <280:
