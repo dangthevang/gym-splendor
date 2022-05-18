@@ -22,17 +22,17 @@ file_train = pd.read_csv('./TRAIN_HIEU/file_train.csv')
 class Agent(Player):
     def __init__(self, name):
         super().__init__(name)
-
-
-
-
-    def action(self, state):
+    def action(self, state=None,action_space = None):
         stocks = []
         card = None
+<<<<<<< HEAD:gym_splendor/envs/agents/nháp/agent_Hieu.py
         stock_return = []
         print(self.NL_board(state))
         # self.check_winner(state)
         
+=======
+        stock_return = []        
+>>>>>>> 358063f3fe4886f131bccb3e88ff9bf27465e1fe:gym_splendor/envs/agents/agent_Hieu.py
         card = self.Checklatthe(state["Board"])
         nlnhamtoi = list(self.check_board_nl(state["Board"]).keys())
         if card != None:
@@ -40,8 +40,7 @@ class Agent(Player):
         if len(nlnhamtoi) >= 3:
             stocks = nlnhamtoi[:3]
         stock_return = list(self.TimNguyenLieuTra(stocks))
-
-        return stocks, card, stock_return
+        return stocks,card,stock_return
     
     def board_nl(self,board):
         x = board.stocks
