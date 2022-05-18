@@ -4,6 +4,7 @@ import random
 import math
 import json
 import numpy as np
+import pandas as pd
 
 
 class Agent(Player):
@@ -17,8 +18,8 @@ class Agent(Player):
         try:
             s_a = pd.read_csv('State_tam_4.csv')
         except:
-            s_a = pd.DataFrame({'state':[], 'action': [], 'list_action':[], 'win': []})
-        
-        s_a = pd.concat([s_a, pd.DataFrame({'state':t, 'action': number, 'list_action':a, 'win': []})])
-        s_a.to_csv('State_tam_4.csv')
+            s_a = [np.nan, np.nan, np.nan, np.nan]
+        s_a.loc[len(s_a.index)] =[t, number, a, np.nan]
+        # s_a = pd.concat([s_a, pd.DataFrame({'state':[t], 'action': number, 'list_action':[a], 'win': []})])
+        s_a.to_csv('State_tam_4.csv', index = False)
         return a[number]
