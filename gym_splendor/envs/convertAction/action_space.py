@@ -111,13 +111,6 @@ class Action_Space_State():
             list_card = self.formatListCard(state["Player"][vitri].card_noble)
             for card in list_card:
                 self.list_state.append(card)
-
-        if state["Victory"] == None:
-            self.list_state.append(-1)
-        elif state["Victory"].stt != player.stt:
-            self.list_state.append(0)
-        else:
-            self.list_state.append(1)
         return self.list_state
 
     def convertListToState(self, List_State):
@@ -191,6 +184,34 @@ class Action_Space_State():
             list_code.append(self.all_action[i]["Index"])
         list_code.append(1295)
         return list_code
+    def checkVictory(self,list_state):
+        turn = list_state[0]
+        arr_point = [list_state[107]]
+        amount_player = (len(list_state)-200)//212
+        for player in range(amount_player-1):
+            if player == 0:
+                arr_point.append(list_state[419])
+            elif player == 1:
+                arr_point.append(list_state[631])
+            elif player == 2:
+                arr_point.append(list_state[843])
+        check = 0
+        max_point = max(arr_point)
+        if max_point >= 15:
+            arr_point = [1 if i == max_point else 0 for i in arr_point]
+            arr_amount_card = [len(i.card_open) for i in self.player]
+            min = 100
+            for i in range(len(arr_point)):
+                if arr_point[i] == 1 and arr_amount_card[i] < min:
+                    min = arr_amount_card[i]
+                    self.pVictory = self.player[i]
+                    self.End_Game = True
+                    self.state["Victory"] = self.pVictory
+        else:
+            check = -1
+        return check
+        # for i in :
+        # ,list_state[419],list_state[631],list_state[843]]
 
     def formatListCard(self, arr):
         list_card = [0 for i in range(0, 100)]

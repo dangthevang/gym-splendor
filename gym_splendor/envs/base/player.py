@@ -104,7 +104,7 @@ class Player:
         return self.actioner.convertListToState(state_list)
 
     def check_victory(self,state_list):
-        return state_list[-1]
+        return self.actioner.checkVictory(state_list)
 
     def getAction(self,state):
         return self.actioner.recomend_action(state,self)
