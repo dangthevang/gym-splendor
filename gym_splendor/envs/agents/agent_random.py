@@ -17,13 +17,6 @@ class Agent(Player):
         #     return [], None, []
         number = random.randint(0,len(a)-1)
         # print(t, number, a)
-        try:
-            s_a = pd.read_csv('state_MA_1.csv')
-        except:
-            s_a = pd.DataFrame({'state':np.nan, 'action': np.nan, 'list_action':np.nan, 'win': np.nan})
-        
-        s_a = pd.concat([s_a, pd.DataFrame({'state':t, 'action': number, 'list_action':a, 'win': np.nan})])
-        s_a.to_csv('state_MA_1.csv')
 
         # s_a = {}
         # list_a = []
