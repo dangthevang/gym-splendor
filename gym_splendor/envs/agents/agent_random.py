@@ -13,7 +13,7 @@ class Agent(Player):
         a = self.get_list_index_action(t)
         number = random.randint(0,len(a)-1)
         # print(t)
-        print(a[number],self.check_victory(t))
+        # print(self.name,self.score,self.check_victory(t),len(a),number)
         # print(self.check_victory(t))
         # if state["Turn"] >40:
             # print(self.check_victory(t))

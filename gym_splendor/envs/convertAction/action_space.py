@@ -21,8 +21,7 @@ def check_get_card(stocks, stocks_const, stock_card):
     for i in stock_card.keys():
         if stocks[i] + stocks_const[i] < stock_card[i]:
             if stocks[i] + stocks_const[i] + auto_color >= stock_card[i]:
-                auto_color = stocks[i] + stocks_const[i] + \
-                    auto_color - stock_card[i]
+                auto_color = stocks[i] + stocks_const[i] + auto_color - stock_card[i]
             else:
                 return False
     return True
@@ -67,12 +66,17 @@ class Action_Space_State():
         for card in state["Board"].getCardUp():
             id = cv.to_str(card.stt)
             # print(id,end=" ")
+            if sum(stock_player.values()) <10:
+                    if stock_board["auto_color"] > 0:
+                        data = data.append(cv.getUpDown(id), ignore_index=True)
+                    else:
+                        data = data.append(cv.getUpDownNoneAuto(id), ignore_index=True)
+            else:
+                    stock = list(cv.GetListStock(stock_player))
+                    for s in stock:
+                        data = data.append(cv.getUpDown_return_stock(id,s),ignore_index=True)
             if player.check_get_card(card):
                 data = data.append(cv.getCard(id), ignore_index=True)
-            if stock_board["auto_color"] > 0:
-                data = data.append(cv.getUpDown(id), ignore_index=True)
-            else:
-                data = data.append(cv.getUpDownNoneAuto(id), ignore_index=True)
         List_Code = cv.CreateCode(data)
         list_code = []
         
@@ -100,9 +104,12 @@ class Action_Space_State():
             
             for value in state["Player"][vitri].stocks_const.values():
                 self.list_state.append(value)
+            # print("-------------",len(self.list_state))
             list_card = self.formatListCard(state["Player"][vitri].card_open)
             for card in list_card:
                 self.list_state.append(card)
+            # print("-------------",len(self.list_state))
+
             if i == index:
                 # print(len(self.list_state))
                 list_card = self.formatListCard(state["Player"][vitri].card_upside_down)
@@ -151,7 +158,6 @@ class Action_Space_State():
             if List_State[i] == 1:
                 list_card.append(i-vitri+1)
                 card_up_down.append(i-vitri+1)
-        # print("dichtustate: ",list_card)
         
         data = pd.DataFrame(columns=["TypeAction", "Stock1", "Stock2", "Stock3",
                                      "Card", "StockAutoColor", "StockReturn1", "StockReturn2", "StockReturn3"])
@@ -168,15 +174,19 @@ class Action_Space_State():
             
         for card in list_card:
             id = cv.to_str(card)
-            # print(id,end = " ")
-            card_stock = self.all_data[card]["stock"].copy()
+            card_stock = self.all_data[card-1]["stock"].copy()
             if check_get_card(stocks_player, stocks_const_player, card_stock):
                 data = data.append(cv.getCard(id), ignore_index=True)
             if len(card_up_down)<3 and not (card in card_up_down):
-                if stocks_board["auto_color"] > 0:
-                    data = data.append(cv.getUpDown(id), ignore_index=True)
+                if sum(stocks_player.values()) <10:
+                    if stocks_board["auto_color"] > 0:
+                        data = data.append(cv.getUpDown(id), ignore_index=True)
+                    else:
+                        data = data.append(cv.getUpDownNoneAuto(id), ignore_index=True)
                 else:
-                    data = data.append(cv.getUpDownNoneAuto(id), ignore_index=True)
+                    stock = list(cv.GetListStock(stocks_player))
+                    for s in stock:
+                        data = data.append(cv.getUpDown_return_stock(id,s),ignore_index=True)
         
         List_Code = cv.CreateCode(data)
         list_code = []
@@ -185,28 +195,33 @@ class Action_Space_State():
         list_code.append(1295)
         return list_code
     def checkVictory(self,list_state):
-        turn = list_state[0]
+        # turn = list_state[0]
         arr_point = [list_state[107]]
         amount_player = (len(list_state)-200)//212
+        card=[list_state[119:219]]
         for player in range(amount_player-1):
             if player == 0:
+                card.append(list_state[431:531])
                 arr_point.append(list_state[419])
             elif player == 1:
+                card.append(list_state[643:743])
                 arr_point.append(list_state[631])
             elif player == 2:
+                card.append(list_state[855:955])
                 arr_point.append(list_state[843])
         check = 0
         max_point = max(arr_point)
         if max_point >= 15:
             arr_point = [1 if i == max_point else 0 for i in arr_point]
-            arr_amount_card = [len(i.card_open) for i in self.player]
+            arr_amount_card = [sum(i) for i in card]
             min = 100
             for i in range(len(arr_point)):
                 if arr_point[i] == 1 and arr_amount_card[i] < min:
                     min = arr_amount_card[i]
-                    self.pVictory = self.player[i]
-                    self.End_Game = True
-                    self.state["Victory"] = self.pVictory
+                    if i == 0:
+                        check = 1
+                    else:
+                        check = 0
         else:
             check = -1
         return check
