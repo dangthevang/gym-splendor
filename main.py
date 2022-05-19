@@ -8,7 +8,6 @@ import numpy as np
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.filterwarnings("ignore", category=np.VisibleDeprecationWarning)
 
-
 def main():
     env = gym.make('gym_splendor-v0')
     env.reset() 
