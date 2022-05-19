@@ -5,7 +5,7 @@ from scipy.stats import hmean
 import pandas as pd
 player_01 = player.Player("3", 0)
 #DONE
-def action(board,  state=None,action_space = None):
+def action(board,  state=None):
     file_card_point = pd.read_csv('file_card_point.csv')
     return turn(board, player_01, file_card_point)
 

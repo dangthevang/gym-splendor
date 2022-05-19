@@ -6,7 +6,7 @@ class Agent(Player):
     def __init__(self, name):
         super().__init__(name)
 
-    def action(self, state=None,action_space = None):
+    def action(self, state=None):
         if self.hanh_dong(state['Board'], state) == None:
             return [], None, []
         

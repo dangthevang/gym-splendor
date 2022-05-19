@@ -22,7 +22,7 @@ file_train = pd.read_csv('./TRAIN_HIEU/file_train.csv')
 class Agent(Player):
     def __init__(self, name):
         super().__init__(name)
-    def action(self, state=None,action_space = None):
+    def action(self, state=None):
         stocks = []
         card = None
         stock_return = []        

@@ -7,7 +7,7 @@ class Agent(Player):
     def __init__(self, name):
         super().__init__(name)
 
-    def action(self,  state=None,action_space = None):
+    def action(self,  state=None):
         stocks = []
         card = None
         stock_return = []
