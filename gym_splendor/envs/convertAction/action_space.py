@@ -28,11 +28,13 @@ def check_get_card(stocks, stocks_const, stock_card):
 
 
 class Action_Space_State():
+    with open("gym_splendor/envs/data_action/action_space.json") as datafile:
+        a = json.load(datafile)
+    with open('gym_splendor/envs/Cards_Splendor.json') as datafile:
+        d = json.load(datafile)
     def __init__(self):
-        with open("gym_splendor/envs/data_action/action_space.json") as datafile:
-            self.all_action = json.load(datafile)
-        with open('gym_splendor/envs/Cards_Splendor.json') as datafile:
-            self.all_data = json.load(datafile)
+        self.all_action = Action_Space_State.a
+        self.all_data = Action_Space_State.d
         # self.all_data = pd.read_json("gym_splendor/envs/Cards_Splendor.json")
         self.list_state = []
         self.index_list_state = []
