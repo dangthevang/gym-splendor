@@ -1,7 +1,7 @@
-# from gym_splendor.envs.agents import agent_1 as a1
-# from gym_splendor.envs.agents import agent_2 as a2
-# from gym_splendor.envs.agents import agent_3 as a3
-# from gym_splendor.envs.agents import agent_test as a4
+# from gym_splendor.envs.agents import agent_random as a1
+# from gym_splendor.envs.agents import agent_random as a2
+# from gym_splendor.envs.agents import agent_random as a3
+# from gym_splendor.envs.agents import agent_random as a4
 
 from gym_splendor.envs.agents import MA_1 as a1
 from gym_splendor.envs.agents import MA_2 as a2

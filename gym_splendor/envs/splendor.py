@@ -1,3 +1,4 @@
+from ast import expr_context
 import json
 import random
 import gym
@@ -31,8 +32,8 @@ class SplendporEnv(gym.Env):
             self.turn = self.turn+1
             return self,None,True,None
         else:
+            # print(action)
             if isinstance(action, int)==True:
-                error.errorColor("Dell hieu")
                 try:
                     action = self.player[self.turn % self.amount_player].transform(self.state,action)
                 except:
@@ -47,6 +48,10 @@ class SplendporEnv(gym.Env):
             except:
                 prioritizes = 0
             self.state["Turn"] = self.turn+1
+            # try: 
+            #     print(stocks,card.stt,stock_return,card.stocks)
+            # except:
+            #     print(stocks,card,stock_return)
             self.player[self.turn % self.amount_player].action_real(self.state,stocks,card,stock_return,prioritize=prioritizes)
             self.turn = self.turn+1
             return self.state,None,None,None
@@ -65,7 +70,7 @@ class SplendporEnv(gym.Env):
             "Turn" : 0,
             "Board": self.board,
             "Player": self.player,
-            "Victory": self.pVictory,
+            "Victory": self.pVictory
         }
         self.setup_board()
 

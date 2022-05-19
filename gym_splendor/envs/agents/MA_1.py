@@ -22,10 +22,8 @@ class Agent(Player):
             s_a = [np.nan, np.nan, np.nan, np.nan]
         s_a.loc[len(s_a.index)] =[t, number, a, np.nan]
         s_a.to_csv('State_tam_1.csv', index = False)
-        print(self.check_victory(t))
 
         if self.check_victory(t) == 1:
-            print('thang')
             try:
                 state_save = pd.read_csv('state.csv')
             except:
@@ -34,7 +32,6 @@ class Agent(Player):
             state_save = pd.concat([state_save, s_a])
             state_save.to_csv('state.csv', index = False)  
         elif self.check_victory(t) == 0:
-            print('thua')
             try:
                 state_save = pd.read_csv('state.csv')
             except:
