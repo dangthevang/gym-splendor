@@ -38,6 +38,9 @@ def scoring(state,value):
     return min(list_score)
 
 
+
+
+
 class Agent(Player):
     with open(path + "envs/agents/model.json", 'r') as openfile:
         model = json.load(openfile)
@@ -48,7 +51,29 @@ class Agent(Player):
     def __init__(self, name):
         super().__init__(name)
         self.pairs = []
-        # try:
+    def chosing_actions(self,State,mind_capacity):
+        list_action = self.get_list_index_action(State)
+        new_states = [predict(State,act,Agent.model,Agent.limit) for act in list_action]
+        new_scores = [1/scoring(new_state,Agent.value) for new_state in new_states]
+        chosen_actions = random.choices(list_action,weights=new_scores,k=mind_capacity)
+        chosen_states = []
+        for chosen_action in chosen_actions:
+            chosen_states.append(new_states[list_action.index(chosen_action)])
+        return chosen_actions, max(new_scores),chosen_states
+    def chosing_new_states_from_many_states(self,list_state,mind_capacity):
+        all_states = []
+        all_scores = []
+        for State in list_state:
+            list_action = self.get_list_index_action(State)
+            generated_states = [predict(State,act,Agent.model,Agent.limit) for act in list_action]
+            generated_scores = [1/scoring(new_state,Agent.value) for new_state in generated_states]
+            all_states += generated_states
+            all_scores += generated_scores
+        chosen_states = random.choices(all_states,weights=all_scores,k=mind_capacity)
+        max_score = max(all_scores)
+        return chosen_states,max_score
+
+            # try:
         #     with open(path + "envs/agents/value.json", 'r') as openfile:
         #         self.value = json.load(openfile)
         # except:
@@ -59,40 +84,22 @@ class Agent(Player):
         action = random.choice(list_action)
         max_score = 0
         # dự đoán n turn sau đó
-        turn_predicted = 5
+        turn_predict = 2
         # chọn ra n action để đệ quy
         mind_capacity = 5
-        new_states = [predict(State,act,Agent.model,Agent.limit) for act in list_action]
-        new_scores = [1/scoring(new_state,Agent.value) for new_state in new_states]
-        chosen_actions = random.choices(list_action,weights=new_scores,k=mind_capacity)
-        if len(list_action) >1:
-            for act in chosen_actions:
-                mode = 0
-        #         old_states = [predict(State,act,model,limit)]
-        #         for turn in range(min_score + 1):
-        #             # print(turn)
-        #             if mode == 1:
-        #                 break
-        #             new_states = []
-        #             #check nếu đã xong game
-        #             for old_state in old_states:
-        #                 if self.check_victory(old_state) == 1:
-        #                     mode = 1
-        #                     break
-        #                 # print(old_state)
-        #                 generated_actions = self.get_list_index_action(old_state)
-        #                 # actions = random.choices(generated_actions,k=no_action)
-        #                 for to_act in generated_actions:
-        #                     if to_act != 0:
-        #                         new_states.append(predict(old_state,to_act,model,limit))
-        #             old_states = new_states.copy()
-        #         if turn <= min_score:
-        #             min_score = turn
-        #             action = act
-        #     if min_score == 1:
-        #         print("thắng mẹ rồi")
-        #     else:
-        #         print("dự kiến thắng sau",min_score-1,"turn nữa")  
+        to_acts,score,chosen_states = self.chosing_actions(State,mind_capacity)
+        old_states = [State]
+        for act in to_acts:
+            new_states = [predict(State,act,Agent.model,Agent.limit) for old_state in old_states]
+            for turn_predicted in range(turn_predict):
+                old_states,score = self.chosing_new_states_from_many_states(new_states,mind_capacity)
+                new_states = old_states.copy()
+                # print(turn_predicted,score,len(new_states))
+            if score > max_score:
+                max_score = score
+                action = act
+        print(max_score)   
+        
         self.pairs.append([State,action])
         # khi thắng, học value, model, limit
         if self.check_victory(State) == 1:
