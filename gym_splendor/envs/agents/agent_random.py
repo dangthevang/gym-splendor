@@ -37,6 +37,16 @@ def scoring(state,value):
             min_score = score
     return min_score
 
+def find_n_smallest(list_n,n):
+    mins = list_n[:n]
+    mins.sort()
+    for i in list_n[n:]:
+        if i < mins[-1]: 
+            mins.append(i)
+            mins.sort()
+            mins= mins[:n]
+    return mins
+
 class Agent(Player):
     # with open("/content/TienLenMienNam/gym_TLMN/envs/agents/model.json", 'r') as openfile:
     #     model = json.load(openfile)
@@ -99,7 +109,7 @@ class Agent(Player):
                 with open(path + "envs/agents/value.json", 'r') as openfile:
                     value = json.load(openfile)
             except:
-                value = {}
+                value = {"max":0}
             try:
                 with open(path + "envs/agents/model.json", 'r') as openfile:
                     model = json.load(openfile)
@@ -110,6 +120,8 @@ class Agent(Player):
                     limit = json.load(openfile)
             except:
                 limit = [[99999999999,0] for _ in range(len(State))]
+            if len(self.pairs) > value["max"]:
+                value["max"] = len(self.pairs)
             for id_pair in range(len(self.pairs)):
                 old_state = self.pairs[id_pair][0]
                 old_action = self.pairs[id_pair][1]

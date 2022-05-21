@@ -10,7 +10,7 @@ def main():
     start_time = time.time()
     while env.turn <1000:
         o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state))
-        # env.render()
+        env.render()
         if done == True:
             break
     for i in range(4):
