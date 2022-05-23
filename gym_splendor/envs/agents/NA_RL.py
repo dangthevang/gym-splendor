@@ -21,7 +21,11 @@ def select(start,dict_model,limit):
 
 def predict(state,act,model,limit):
     act_form = []
+    # try:
     data = model[act]
+    # except:
+    #     print("lỗi action chưa có:",act)
+    #     return state
     for id_state in range(len(data)):
         act_form.append(select(state[id_state],data[id_state],limit[id_state]))
     new_state = np.array(state) + np.array(act_form)
@@ -79,14 +83,15 @@ class Agent(Player):
         # except:
         #     pass
     def action(self, dict_input):
+        # print(self.amount_action_space)
         State = self.get_list_state(dict_input)
         list_action = self.get_list_index_action(State)
         action = random.choice(list_action)
         max_score = 0
         # dự đoán n turn sau đó
-        turn_predict = 2
+        turn_predict = 10
         # chọn ra n action để đệ quy
-        mind_capacity = 5
+        mind_capacity = 2
         to_acts,score,chosen_states = self.chosing_actions(State,mind_capacity)
         old_states = [State]
         for act in to_acts:
