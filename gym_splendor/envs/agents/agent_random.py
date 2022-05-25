@@ -28,14 +28,17 @@ def predict(state,act,model,limit):
     return list(new_state)
 
 def scoring(state,value):
+    list_score = []
+    final = 1
     for id_state in range(len(state)):
-        min_score = 99999
         name = str(id_state) + "_" + str(state[id_state])
         if name in value.keys():
             score = value[name][0]
-        if score < min_score:
-            min_score = score
-    return min_score
+            # list_score.append(float(score))
+            final *= score**(1/1000)
+            # print(final,score)
+            # print(score,name)
+    return final
 
 def find_n_smallest(list_n,n):
     mins = list_n[:n]
@@ -48,12 +51,12 @@ def find_n_smallest(list_n,n):
     return mins
 
 class Agent(Player):
-    # with open("/content/TienLenMienNam/gym_TLMN/envs/agents/model.json", 'r') as openfile:
+    # with open(path+"envs/agents/model.json", 'r') as openfile:
     #     model = json.load(openfile)
     # with open("/content/TienLenMienNam/gym_TLMN/envs/agents/limit.json", 'r') as openfile:
     #     limit = json.load(openfile)
-    # with open("/content/TienLenMienNam/gym_TLMN/envs/agents/limit.json", 'r') as openfile:
-    #     limit = json.load(openfile)
+    with open(path+"envs/agents/value.json", 'r') as openfile:
+        value = json.load(openfile)
     def __init__(self, name):
         super().__init__(name)
         self.pairs = []
@@ -64,6 +67,8 @@ class Agent(Player):
         #     pass
     def action(self, dict_input):
         State = self.get_list_state(dict_input)
+        # print(State)
+        print("điểm hiện tại",scoring(State,Agent.value))
         list_action = self.get_list_index_action(State)
         action = random.choice(list_action)
         # print(scoring(State,self.value))

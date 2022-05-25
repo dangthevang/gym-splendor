@@ -33,13 +33,16 @@ def predict(state,act,model,limit):
 
 def scoring(state,value):
     list_score = []
+    final = 1
     for id_state in range(len(state)):
         name = str(id_state) + "_" + str(state[id_state])
         if name in value.keys():
             score = value[name][0]
-            list_score.append(score)
+            # list_score.append(float(score))
+            final *= score**(1/1000)
+            # print(final,score)
             # print(score,name)
-    return min(list_score)
+    return final
 
 
 
@@ -55,56 +58,43 @@ class Agent(Player):
     def __init__(self, name):
         super().__init__(name)
         self.pairs = []
-    def chosing_actions(self,State,mind_capacity):
-        list_action = self.get_list_index_action(State)
-        new_states = [predict(State,act,Agent.model,Agent.limit) for act in list_action]
-        new_scores = [1/scoring(new_state,Agent.value) for new_state in new_states]
-        chosen_actions = random.choices(list_action,weights=new_scores,k=mind_capacity)
-        chosen_states = []
-        for chosen_action in chosen_actions:
-            chosen_states.append(new_states[list_action.index(chosen_action)])
-        return chosen_actions, max(new_scores),chosen_states
-    def chosing_new_states_from_many_states(self,list_state,mind_capacity):
-        all_states = []
-        all_scores = []
-        for State in list_state:
-            list_action = self.get_list_index_action(State)
-            generated_states = [predict(State,act,Agent.model,Agent.limit) for act in list_action]
-            generated_scores = [1/scoring(new_state,Agent.value) for new_state in generated_states]
-            all_states += generated_states
-            all_scores += generated_scores
-        chosen_states = random.choices(all_states,weights=all_scores,k=mind_capacity)
-        max_score = max(all_scores)
-        return chosen_states,max_score
 
-            # try:
-        #     with open(path + "envs/agents/value.json", 'r') as openfile:
-        #         self.value = json.load(openfile)
-        # except:
-        #     pass
+
+
     def action(self, dict_input):
         # print(self.amount_action_space)
         State = self.get_list_state(dict_input)
         list_action = self.get_list_index_action(State)
-        action = random.choice(list_action)
+        list_score = [scoring(predict(State,act,Agent.model,Agent.limit),Agent.value) for act in list_action]
+        score_sorted = list_score.copy()
+        score_sorted.sort()
+        sample_action = []
+        capacity = 2
+        for soluong in range(capacity):
+            can_tim = score_sorted[soluong]
+            indx = list_score.index(can_tim)
+            sample_action.append(list_action[indx])
+        action = random.choice(sample_action)
+        print(len(sample_action))
         max_score = 0
         # dự đoán n turn sau đó
-        turn_predict = 10
-        # chọn ra n action để đệ quy
-        mind_capacity = 2
-        to_acts,score,chosen_states = self.chosing_actions(State,mind_capacity)
-        old_states = [State]
-        for act in to_acts:
-            new_states = [predict(State,act,Agent.model,Agent.limit) for old_state in old_states]
-            for turn_predicted in range(turn_predict):
-                old_states,score = self.chosing_new_states_from_many_states(new_states,mind_capacity)
-                new_states = old_states.copy()
-                # print(turn_predicted,score,len(new_states))
-            if score > max_score:
-                max_score = score
-                action = act
-        print(max_score)   
-        
+        turn_predict = 5
+        old_state = State
+        min_score = 99999
+        for to_act in sample_action:
+            for predicted in range(turn_predict):
+                new_state = predict(old_state,to_act,Agent.model,Agent.limit)
+                new_list_action = self.get_list_index_action(new_state)
+                list_new_state = []
+                for act in new_list_action:
+                    list_new_state.append(predict(new_state,act,Agent.model,Agent.limit))
+                    list_scores = [scoring(state_a,Agent.value) for state_a in list_new_state]
+                best_score = min(list_scores)
+                old_state = list_new_state[list_scores.index(best_score)]
+            print(best_score)
+            if best_score < min_score:
+                min_score = best_score
+                action = to_act
         self.pairs.append([State,action])
         # khi thắng, học value, model, limit
         if self.check_victory(State) == 1:
