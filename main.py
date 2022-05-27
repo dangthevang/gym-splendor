@@ -7,9 +7,6 @@ import time
 def main(env):
     # env = gym.make('gym_splendor-v0')
     env.reset() 
-    print('CHECK')
-    print(env.id_tran)
-    print(env.player)
     while env.turn <1000:
         o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state))
         # env.render()
@@ -38,7 +35,7 @@ if __name__ == '__main__':
 
     for i in range(1, len(env.list_all_game)+1):
     # for i in range(1, 10):
-        print('Game', i, end='      ')
+        print('Game', i)
         x, y = main(env)
         list_player.append(x)
         list_score.append(y)
