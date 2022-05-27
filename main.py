@@ -7,17 +7,16 @@ import time
 def main(env):
     # env = gym.make('gym_splendor-v0')
     env.reset() 
-    # start_time = time.time()
+    print('CHECK')
+    print(env.id_tran)
+    print(env.player)
     while env.turn <1000:
         o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state))
         # env.render()
         if done == True:
             break
     for i in range(4):
-        # print(env.turn//4)
         o,a,done,t = env.step(env.player[env.turn%env.amount_player].action(env.state))
-    # print(env.pVictory)
-    # print(time.time()-start_time)
     dict_result = {}
     for p in env.player:
         dict_result[p.name] = p.score
@@ -29,19 +28,27 @@ def main(env):
 
 if __name__ == '__main__':
     env = gym.make('gym_splendor-v0')
-    result_for_elo = pd.DataFrame({'player':[], 'score':[]})
+    try:
+        result_for_elo = pd.read_csv('data_for_elo.csv')
+    except:
+        result_for_elo = pd.DataFrame({'player':[], 'score':[]})
     list_player = []
     list_score = []
-    print(len(env.list_all_game))
-    print(env.list_all_game[:10])
+   
 
-    # for i in range(1, len(env.list_all_game)+1):
-    for i in range(1, 10):
+    for i in range(1, len(env.list_all_game)+1):
+    # for i in range(1, 10):
         print('Game', i, end='      ')
         x, y = main(env)
         list_player.append(x)
         list_score.append(y)
         env.id_tran += 1
-    result_for_elo['player'] = list_player
-    result_for_elo['score'] = list_score
-    result_for_elo.to_csv('data_for_elo.csv', index= False)
+    list_player = list(result_for_elo['player']) + list_player
+    list_score = list(result_for_elo['score']) + list_score
+    result_for_elo_new = pd.DataFrame()
+    result_for_elo_new['player'] = list_player
+    result_for_elo_new['score'] = list_score
+    result_for_elo_new.to_csv('data_for_elo.csv', index= False)
+
+
+    # print(env.list_all_game[:10])

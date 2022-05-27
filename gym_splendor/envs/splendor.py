@@ -66,6 +66,7 @@ class SplendporEnv(gym.Env):
         self.board = Board()
         # self.player = random.sample(agents_inteface.ListPlayer, k=self.amount_player)
         self.player = self.list_all_game[self.id_tran]
+        self.id_tran += 1
         for p in self.player:
             p.reset()
         self.pVictory = None
