@@ -2,7 +2,7 @@ from ast import expr_context
 import json
 import random
 import gym
-
+import itertools
 import numpy
 from gym_splendor.envs.base.board import Board
 from gym_splendor.envs.base.card import Card_Stock,Card_Noble
@@ -22,9 +22,12 @@ class SplendporEnv(gym.Env):
         self.amount_player = amount_player
         self.board = None
         self.player = None
-        
         self.state = {}
         self.actioner = AS.Action_Space_State()
+        #Hiếu thêm
+        self.list_all_game = [list(item) for item in itertools.combinations(agents_inteface.ListPlayer, 4)]
+        self.id_tran = 0
+        #Hiếu end
 
     def step(self, action):
         self.close()
@@ -61,7 +64,8 @@ class SplendporEnv(gym.Env):
         self.turn = 0
         self.amount_player = amount_player
         self.board = Board()
-        self.player = random.sample(agents_inteface.ListPlayer, k=self.amount_player)
+        # self.player = random.sample(agents_inteface.ListPlayer, k=self.amount_player)
+        self.player = self.list_all_game[self.id_tran]
         for p in self.player:
             p.reset()
         self.pVictory = None

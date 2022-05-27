@@ -1,0 +1,10 @@
+player,score
+"['agent_Hieu_val', 'agent_Hieuuu', 'agent_Ann', 'agent_Chi']","[16, 11, 10, 3]"
+"['agent_Ann', 'agent_Hieu_val', 'agent_Chi', 'agent_Hieuuu']","[16, 15, 9, 8]"
+"['agent_Hieu_val', 'agent_Ann', 'agent_Hieuuu', 'agent_Chi']","[15, 6, 5, 0]"
+"['agent_Hieu_val', 'agent_Ann', 'agent_Chi', 'agent_Hieuuu']","[15, 10, 8, 7]"
+"['agent_Ann', 'agent_Hieu_val', 'agent_Chi', 'agent_Hieuuu']","[16, 13, 11, 5]"
+"['agent_Ann', 'agent_Hieu_val', 'agent_Hieuuu', 'agent_Chi']","[15, 10, 8, 3]"
+"['agent_Hieu_val', 'agent_Chi', 'agent_Ann', 'agent_Hieuuu']","[20, 7, 5, 4]"
+"['agent_Ann', 'agent_Hieuuu', 'agent_Chi', 'agent_Hieu_val']","[20, 7, 5, 3]"
+"['agent_Ann', 'agent_Chi', 'agent_Hieu_val', 'agent_Hieuuu']","[16, 7, 5, 4]"
