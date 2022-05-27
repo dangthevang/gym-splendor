@@ -39,7 +39,6 @@ if __name__ == '__main__':
         x, y = main(env)
         list_player.append(x)
         list_score.append(y)
-        env.id_tran += 1
     list_player = list(result_for_elo['player']) + list_player
     list_score = list(result_for_elo['score']) + list_score
     result_for_elo_new = pd.DataFrame()
