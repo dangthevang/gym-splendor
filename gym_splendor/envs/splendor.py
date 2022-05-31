@@ -5,7 +5,7 @@ import gym
 
 import numpy
 from gym_splendor.envs.base.board import Board
-from gym_splendor.envs.base.card import Card_Stock,Card_Noble
+from gym_splendor.envs.base.card import Card_Stock,Card_Noble,Card
 from gym_splendor.envs.agents import agents_inteface
 from gym_splendor.envs.base import error
 from gym_splendor.envs.convertAction import action_space as AS
@@ -22,7 +22,6 @@ class SplendporEnv(gym.Env):
         self.amount_player = amount_player
         self.board = None
         self.player = None
-        
         self.state = {}
         self.actioner = AS.Action_Space_State()
 
@@ -61,7 +60,8 @@ class SplendporEnv(gym.Env):
         self.turn = 0
         self.amount_player = amount_player
         self.board = Board()
-        self.player = random.sample(agents_inteface.ListPlayer, k=self.amount_player)
+        Card.tt = 0
+        self.player = random.sample(agents_inteface.createListPlayer(), k=self.amount_player)
         for p in self.player:
             p.reset()
         self.pVictory = None
